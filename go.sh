@@ -4,6 +4,7 @@
 #   bash go.sh fetch     download laboratory AMR records
 #   bash go.sh select    select isolates and download genomes
 #   bash go.sh test      run the unit tests
+#   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -23,6 +24,10 @@ case "${1:-}" in
   select)
     "$PY" scripts/02_select_isolates.py --evidence "Laboratory Method"
     "$PY" scripts/03_fetch_genomes.py
+    ;;
+  ref)
+    source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
+    "$PY" scripts/04_reference_arm.py
     ;;
   test)
     "$PY" -m pytest -q tests

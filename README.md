@@ -30,7 +30,8 @@ scripts/
   01_fetch_amr.py        BV-BRC phenotype download (needs internet)
   02_select_isolates.py  eligibility + antibiotic rule + seeded sampling
   03_fetch_genomes.py    assembly download, QC, anonymisation
-  reference_rule.md      AMRFinderPlus reference-arm rule
+  reference_rule.md      AMRFinderPlus reference-arm rule (vocabulary verified 2026-11-14)
+  04_reference_arm.py    runs AMRFinderPlus and applies that rule
   metrics.py             CA / VME / ME, Wilson CIs, McNemar, Fleiss kappa
   hallucination_audit.py mechanical candidate findings for the H1-H5 taxonomy
 tests/                   unit tests for metrics.py (synthetic toy data)
