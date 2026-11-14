@@ -8,6 +8,7 @@
 #   bash go.sh pilot [claude|gemini|gpt]   pilot run on 3 isolates (discarded)
 #   bash go.sh subset   draw the 40-isolate reproducibility subset (once)
 #   bash go.sh freeze   tag protocol-v1.0 after the tests pass
+#   bash go.sh durum   calisan var mi, kac grup bitti, son log
 #   bash go.sh run <arm> <rep> [max batches]  real run, resumable, in the background
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh events   summarise the pilot event streams
@@ -48,6 +49,23 @@ case "${1:-}" in
     # Donma kaydı FREEZE.md commit'idir; etiketi göndermek isterseniz: git push origin protocol-v1.0
     echo "Frozen. Marker: FREEZE.md (commit). Local tag: protocol-v1.0"
     echo "Every later change goes in PROTOCOL.md section 12."
+    ;;
+  durum)
+    set +e                      # bu blokta hicbir eksik dosya komutu yarida kesmesin
+    if pgrep -f "05_run_agent.py" >/dev/null 2>&1; then
+      echo "CALISIYOR:"; pgrep -af "05_run_agent.py" | sed 's/^/   /'
+    else
+      echo "DURMUS (calisan ajan yok)"
+    fi
+    for d in runs/claude/rep* runs/gemini/rep* runs/gpt/rep*; do
+      [ -d "$d" ] || continue
+      biten=$(ls -d "$d"/batch_*/workspace/output/predictions.tsv 2>/dev/null | wc -l | tr -d " ")
+      satir=$([ -f "$d/predictions.tsv" ] && echo $(($(wc -l < "$d/predictions.tsv") - 1)) || echo 0)
+      echo "  $d : $biten grup bitti, $satir tahmin satiri"
+    done
+    son=$(ls -t runs/run_*.log 2>/dev/null | head -1)
+    if [ -n "$son" ]; then echo; echo "son log: $son"; tail -5 "$son"; fi
+    exit 0
     ;;
   run)
     # bash go.sh run <claude|gemini|gpt> <replicate> [max batches this sitting]
