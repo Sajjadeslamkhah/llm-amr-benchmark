@@ -3,6 +3,7 @@
 #   bash go.sh vocab     AMRFinderPlus class/subclass vocabulary
 #   bash go.sh fetch     download laboratory AMR records
 #   bash go.sh select    select isolates and download genomes
+#   bash go.sh harness   collect CLI help output for the three agents
 #   bash go.sh test      run the unit tests
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
@@ -28,6 +29,22 @@ case "${1:-}" in
   ref)
     source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
     "$PY" scripts/04_reference_arm.py
+    ;;
+  harness)
+    mkdir -p data/summary
+    out=data/summary/harness_help.txt
+    : > "$out"
+    for c in "claude --help" "claude -p --help" "codex --help" "codex exec --help" "agy --help" "agy run --help"; do
+      echo "########## $c" >> "$out"
+      sh -c "$c" >> "$out" 2>&1 || echo "(command failed)" >> "$out"
+      echo >> "$out"
+    done
+    for f in "$HOME/.claude/settings.json" "$HOME/.codex/config.toml" "$HOME/.antigravity/config.json" "$HOME/.agy/config.json"; do
+      echo "########## exists? $f" >> "$out"
+      [ -f "$f" ] && echo "yes" >> "$out" || echo "no" >> "$out"
+    done
+    wc -l "$out"
+    echo "Send me: $out"
     ;;
   test)
     "$PY" -m pytest -q tests
