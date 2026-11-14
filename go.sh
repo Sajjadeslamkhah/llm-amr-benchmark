@@ -5,6 +5,7 @@
 #   bash go.sh select    select isolates and download genomes
 #   bash go.sh harness   collect CLI help output for the three agents
 #   bash go.sh test      run the unit tests
+#   bash go.sh pilot [claude|gemini|gpt]   pilot run on 3 isolates (discarded)
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
 set -euo pipefail
@@ -25,6 +26,11 @@ case "${1:-}" in
   select)
     "$PY" scripts/02_select_isolates.py --evidence "Laboratory Method"
     "$PY" scripts/03_fetch_genomes.py
+    ;;
+  pilot)
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    arm="${2:-claude}"
+    "$PY" scripts/05_run_agent.py --arm "$arm" --rep 0 --pilot 3 --timeout 1800
     ;;
   ref)
     source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
