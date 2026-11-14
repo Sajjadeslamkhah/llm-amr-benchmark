@@ -93,7 +93,7 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 | Arm | Description |
 |---|---|
 | A1 | Claude (Anthropic): current flagship model at freeze date, run in Claude Code |
-| A2 | Gemini (Google): current flagship model at freeze date, run in Gemini CLI |
+| A2 | Gemini (Google): current flagship model at freeze date, run in Antigravity CLI (`agy`; replaced Gemini CLI for Google AI Pro accounts on 2026-06-18) |
 | A3 | GPT (OpenAI): current flagship model at freeze date, run in Codex CLI |
 | REF | AMRFinderPlus with the pre-specified gene/mutation-to-drug mapping rule (`scripts/reference_rule.md`) |
 
