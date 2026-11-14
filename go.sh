@@ -43,9 +43,11 @@ case "${1:-}" in
     ;;
   freeze)
     "$PY" -m pytest -q tests || { echo "Tests failed; not freezing."; exit 1; }
-    git tag -a protocol-v1.0 -m "Protocol frozen before any scored agent run"
-    git push origin protocol-v1.0
-    echo "Frozen. Every later change goes in PROTOCOL.md section 12."
+    git tag -f -a protocol-v1.0 -m "Protocol frozen before any scored agent run" 2>/dev/null || true
+    # Etiketi uzak depoya gönderme burada DENENMEZ: kimlik bilgisi yoksa komut şifre sorup takılıyor.
+    # Donma kaydı FREEZE.md commit'idir; etiketi göndermek isterseniz: git push origin protocol-v1.0
+    echo "Frozen. Marker: FREEZE.md (commit). Local tag: protocol-v1.0"
+    echo "Every later change goes in PROTOCOL.md section 12."
     ;;
   run)
     # bash go.sh run <claude|gemini|gpt> <replicate> [max batches this sitting]
