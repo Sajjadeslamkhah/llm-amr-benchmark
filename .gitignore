@@ -4,3 +4,4 @@ sandbox/data/genomes/
 __pycache__/
 .pytest_cache/
 *.pyc
+data/summary/amrfinder_vocab.txt
