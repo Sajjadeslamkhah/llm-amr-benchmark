@@ -104,9 +104,13 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 - **Model versions:** The exact model identifier, harness version and run date are recorded for every run. Model versions are not named in this draft because they are fixed at freeze.
 - **Harness:** Each model runs in its vendor's official command-line agent with default settings, inside the same container: Claude Code, Antigravity CLI and Codex CLI. Each agent signs in with the investigator's subscription account rather than an API key, and the plan tier is recorded. Using each vendor's own harness is a design choice and is reported as such.
 - **Prompt:** Every agent receives the identical task prompt (`prompts/task_prompt.md`) with no example answers.
-- **Replicates:** 3 independent runs per agent, each from a fresh container.
-- **Network:** Each agent reaches its own vendor's model endpoint and nothing else. Web search and page fetching are disabled, and commands the agent runs have no network access. Which of these each harness can enforce is verified before the freeze and reported per arm, including any that cannot be enforced.
-- **Logging:** Every command the agent runs is recorded to `commands.log` (one JSON object per command: `cmd`, `exit_code`, `stdout`, `stderr`), alongside the agent's transcript. This log is what `scripts/hallucination_audit.py` checks the agent's claims against, so a run without it cannot be audited and is repeated.
+- **Batching:** Isolates are processed in batches of 10, each a separate agent session with a fresh workspace holding only that batch's genomes. The pilot used about 437,000 tokens for 3 isolates, so a single session over 118 isolates would exceed the context window. Batch size is identical for every arm and replicate. A finished batch is never rerun; an interrupted run resumes at the next unfinished batch.
+- **Replicates:** The primary analysis uses **one run per agent over all eligible isolates**. Reproducibility is measured from **3 independent runs per agent on a pre-specified random subset of 40 isolates** (`data/selection/reproducibility_subset.txt`, drawn with `SEED = 20261114` from the QC-pass isolates before any run; the first of the three is the corresponding part of the full run). This splits the available quota between coverage and repeatability. It is a resource decision, not a result-driven one, and is logged in section 12.
+- **Network:** Each agent reaches its own vendor's model endpoint and nothing else; web search and page fetching are disabled, and commands the agent runs should have no network access. Enforcement differs per harness and is reported per arm rather than assumed:
+  - *GPT (Codex CLI):* `--sandbox workspace-write` runs model-issued commands without network access; web search is not enabled.
+  - *Claude (Claude Code):* `--disallowed-tools WebSearch WebFetch` removes the web tools, and each run's `result` event records `web_search_requests` and `web_fetch_requests`, which are reported. Shell commands are not OS-sandboxed on macOS, so network access from a command is not blocked at the OS level; this residual gap is reported.
+  - *Gemini (Antigravity CLI):* `--sandbox` enables terminal restrictions; no documented switch removes web tools.
+- **Logging:** Each harness's event stream is captured verbatim (`events.jsonl`) and converted to `transcript.txt` and `commands.log` (one JSON object per command: `cmd`, `exit_code`, `stdout`, `stderr`). This log is what `scripts/hallucination_audit.py` checks the agent's claims against, so a batch without it cannot be audited and is rerun.
 
 ## 9. Outcomes and definitions
 
@@ -118,7 +122,7 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 | VME | predicted S when the reference is R. Denominator: reference-R pairs |
 | ME | predicted R when the reference is S. Denominator: reference-S pairs |
 | No call | a missing, malformed or "uncertain" prediction. Counted as an error in the primary analysis and excluded in a sensitivity analysis |
-| Reproducibility | Fleiss' κ across the 3 replicates, per agent |
+| Reproducibility | Fleiss' κ across the 3 replicates on the 40-isolate subset, per agent; plus the percentage of isolate-antibiotic pairs given an identical call in all 3 |
 
 **Benchmark thresholds:** Results are displayed against the commonly used AST-evaluation thresholds: CA ≥ 90%, VME ≤ 1.5%, ME ≤ 3%. The exact source for these thresholds is to be confirmed and cited before the freeze. They serve as reference lines, not as pass/fail hypotheses.
 
@@ -145,10 +149,10 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 
 - All proportions are reported with Wilson 95% confidence intervals, per antibiotic and pooled.
 - **Primary analysis:**
-  - Replicate 1 of each agent.
+  - The single full run of each agent over all eligible isolates.
   - All six pairwise comparisons among the four arms (Claude, Gemini, GPT, REF) on paired isolate–antibiotic correctness, each with McNemar's exact test.
   - Holm correction is applied across the 6 comparisons.
-- **Secondary analysis:** Majority vote across the 3 replicates.
+- **Secondary analysis:** On the 40-isolate subset only, the majority call across the 3 replicates, compared with that subset's calls in the full run.
 - **Sensitivity analyses:**
   - (i) I counted as non-susceptible.
   - (ii) No-calls excluded.
@@ -168,3 +172,6 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 |---|---|---|---|
 | 2026-11-14 (pre-freeze) | 5 | Candidate list changed from 8 antibiotics (3 third-generation cephalosporins, "first 6 by order") to one antibiotic per class (6 classes). | Mechanistic diversity. Decided before any model run and before any look at agent output. Counts for all candidates are archived. |
 | 2026-11-14 (pre-freeze) | 4 | Evidence string fixed to "Laboratory Method". | Confirmed from the first download. |
+| 2026-11-15 (pre-freeze) | 8 | Isolates are processed in batches of 10 rather than one session per run. | A 3-isolate pilot consumed about 437,000 tokens, so 118 isolates would exceed the context window. Mechanical change; the task and the prompt are unchanged. |
+| 2026-11-15 (pre-freeze) | 8, 9, 10 | Replicates redistributed: one full run per agent for the primary analysis, 3 replicates on a pre-specified 40-isolate subset for reproducibility, instead of 3 full runs per agent. | Subscription rate limits. The pilot showed about 15-19 minutes per 3 isolates per agent, and the Claude run reported 78% of the weekly limit already used, so 9 full runs are not feasible. Decided from timing and quota data only, before any outcome was examined. |
+| 2026-11-15 (pre-freeze) | 8 | Network enforcement described per harness instead of as one blanket claim. | Verified from each CLI's documented options during the pilot; Claude Code's shell commands are not OS-sandboxed on macOS, and that gap is now stated rather than implied away. |

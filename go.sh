@@ -6,6 +6,8 @@
 #   bash go.sh harness   collect CLI help output for the three agents
 #   bash go.sh test      run the unit tests
 #   bash go.sh pilot [claude|gemini|gpt]   pilot run on 3 isolates (discarded)
+#   bash go.sh subset   draw the 40-isolate reproducibility subset (once)
+#   bash go.sh freeze   tag protocol-v1.0 after the tests pass
 #   bash go.sh run <arm> <rep> [max batches]  real run, resumable, in the background
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh events   summarise the pilot event streams
@@ -35,6 +37,15 @@ case "${1:-}" in
     arm="${2:-claude}"
     rm -rf "runs/$arm/rep0"
     "$PY" scripts/05_run_agent.py --arm "$arm" --rep 0 --pilot 3 --batch-size 3 --timeout 2400
+    ;;
+  subset)
+    "$PY" scripts/make_subset.py
+    ;;
+  freeze)
+    "$PY" -m pytest -q tests || { echo "Tests failed; not freezing."; exit 1; }
+    git tag -a protocol-v1.0 -m "Protocol frozen before any scored agent run"
+    git push origin protocol-v1.0
+    echo "Frozen. Every later change goes in PROTOCOL.md section 12."
     ;;
   run)
     # bash go.sh run <claude|gemini|gpt> <replicate> [max batches this sitting]
