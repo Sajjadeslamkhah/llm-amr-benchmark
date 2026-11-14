@@ -98,7 +98,7 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 | REF | AMRFinderPlus with the pre-specified gene/mutation-to-drug mapping rule (`scripts/reference_rule.md`) |
 
 - **Model versions:** The exact model identifier, harness version and run date are recorded for every run. Model versions are not named in this draft because they are fixed at freeze.
-- **Harness:** Each model runs in its vendor's official command-line agent with default settings, inside the same container. Using each vendor's own harness is a design choice and is reported as such.
+- **Harness:** Each model runs in its vendor's official command-line agent with default settings, inside the same container: Claude Code, Antigravity CLI and Codex CLI. Each agent signs in with the investigator's subscription account rather than an API key, and the plan tier is recorded. Using each vendor's own harness is a design choice and is reported as such.
 - **Prompt:** Every agent receives the identical task prompt (`prompts/task_prompt.md`) with no example answers.
 - **Replicates:** 3 independent runs per agent, each from a fresh container.
 
