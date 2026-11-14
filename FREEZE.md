@@ -39,3 +39,23 @@ Verify with:
 
     shasum -a 256 PROTOCOL.md prompts/task_prompt.md scripts/reference_rule.md ...
 
+
+---
+
+## Addendum — 2026-11-15, same day, before any scored run
+
+`data/selection/reproducibility_subset.txt` was recorded as `(missing)` above: it had been drawn on
+the investigator's workstation and was not yet in the repository when FREEZE.md was written. The file
+is now committed. It was reproduced byte for byte from `scripts/make_subset.py`
+(`SEED = 20261114`, 40 of the 118 blinded isolate codes) and the first eight entries match what the
+workstation printed when the subset was drawn: ISO_004, ISO_009, ISO_016, ISO_017, ISO_020, ISO_024,
+ISO_025, ISO_028.
+
+    baa795af815c37989b33033a840d5aa80b57e1fa252a3b3d3722a8efa71419c0  data/selection/reproducibility_subset.txt
+
+Anyone can regenerate it and check the hash:
+
+    python scripts/make_subset.py
+
+Still true at the time of this addendum: no agent prediction has been compared with a reference
+phenotype, and no accuracy, error rate or hallucination count has been computed.
