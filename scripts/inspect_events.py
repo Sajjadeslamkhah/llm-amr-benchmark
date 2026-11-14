@@ -29,14 +29,22 @@ def shorten(obj, depth: int = 0):
 
 
 def kind(ev: dict) -> str:
+    """A label fine-grained enough to show each distinct event shape."""
     for key in ("type", "event", "kind", "msg_type"):
         if key in ev and isinstance(ev[key], str):
             label = ev[key]
-            inner = ev.get("message") or ev.get("msg") or ev.get("payload")
+            inner = ev.get(label) or ev.get("message") or ev.get("msg") or ev.get("payload")
             if isinstance(inner, dict):
-                for k2 in ("type", "role", "event"):
+                # Gemini: step_update.step_type / .state; Claude: message.content[].type
+                for k2 in ("step_type", "subtype", "type", "role", "event"):
                     if isinstance(inner.get(k2), str):
-                        return f"{label}/{inner[k2]}"
+                        label = f"{label}/{inner[k2]}"
+                        break
+                content = inner.get("content")
+                if isinstance(content, list) and content and isinstance(content[0], dict):
+                    blocks = sorted({b.get("type") for b in content if isinstance(b, dict) and b.get("type")})
+                    if blocks:
+                        label += "[" + ",".join(blocks) + "]"
             return label
     return "(no type key) keys=" + ",".join(sorted(ev)[:6])
 

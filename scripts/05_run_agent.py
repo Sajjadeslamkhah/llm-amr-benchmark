@@ -61,7 +61,7 @@ ARMS = {
         "network_note": "--sandbox workspace-write blocks network for model-run commands; web search not enabled",
         "args": lambda prompt, model: (
             ["exec", prompt, "--json", "--sandbox", "workspace-write",
-             "--skip-git-repo-check", "-a", "never"]
+             "--skip-git-repo-check"]
             + (["--model", model] if model else [])),
     },
 }
