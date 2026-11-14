@@ -19,9 +19,9 @@ from pathlib import Path
 import pandas as pd
 
 SEED = 20261114
-CANDIDATES = [  # priority order, PROTOCOL.md section 5
-    "ampicillin", "cefotaxime", "ceftriaxone", "ceftazidime",
-    "meropenem", "ciprofloxacin", "gentamicin", "trimethoprim/sulfamethoxazole",
+CANDIDATES = [  # one per class, PROTOCOL.md section 5
+    "ampicillin", "cefotaxime", "meropenem",
+    "ciprofloxacin", "gentamicin", "trimethoprim/sulfamethoxazole",
 ]
 MIN_PER_CLASS = 20
 MAX_ABX = 6

@@ -45,7 +45,7 @@ No directional hypothesis about which model performs best is pre-specified. The 
 
 **Inclusion:**
 1. The taxon is *Escherichia coli*.
-2. At least one AMR record has `evidence` indicating a laboratory-derived phenotype. Computationally predicted phenotypes are excluded. The exact `evidence` string is confirmed on the first download and written here before the freeze.
+2. At least one AMR record has `evidence = "Laboratory Method"`. Records with `evidence = "Computational Method"` (BV-BRC machine-learning predictions) are excluded. Confirmed on 2026-11-14 (`data/summary/evidence_survey_2026-11-14.txt`): for every candidate antibiotic, laboratory records are a small minority of all *E. coli* records (e.g. ampicillin 12,671 of 234,759).
 3. The `resistant_phenotype` value is Susceptible or Resistant for at least one study antibiotic.
 4. A genome assembly can be downloaded.
 
@@ -57,20 +57,24 @@ No directional hypothesis about which model performs best is pre-specified. The 
 
 ## 5. Antibiotics
 
-**Candidate list, chosen for clinical relevance:**
-- ampicillin
-- cefotaxime
-- ceftriaxone
-- ceftazidime
-- meropenem
-- ciprofloxacin
-- gentamicin
-- trimethoprim-sulfamethoxazole
+**Candidate list: one agent per antimicrobial class, chosen for clinical relevance and mechanistic diversity:**
 
-**Pre-specified inclusion rule:**
-- An antibiotic enters the study if at least 20 R and at least 20 S eligible isolates are available.
-- At most 6 antibiotics are kept. When more than 6 qualify, priority follows the order of the candidate list.
-- The final list is fixed from counts alone, before any model run.
+| Class | Antibiotic |
+|---|---|
+| Aminopenicillin | ampicillin |
+| Third-generation cephalosporin | cefotaxime |
+| Carbapenem | meropenem |
+| Fluoroquinolone | ciprofloxacin |
+| Aminoglycoside | gentamicin |
+| Folate-pathway inhibitor | trimethoprim-sulfamethoxazole (BV-BRC spellings `trimethoprim/sulfamethoxazole` and `sulfamethoxazole/trimethoprim` are merged) |
+
+**Inclusion rule:** An antibiotic enters the study if at least 20 R and at least 20 S eligible isolates are available. On 2026-11-14 all six met the rule. The smallest stratum is meropenem R, with 100 laboratory records (`data/summary/fetch_summary_2026-11-14.txt`).
+
+**Phenotype source heterogeneity:**
+- *Testing methods:* disk diffusion, MIC, broth and agar dilution.
+- *Testing standards:* EUCAST, CLSI, or not stated, in versions that differ between studies.
+- *Handling:* The recorded S/R call is used as reported. A sensitivity analysis is stratified by testing standard (EUCAST / CLSI / not stated).
+- *Records with MIC but no S/R call:* excluded from the primary analysis. In sensitivity analysis (iii) they are reinterpreted with EUCAST v16.1.
 
 ## 6. Sample
 
@@ -138,6 +142,7 @@ Public genomes and their phenotypes may appear in model training data, or be ret
   - (i) I counted as non-susceptible.
   - (ii) No-calls excluded.
   - (iii) Phenotypes reinterpreted from MIC values with EUCAST Breakpoint Tables v16.1, where MICs are available.
+  - (iv) Stratified by the testing standard recorded for the phenotype: EUCAST, CLSI, or not stated.
 - **Code:** All numbers in the manuscript are produced by `scripts/metrics.py` and the scripts that follow it. No value is typed by hand.
 
 ## 11. Integrity and reporting
@@ -150,4 +155,5 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 
 | Date | Section | Change | Reason |
 |---|---|---|---|
-| — | — | — | — |
+| 2026-11-14 (pre-freeze) | 5 | Candidate list changed from 8 antibiotics (3 third-generation cephalosporins, "first 6 by order") to one antibiotic per class (6 classes). | Mechanistic diversity. Decided before any model run and before any look at agent output. Counts for all candidates are archived. |
+| 2026-11-14 (pre-freeze) | 4 | Evidence string fixed to "Laboratory Method". | Confirmed from the first download. |
