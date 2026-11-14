@@ -32,9 +32,11 @@ case "${1:-}" in
     ;;
   harness)
     mkdir -p data/summary
+    # npm-installed CLIs live in the base env, not in the amr env
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
     out=data/summary/harness_help.txt
     : > "$out"
-    for c in "claude --help" "claude -p --help" "codex --help" "codex exec --help" "agy --help" "agy run --help"; do
+    for c in "which claude codex agy" "codex --help" "codex exec --help" "codex login status"; do
       echo "########## $c" >> "$out"
       sh -c "$c" >> "$out" 2>&1 || echo "(command failed)" >> "$out"
       echo >> "$out"
