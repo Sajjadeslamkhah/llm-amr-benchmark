@@ -1,0 +1,79 @@
+database directory: /tmp/fakedb
+database version:   2026-10-29.1
+
+### fam.tsv  (5 rows, 7 columns)
+header: 1:#node_id | 2:parent_node_id | 3:gene_symbol | 4:type | 5:subtype | 6:class | 7:subclass
+
+  -- column 1 (#node_id): 5 distinct
+             1  ACID
+             1  blaCTX-M-15
+             1  blaNDM-1
+             1  gyrA
+             1  dfrA17
+
+  -- column 2 (parent_node_id): 5 distinct
+             1  STRESS
+             1  blaCTX-M
+             1  blaNDM
+             1  -
+             1  dfrA
+
+  -- column 3 (gene_symbol): 5 distinct
+             1  -
+             1  blaCTX-M-15
+             1  blaNDM-1
+             1  gyrA
+             1  dfrA17
+
+  -- column 4 (type): 2 distinct
+             4  AMR
+             1  STRESS
+
+  -- column 5 (subtype): 3 distinct
+             3  AMR
+             1  ACID
+             1  POINT
+
+  -- column 6 (class): 3 distinct
+             2  BETA-LACTAM
+             1  QUINOLONE
+             1  TRIMETHOPRIM
+
+  -- column 7 (subclass): 4 distinct
+             1  CEPHALOSPORIN
+             1  CARBAPENEM
+             1  QUINOLONE
+             1  TRIMETHOPRIM
+
+### fam.tsv, type=AMR rows: 4
+
+  -- distinct class values (3)
+             2  BETA-LACTAM
+             1  QUINOLONE
+             1  TRIMETHOPRIM
+
+  -- subclass values, for each class used by reference_rule.md
+
+     BETA-LACTAM: 2 rows, 2 distinct subclasses
+             1  CEPHALOSPORIN
+             1  CARBAPENEM
+
+     QUINOLONE: 1 rows, 1 distinct subclasses
+             1  QUINOLONE
+
+     AMINOGLYCOSIDE: 0 rows, 0 distinct subclasses
+
+     TRIMETHOPRIM: 1 rows, 1 distinct subclasses
+             1  TRIMETHOPRIM
+
+     SULFONAMIDE: 0 rows, 0 distinct subclasses
+
+  -- subclass values mentioning an antibiotic the study uses
+
+     'TRIMETHOPRIM' appears in: TRIMETHOPRIM / TRIMETHOPRIM (n=1)
+
+     'QUINOLONE' appears in: QUINOLONE / QUINOLONE (n=1)
+
+     'CEPHALOSPORIN' appears in: BETA-LACTAM / CEPHALOSPORIN (n=1)
+
+     'CARBAPENEM' appears in: BETA-LACTAM / CARBAPENEM (n=1)
