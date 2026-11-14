@@ -7,6 +7,7 @@
 #   bash go.sh test      run the unit tests
 #   bash go.sh pilot [claude|gemini|gpt]   pilot run on 3 isolates (discarded)
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
+#   bash go.sh events   summarise the pilot event streams
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
 set -euo pipefail
@@ -47,6 +48,13 @@ case "${1:-}" in
       echo "=================== done $(date)"
     ' > "$log" 2>&1 &
     echo "Started in the background (pid $!). You can close the Terminal window."
+    ;;
+  events)
+    "$PY" scripts/inspect_events.py runs/claude/rep0 runs/gemini/rep0 > data/summary/events_pilot.txt 2>&1
+    echo "--- gpt error ---" >> data/summary/events_pilot.txt
+    head -40 runs/gpt/rep0/stdout.txt >> data/summary/events_pilot.txt 2>&1 || true
+    wc -l data/summary/events_pilot.txt
+    echo "Send me: data/summary/events_pilot.txt"
     ;;
   ref)
     source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
