@@ -8,7 +8,7 @@ Frozen with PROTOCOL.md. This rule is intentionally simple and transparent, beca
 amrfinder -n ISO_###.fasta --organism Escherichia --plus -o ISO_###.amrfinder.tsv
 ```
 
-The AMRFinderPlus software version and database version are recorded in `runs/amrfinderplus/VERSIONS.txt`.
+The AMRFinderPlus software version and database version are recorded in `runs/amrfinderplus/VERSIONS.txt`: software 4.2.7, database 2026-10-29.1 (installed 2026-11-14). The same build and database are used for the reference arm and inside every agent container.
 
 ## Rule
 

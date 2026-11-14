@@ -105,6 +105,8 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 - **Harness:** Each model runs in its vendor's official command-line agent with default settings, inside the same container: Claude Code, Antigravity CLI and Codex CLI. Each agent signs in with the investigator's subscription account rather than an API key, and the plan tier is recorded. Using each vendor's own harness is a design choice and is reported as such.
 - **Prompt:** Every agent receives the identical task prompt (`prompts/task_prompt.md`) with no example answers.
 - **Replicates:** 3 independent runs per agent, each from a fresh container.
+- **Network:** Each agent reaches its own vendor's model endpoint and nothing else. Web search and page fetching are disabled, and commands the agent runs have no network access. Which of these each harness can enforce is verified before the freeze and reported per arm, including any that cannot be enforced.
+- **Logging:** Every command the agent runs is recorded to `commands.log` (one JSON object per command: `cmd`, `exit_code`, `stdout`, `stderr`), alongside the agent's transcript. This log is what `scripts/hallucination_audit.py` checks the agent's claims against, so a run without it cannot be audited and is repeated.
 
 ## 9. Outcomes and definitions
 
@@ -120,15 +122,24 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 
 **Benchmark thresholds:** Results are displayed against the commonly used AST-evaluation thresholds: CA ≥ 90%, VME ≤ 1.5%, ME ≤ 3%. The exact source for these thresholds is to be confirmed and cited before the freeze. They serve as reference lines, not as pass/fail hypotheses.
 
-**Hallucination taxonomy**, adjudicated independently by two reviewers with disagreements resolved by discussion:
+**Hallucination taxonomy.** A hallucination here means the agent reported something that does not exist or did not happen. Whether a prediction is biologically correct is a separate question, measured by CA, VME and ME above.
 
-| Code | Type |
-|---|---|
-| H1 | Gene or variant name that does not exist in the AMRFinderPlus/CARD databases |
-| H2 | Reported tool output that is absent from the execution log (fabricated execution) |
-| H3 | Invented or incorrect breakpoint, guideline or rule |
-| H4 | Nonexistent command, flag or tool |
-| H5 | Invented citation or database accession |
+| Code | Type | Mechanical check |
+|---|---|---|
+| H1 | Gene or variant name that does not exist | compared against the AMRFinderPlus catalogue (`ReferenceGeneCatalog.txt`, database version 2026-10-29.1) and against every tool output in the run |
+| H2 | Reported tool output absent from the execution log | each line the agent presents as output is looked up in the recorded stdout and stderr |
+| H3 | Invented or incorrect breakpoint, guideline or rule | flagged by pattern; decided by a human against EUCAST v16.1 |
+| H4 | Nonexistent command, flag or tool, or a failed command reported as working | compared against the command log, including exit codes |
+| H5 | Invented citation or database accession | compared against the catalogue and every tool output |
+
+**Adjudication procedure.** Claude is one of the evaluated arms (A1), so no model adjudicates this study's findings as the primary method.
+
+1. `scripts/hallucination_audit.py` produces candidate findings mechanically from each run's transcript, command log and predictions. The script is in the repository and its output is archived with the manuscript.
+2. Candidates are written to a blinded sheet: shuffled, with the arm removed, so the adjudicator does not know which agent produced a line.
+3. Two reviewers confirm or reject each candidate independently. Agreement is reported as Cohen's κ, and disagreements are resolved by discussion. Only confirmed findings are counted in the manuscript.
+4. The script's text matching is approximate, so both false positives and missed findings are possible. The confirmation step removes false positives. For missed findings, one replicate per agent is additionally read end to end by a human, and anything found that the script did not flag is reported as the script's miss rate.
+
+**Secondary analysis: cross-model adjudication.** Each agent's blinded transcripts are also given to the two other models, so no model judges its own output. Reported as an exploratory comparison against the human verdicts (how often each model agrees with the adjudicated truth), never in place of them.
 
 ## 10. Statistical analysis
 

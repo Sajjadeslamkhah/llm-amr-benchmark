@@ -11,8 +11,10 @@ The study is pre-registered: see [`PROTOCOL.md`](PROTOCOL.md). The protocol is b
 | Step | State |
 |---|---|
 | Protocol draft | ✅ v0.1 |
-| Protocol freeze (`protocol-v1.0` tag) | ⏳ |
-| Data download | ⏳ |
+| Data download (105,093 laboratory records, 13,287 genomes) | ✅ 2026-11-14 |
+| Isolate selection (118 of 120 passed assembly QC) | ✅ 2026-11-14 |
+| AMRFinderPlus 4.2.7 / database 2026-10-29.1 | ✅ 2026-11-14 |
+| Protocol freeze (`protocol-v1.0` tag) | ⏳ next |
 | Agent runs | ⏳ |
 | Analysis | ⏳ |
 | Manuscript | ⏳ |
@@ -30,6 +32,7 @@ scripts/
   03_fetch_genomes.py    assembly download, QC, anonymisation
   reference_rule.md      AMRFinderPlus reference-arm rule
   metrics.py             CA / VME / ME, Wilson CIs, McNemar, Fleiss kappa
+  hallucination_audit.py mechanical candidate findings for the H1-H5 taxonomy
 tests/                   unit tests for metrics.py (synthetic toy data)
 data/                    downloaded data (raw files not committed)
 sandbox/                 the only files the agents see
