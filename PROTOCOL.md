@@ -94,6 +94,7 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 |---|---|
 | A1 | Claude (Anthropic): current flagship model at freeze date, run in Claude Code |
 | A2 | Gemini (Google): current flagship model at freeze date, run in Gemini CLI |
+| A3 | GPT (OpenAI): current flagship model at freeze date, run in Codex CLI |
 | REF | AMRFinderPlus with the pre-specified gene/mutation-to-drug mapping rule (`scripts/reference_rule.md`) |
 
 - **Model versions:** The exact model identifier, harness version and run date are recorded for every run. Model versions are not named in this draft because they are fixed at freeze.
@@ -130,8 +131,8 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 - All proportions are reported with Wilson 95% confidence intervals, per antibiotic and pooled.
 - **Primary analysis:**
   - Replicate 1 of each agent.
-  - Three pairwise comparisons on paired isolate–antibiotic correctness, each with McNemar's exact test: Claude vs Gemini, Claude vs REF, Gemini vs REF.
-  - Holm correction is applied across the 3 comparisons.
+  - All six pairwise comparisons among the four arms (Claude, Gemini, GPT, REF) on paired isolate–antibiotic correctness, each with McNemar's exact test.
+  - Holm correction is applied across the 6 comparisons.
 - **Secondary analysis:** Majority vote across the 3 replicates.
 - **Sensitivity analyses:**
   - (i) I counted as non-susceptible.

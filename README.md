@@ -2,7 +2,7 @@
 
 **Can Large Language Model Agents Predict Antimicrobial Resistance from Bacterial Genomes? A Benchmark of Accuracy and Hallucination Against Phenotypic Susceptibility Testing**
 
-This benchmark compares two autonomous LLM agents, **Claude** (Anthropic) and **Gemini** (Google), against a rule-based **AMRFinderPlus** reference arm. Each predicts susceptible/resistant calls for *Escherichia coli* from genome assemblies, and the calls are scored against laboratory phenotypes from BV-BRC.
+This benchmark compares three autonomous LLM agents, **Claude** (Anthropic), **Gemini** (Google) and **GPT** (OpenAI), against a rule-based **AMRFinderPlus** reference arm. Each predicts susceptible/resistant calls for *Escherichia coli* from genome assemblies, and the calls are scored against laboratory phenotypes from BV-BRC.
 
 The study is pre-registered: see [`PROTOCOL.md`](PROTOCOL.md). The protocol is binding from the `protocol-v1.0` tag onward.
 

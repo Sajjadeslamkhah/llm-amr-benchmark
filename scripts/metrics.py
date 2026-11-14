@@ -5,6 +5,7 @@
         --key data/selection/blinding_key.tsv \
         --pred claude=runs/claude/rep1/predictions.tsv \
         --pred gemini=runs/gemini/rep1/predictions.tsv \
+        --pred gpt=runs/gpt/rep1/predictions.tsv \
         --pred ref=runs/amrfinderplus/predictions.tsv \
         --out results/
 
