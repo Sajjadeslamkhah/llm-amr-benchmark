@@ -6,6 +6,7 @@
 #   bash go.sh harness   collect CLI help output for the three agents
 #   bash go.sh test      run the unit tests
 #   bash go.sh pilot [claude|gemini|gpt]   pilot run on 3 isolates (discarded)
+#   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
 set -euo pipefail
@@ -31,6 +32,21 @@ case "${1:-}" in
     export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
     arm="${2:-claude}"
     "$PY" scripts/05_run_agent.py --arm "$arm" --rep 0 --pilot 3 --timeout 1800
+    ;;
+  pilotall)
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    mkdir -p runs
+    log="runs/pilot_$(date +%Y%m%d_%H%M).log"
+    echo "Pilot of all three arms. Log: $log"
+    echo "Leave the Mac plugged in, lid open. Check the log in the morning."
+    caffeinate -dimsu bash -c '
+      for arm in claude gemini gpt; do
+        echo "=================== $arm $(date)"
+        '"$PY"' scripts/05_run_agent.py --arm "$arm" --rep 0 --pilot 3 --timeout 2400 --force || echo "ARM $arm FAILED"
+      done
+      echo "=================== done $(date)"
+    ' > "$log" 2>&1 &
+    echo "Started in the background (pid $!). You can close the Terminal window."
     ;;
   ref)
     source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
