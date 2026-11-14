@@ -3,7 +3,7 @@
 
     python scripts/hallucination_audit.py \
         --run runs/claude/rep1 \
-        --catalog "$AMRFINDER_DB/ReferenceGeneCatalog.txt" \
+        --catalog "$AMRFINDER_DB" \
         --out results/audit/claude_rep1.tsv
 
 A run directory holds what the agent produced and what it actually did:
@@ -50,23 +50,46 @@ CODES = {
 }
 
 
-def read_catalog(path: Path) -> set[str]:
-    """Every gene symbol, allele and accession string in the AMRFinderPlus catalogue.
+CATALOG_FILES = ("fam.tsv", "taxgroup.tsv", "AMRProt-mutation.tsv",
+                 "AMRProt-suppress.tsv", "AMRProt-susceptible.tsv")
+CATALOG_GLOBS = ("AMR_DNA-*.tsv", "AMRProt*.fa", "AMR_CDS.fa")
 
-    Column names differ between database versions, so every cell of every
-    column is taken and split on whitespace. This over-collects on purpose:
-    an over-full catalogue can only turn a real finding into a missed one,
-    never invent one, and the missed ones are caught by reading the
-    transcript. Verify the file's header once per database version.
+
+def read_catalog(db: Path) -> set[str]:
+    """Every gene symbol, allele, mutation and accession in an AMRFinderPlus database.
+
+    `db` is the database directory, e.g. .../amrfinderplus/data/2026-10-29.1.
+    File names and columns differ between database versions, so this reads the
+    known tabular files plus the FASTA headers and keeps every whitespace-
+    separated token. It over-collects on purpose: an over-full catalogue can
+    only turn a real finding into a missed one, never invent one, and misses
+    are measured separately by the human read of one replicate per agent.
     """
     names: set[str] = set()
-    with path.open(encoding="utf-8", errors="replace") as fh:
-        for row in csv.reader(fh, delimiter="\t"):
-            for cell in row:
-                for token in cell.split():
-                    if 2 <= len(token) <= 60:
-                        names.add(token)
-                        names.add(token.lower())
+
+    def add(token: str) -> None:
+        if 2 <= len(token) <= 60:
+            names.add(token)
+            names.add(token.lower())
+
+    paths = [db / n for n in CATALOG_FILES]
+    for pattern in CATALOG_GLOBS:
+        paths.extend(db.glob(pattern))
+    seen = False
+    for p in paths:
+        if not p.exists():
+            continue
+        seen = True
+        with p.open(encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if p.suffix == ".fa" and not line.startswith(">"):
+                    continue
+                for cell in line.rstrip("\n").split("\t"):
+                    for token in cell.replace(">", " ").replace("|", " ").split():
+                        add(token)
+    if not seen:
+        raise SystemExit(f"No AMRFinderPlus catalogue files found in {db}. "
+                         f"Pass the database directory (see `amrfinder --database_version`).")
     return names
 
 
@@ -153,7 +176,7 @@ def main() -> None:
     ap.add_argument("--run", action="append", required=True,
                     help="run directory; repeat for several runs")
     ap.add_argument("--catalog", required=True,
-                    help="ReferenceGeneCatalog.txt from the AMRFinderPlus database directory")
+                    help="AMRFinderPlus database directory, as printed by `amrfinder --database_version`")
     ap.add_argument("--out", required=True, help="output TSV of candidate findings")
     ap.add_argument("--blind", help="also write a shuffled sheet with the arm removed, "
                                     "for adjudication; the key goes next to it")

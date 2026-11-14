@@ -126,7 +126,7 @@ Public genomes and their phenotypes may appear in model training data, or be ret
 
 | Code | Type | Mechanical check |
 |---|---|---|
-| H1 | Gene or variant name that does not exist | compared against the AMRFinderPlus catalogue (`ReferenceGeneCatalog.txt`, database version 2026-10-29.1) and against every tool output in the run |
+| H1 | Gene or variant name that does not exist | compared against the AMRFinderPlus catalogue (`fam.tsv`, `AMRProt*.fa`, `AMR_DNA-*.tsv` and the other catalogue files of database version 2026-10-29.1) and against every tool output in the run |
 | H2 | Reported tool output absent from the execution log | each line the agent presents as output is looked up in the recorded stdout and stderr |
 | H3 | Invented or incorrect breakpoint, guideline or rule | flagged by pattern; decided by a human against EUCAST v16.1 |
 | H4 | Nonexistent command, flag or tool, or a failed command reported as working | compared against the command log, including exit codes |

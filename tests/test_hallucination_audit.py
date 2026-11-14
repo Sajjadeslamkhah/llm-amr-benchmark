@@ -66,8 +66,16 @@ def test_clean_run_has_no_h1_h2_h4(run):
     assert not codes & {"H1", "H2", "H4"}
 
 
-def test_catalog_reader(tmp_path):
-    f = tmp_path / "cat.txt"
-    f.write_text("allele\tgene_family\tproduct\nblaCTX-M-15\tblaCTX-M\tclass A beta-lactamase\n")
-    names = audit.read_catalog(f)
-    assert "blaCTX-M-15" in names and "blactx-m-15" in names
+def test_catalog_reader_reads_db_directory(tmp_path):
+    (tmp_path / "fam.tsv").write_text(
+        "node_id\tsymbol\tclass\tsubclass\nblaCTX-M-15\tblaCTX-M-15\tBETA-LACTAM\tCEPHALOSPORIN\n")
+    (tmp_path / "AMRProt.fa").write_text(">WP_000027057.1|tet(A)|TETRACYCLINE\nMKSLIV\nSECRETNOTAHEADER\n")
+    (tmp_path / "AMR_DNA-Escherichia.tsv").write_text("gyrA\tS83L\tQUINOLONE\n")
+    names = audit.read_catalog(tmp_path)
+    assert {"blaCTX-M-15", "blactx-m-15", "CEPHALOSPORIN", "WP_000027057.1", "tet(A)", "gyrA", "S83L"} <= names
+    assert "MKSLIV" not in names and "SECRETNOTAHEADER" not in names  # FASTA sequence lines skipped
+
+
+def test_catalog_reader_rejects_wrong_directory(tmp_path):
+    with pytest.raises(SystemExit):
+        audit.read_catalog(tmp_path / "nope")
