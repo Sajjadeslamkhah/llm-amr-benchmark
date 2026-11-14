@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
-"""Run one agent arm on the isolate set and record everything it did.
+"""Run one agent arm over the isolate set, in batches, and record everything.
 
-    python scripts/05_run_agent.py --arm claude --rep 1
-    python scripts/05_run_agent.py --arm claude --rep 0 --pilot 3   # pilot, discarded
+    python scripts/05_run_agent.py --arm claude --rep 1                 # all isolates
+    python scripts/05_run_agent.py --arm claude --rep 0 --pilot 3       # pilot, discarded
+    python scripts/05_run_agent.py --arm gpt --rep 2 --isolates subset  # reproducibility subset
 
-Creates runs/<arm>/rep<N>/ with:
-    workspace/data/genomes/ISO_###.fasta   the only genomes the agent sees
-    workspace/data/antibiotics.txt
-    workspace/output/                      where the agent writes its answers
-    events.jsonl                           the harness event stream, verbatim
-    stdout.txt                             everything the CLI printed
-    meta.json                              arm, replicate, command, versions, timing
+Isolates are processed in batches, each a separate agent session, because one
+session over the whole set exceeds the context window (the pilot used about
+437k tokens for 3 isolates). Batches are resumable: a batch whose
+predictions.tsv already exists is skipped, so an interrupted run continues
+where it stopped. --max-batches stops after N batches in one sitting, for
+working within a subscription's rate limits.
 
-The event stream is kept verbatim; scripts/06_parse_run.py turns it into the
-transcript.txt and commands.log that scripts/hallucination_audit.py reads.
+Layout
+    runs/<arm>/rep<N>/batch_001/workspace/data/genomes/ISO_###.fasta
+                               /workspace/output/predictions.tsv
+                               /events.jsonl   harness event stream, verbatim
+                               /stdout.txt
+                               /meta.json
+    runs/<arm>/rep<N>/predictions.tsv          all batches merged
+    runs/<arm>/rep<N>/run_meta.json
 
-Each harness is invoked through its own official CLI with its own flags, which
-is a design choice recorded in PROTOCOL.md section 8. Network handling differs
-per harness and is recorded in meta.json rather than assumed:
-  codex   --sandbox workspace-write     commands run without network
-  claude  --disallowed-tools WebSearch WebFetch
-  agy     --sandbox                     terminal restrictions
+Network handling differs per harness and is recorded, not assumed:
+    gpt     codex --sandbox workspace-write   commands run without network
+    claude  --disallowed-tools WebSearch WebFetch; the result event records
+            web_search_requests and web_fetch_requests, which the manuscript cites
+    gemini  --sandbox                         terminal restrictions
 """
 import argparse
+import csv
 import datetime as dt
 import json
 import os
@@ -60,11 +66,12 @@ ARMS = {
         "bin": [str(HOME / "miniforge3/bin/codex"), "codex"],
         "network_note": "--sandbox workspace-write blocks network for model-run commands; web search not enabled",
         "args": lambda prompt, model: (
-            ["exec", prompt, "--json", "--sandbox", "workspace-write",
-             "--skip-git-repo-check"]
+            ["exec", prompt, "--json", "--sandbox", "workspace-write", "--skip-git-repo-check"]
             + (["--model", model] if model else [])),
     },
 }
+PRED_FIELDS = ["isolate_id", "antibiotic", "prediction", "evidence"]
+N_ANTIBIOTICS = 6
 
 
 def find_bin(candidates: list[str]) -> str:
@@ -74,20 +81,20 @@ def find_bin(candidates: list[str]) -> str:
     sys.exit(f"None of these executables was found: {candidates}")
 
 
-def build_workspace(run: Path, pilot: int | None) -> int:
-    src = ROOT / "sandbox" / "data"
-    genomes = sorted((src / "genomes").glob("ISO_*.fasta"))
+def select_genomes(pilot: int | None, isolates: str) -> list[Path]:
+    src = ROOT / "sandbox" / "data" / "genomes"
+    genomes = sorted(src.glob("ISO_*.fasta"))
     if not genomes:
-        sys.exit(f"No genomes in {src / 'genomes'}. Run scripts/03_fetch_genomes.py first.")
+        sys.exit(f"No genomes in {src}. Run scripts/03_fetch_genomes.py first.")
     if pilot:
-        genomes = genomes[:pilot]
-    ws = run / "workspace"
-    (ws / "data" / "genomes").mkdir(parents=True, exist_ok=True)
-    (ws / "output").mkdir(parents=True, exist_ok=True)
-    for g in genomes:
-        shutil.copy2(g, ws / "data" / "genomes" / g.name)
-    shutil.copy2(src / "antibiotics.txt", ws / "data" / "antibiotics.txt")
-    return len(genomes)
+        return genomes[:pilot]
+    if isolates == "subset":
+        sub = ROOT / "data" / "selection" / "reproducibility_subset.txt"
+        if not sub.exists():
+            sys.exit(f"{sub} not found; create it before using --isolates subset.")
+        wanted = {l.strip() for l in sub.read_text().splitlines() if l.strip()}
+        return [g for g in genomes if g.stem in wanted]
+    return genomes
 
 
 def tool_versions() -> dict:
@@ -102,50 +109,25 @@ def tool_versions() -> dict:
     return out
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", required=True, choices=sorted(ARMS))
-    ap.add_argument("--rep", type=int, required=True, help="replicate number; use 0 for a pilot")
-    ap.add_argument("--model", default="", help="pin a model; empty uses the harness default")
-    ap.add_argument("--pilot", type=int, help="use only the first N isolates (pilot, discarded)")
-    ap.add_argument("--timeout", type=int, default=7200, help="seconds before the run is abandoned")
-    ap.add_argument("--force", action="store_true", help="rerun even if the run directory exists")
-    a = ap.parse_args()
+def run_batch(spec: dict, binary: str, prompt: str, model: str, genomes: list[Path],
+              batch_dir: Path, timeout: int, env: dict) -> dict:
+    ws = batch_dir / "workspace"
+    (ws / "data" / "genomes").mkdir(parents=True, exist_ok=True)
+    (ws / "output").mkdir(parents=True, exist_ok=True)
+    for g in genomes:
+        shutil.copy2(g, ws / "data" / "genomes" / g.name)
+    shutil.copy2(ROOT / "sandbox" / "data" / "antibiotics.txt", ws / "data" / "antibiotics.txt")
 
-    spec = ARMS[a.arm]
-    run = ROOT / "runs" / a.arm / f"rep{a.rep}"
-    if run.exists() and not a.force:
-        if (run / "workspace" / "output" / "predictions.tsv").exists():
-            sys.exit(f"{run} already has predictions. Use --force to rerun.")
-        print(f"{run} exists without predictions; continuing into it.", file=sys.stderr)
-    run.mkdir(parents=True, exist_ok=True)
-
-    n = build_workspace(run, a.pilot)
-    prompt = (ROOT / "prompts" / "task_prompt.md").read_text(encoding="utf-8")
-    binary = find_bin(spec["bin"])
-    cmd = [binary] + spec["args"](prompt, a.model)
-
-    env = dict(os.environ)
-    env["PATH"] = f"{HOME}/miniforge3/envs/amr/bin:{HOME}/miniforge3/bin:{HOME}/.local/bin:" + env.get("PATH", "")
-    env.pop("OPENAI_API_KEY", None)      # force subscription auth, never API billing
-    env.pop("ANTHROPIC_API_KEY", None)
-
+    cmd = [binary] + spec["args"](prompt, model)
     meta = {
-        "arm": a.arm, "vendor": spec["vendor"], "replicate": a.rep,
-        "pilot": bool(a.pilot), "n_isolates": n,
-        "binary": binary, "command": cmd[:1] + ["<task prompt>" if x == prompt else x for x in cmd[1:]],
-        "model_requested": a.model or "(harness default)",
-        "network_note": spec["network_note"],
+        "isolates": [g.stem for g in genomes],
+        "command": [binary] + ["<task prompt>" if x == prompt else x for x in cmd[1:]],
         "started_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "tool_versions": tool_versions(),
     }
-    (run / "meta.json").write_text(json.dumps(meta, indent=2))
-
-    print(f"[{a.arm} rep{a.rep}] {n} isolates; running {binary}", file=sys.stderr)
     t0 = time.time()
-    with (run / "events.jsonl").open("w") as ev, (run / "stdout.txt").open("w") as so:
-        p = subprocess.Popen(cmd, cwd=run / "workspace", env=env,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+    with (batch_dir / "events.jsonl").open("w") as ev, (batch_dir / "stdout.txt").open("w") as so:
+        p = subprocess.Popen(cmd, cwd=ws, env=env, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT, text=True, bufsize=1)
         try:
             for line in p.stdout:
                 so.write(line)
@@ -154,25 +136,109 @@ def main() -> None:
                 if s.startswith("{"):
                     ev.write(s + "\n")
                     ev.flush()
-            p.wait(timeout=a.timeout)
+            p.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             p.kill()
             meta["timed_out"] = True
-
     meta["exit_code"] = p.returncode
     meta["wall_clock_seconds"] = round(time.time() - t0, 1)
     meta["finished_utc"] = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    preds = run / "workspace" / "output" / "predictions.tsv"
+    preds = ws / "output" / "predictions.tsv"
     meta["predictions_written"] = preds.exists()
     if preds.exists():
         meta["prediction_rows"] = sum(1 for _ in preds.open()) - 1
-    (run / "meta.json").write_text(json.dumps(meta, indent=2))
+    (batch_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+    return meta
 
-    print(json.dumps({k: meta[k] for k in ("exit_code", "wall_clock_seconds",
-                                           "predictions_written", "prediction_rows")
-                      if k in meta}, indent=2))
-    if not preds.exists():
-        print("\nNo predictions.tsv. Check stdout.txt and events.jsonl in " + str(run), file=sys.stderr)
+
+def merge_predictions(run: Path) -> int:
+    """Concatenate the batches' predictions, keeping the first row per pair."""
+    rows, seen = [], set()
+    for batch in sorted(run.glob("batch_*")):
+        p = batch / "workspace" / "output" / "predictions.tsv"
+        if not p.exists():
+            continue
+        with p.open(encoding="utf-8", errors="replace") as fh:
+            for r in csv.DictReader(fh, delimiter="\t"):
+                key = ((r.get("isolate_id") or "").strip(), (r.get("antibiotic") or "").strip())
+                if not key[0] or key in seen:
+                    continue
+                seen.add(key)
+                rows.append({k: (r.get(k) or "").strip() for k in PRED_FIELDS})
+    with (run / "predictions.tsv").open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=PRED_FIELDS, delimiter="\t")
+        w.writeheader()
+        w.writerows(rows)
+    return len(rows)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--arm", required=True, choices=sorted(ARMS))
+    ap.add_argument("--rep", type=int, required=True, help="replicate number; 0 means pilot")
+    ap.add_argument("--model", default="", help="pin a model; empty uses the harness default")
+    ap.add_argument("--pilot", type=int, help="use only the first N isolates (pilot, discarded)")
+    ap.add_argument("--isolates", default="all", choices=["all", "subset"])
+    ap.add_argument("--batch-size", type=int, default=10)
+    ap.add_argument("--timeout", type=int, default=5400, help="seconds per batch")
+    ap.add_argument("--max-batches", type=int, help="stop after this many batches this sitting")
+    a = ap.parse_args()
+
+    spec = ARMS[a.arm]
+    run = ROOT / "runs" / a.arm / f"rep{a.rep}"
+    run.mkdir(parents=True, exist_ok=True)
+    genomes = select_genomes(a.pilot, a.isolates)
+    batches = [genomes[i:i + a.batch_size] for i in range(0, len(genomes), a.batch_size)]
+    prompt = (ROOT / "prompts" / "task_prompt.md").read_text(encoding="utf-8")
+    binary = find_bin(spec["bin"])
+
+    env = dict(os.environ)
+    env["PATH"] = f"{HOME}/miniforge3/envs/amr/bin:{HOME}/miniforge3/bin:{HOME}/.local/bin:" + env.get("PATH", "")
+    env.pop("OPENAI_API_KEY", None)      # force subscription auth, never API billing
+    env.pop("ANTHROPIC_API_KEY", None)
+
+    run_meta = {
+        "arm": a.arm, "vendor": spec["vendor"], "replicate": a.rep,
+        "pilot": bool(a.pilot), "isolate_set": a.isolates,
+        "n_isolates": len(genomes), "batch_size": a.batch_size, "n_batches": len(batches),
+        "binary": binary, "model_requested": a.model or "(harness default)",
+        "network_note": spec["network_note"], "tool_versions": tool_versions(),
+        "batches": [],
+    }
+
+    print(f"[{a.arm} rep{a.rep}] {len(genomes)} isolates in {len(batches)} batches of {a.batch_size}",
+          file=sys.stderr)
+    done_this_sitting = 0
+    for i, chunk in enumerate(batches, 1):
+        batch_dir = run / f"batch_{i:03d}"
+        if (batch_dir / "workspace" / "output" / "predictions.tsv").exists():
+            print(f"  batch {i:03d}: already done, skipping", file=sys.stderr)
+            run_meta["batches"].append({"batch": i, "skipped": True})
+            continue
+        if a.max_batches and done_this_sitting >= a.max_batches:
+            print(f"  stopping: reached --max-batches {a.max_batches}", file=sys.stderr)
+            break
+        batch_dir.mkdir(parents=True, exist_ok=True)
+        print(f"  batch {i:03d}: {chunk[0].stem}..{chunk[-1].stem}", file=sys.stderr)
+        m = run_batch(spec, binary, prompt, a.model, chunk, batch_dir, a.timeout, env)
+        run_meta["batches"].append({"batch": i, **{k: m.get(k) for k in
+                                                   ("exit_code", "wall_clock_seconds",
+                                                    "predictions_written", "prediction_rows",
+                                                    "timed_out") if k in m}})
+        done_this_sitting += 1
+        print(f"    exit={m['exit_code']} {m['wall_clock_seconds']}s rows={m.get('prediction_rows', 0)}",
+              file=sys.stderr)
+
+    n = merge_predictions(run)
+    run_meta["merged_prediction_rows"] = n
+    run_meta["expected_rows"] = len(genomes) * N_ANTIBIOTICS
+    run_meta["finished_utc"] = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+    (run / "run_meta.json").write_text(json.dumps(run_meta, indent=2))
+
+    print(f"\nmerged {n} of {len(genomes) * N_ANTIBIOTICS} expected rows -> {run / 'predictions.tsv'}")
+    missing = [b["batch"] for b in run_meta["batches"] if b.get("predictions_written") is False]
+    if missing:
+        print(f"batches without predictions: {missing}", file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@
 #   bash go.sh harness   collect CLI help output for the three agents
 #   bash go.sh test      run the unit tests
 #   bash go.sh pilot [claude|gemini|gpt]   pilot run on 3 isolates (discarded)
+#   bash go.sh run <arm> <rep> [max batches]  real run, resumable, in the background
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh events   summarise the pilot event streams
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
@@ -32,7 +33,19 @@ case "${1:-}" in
   pilot)
     export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
     arm="${2:-claude}"
-    "$PY" scripts/05_run_agent.py --arm "$arm" --rep 0 --pilot 3 --timeout 1800
+    rm -rf "runs/$arm/rep0"
+    "$PY" scripts/05_run_agent.py --arm "$arm" --rep 0 --pilot 3 --batch-size 3 --timeout 2400
+    ;;
+  run)
+    # bash go.sh run <claude|gemini|gpt> <replicate> [max batches this sitting]
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    arm="${2:?arm required}"; rep="${3:?replicate required}"; maxb="${4:-}"
+    extra=""; [ -n "$maxb" ] && extra="--max-batches $maxb"
+    log="runs/run_${arm}_rep${rep}_$(date +%Y%m%d_%H%M).log"
+    echo "Running $arm replicate $rep. Log: $log"
+    echo "Leave the Mac plugged in, lid open. Safe to rerun: finished batches are skipped."
+    caffeinate -dimsu "$PY" scripts/05_run_agent.py --arm "$arm" --rep "$rep" $extra > "$log" 2>&1 &
+    echo "Started in the background (pid $!). You can close the Terminal window."
     ;;
   pilotall)
     export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
