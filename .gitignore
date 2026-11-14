@@ -1,0 +1,6 @@
+data/raw/
+data/genomes_raw/
+sandbox/data/genomes/
+__pycache__/
+.pytest_cache/
+*.pyc
