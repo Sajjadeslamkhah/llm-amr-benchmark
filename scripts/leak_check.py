@@ -86,7 +86,7 @@ def main() -> None:
     files = sorted(p for r in roots for p in r.rglob("events.jsonl"))
     if not files:
         sys.exit("No events.jsonl found.")
-    bad = False
+    bad, pilot_bad = [], []
     print(f"Scanned {len(files)} event logs for exposure of the reference phenotypes "
           f"or the blinding key.\n")
     for p in files:
@@ -94,22 +94,29 @@ def main() -> None:
         if not any(r.values()):
             continue
         rel = p.relative_to(ROOT) if ROOT in p.parents else p
-        print(f"=== {rel.parent}")
+        # rep0 = pilot: its data is discarded by PROTOCOL.md, so it cannot compromise a result
+        pilot = "rep0" in rel.parts
+        print(f"=== {rel.parent}" + ("   [PILOT - data discarded]" if pilot else ""))
         for n, c in r["name"]:
             print(f"  [name only ] line {n}: {c}")
         for n, c in r["read"]:
             print(f"  [READ CMD  ] line {n}: {c}")
-            bad = True
+            (pilot_bad if pilot else bad).append(str(rel.parent))
         for n, what, snip in r["content"]:
             print(f"  [CONTENT   ] line {n}: {what} visible -> {snip}")
-            bad = True
+            (pilot_bad if pilot else bad).append(str(rel.parent))
         print()
+    if pilot_bad:
+        print("PILOT: " + ", ".join(sorted(set(pilot_bad))) + " read the keys. Pilot data is\n"
+              "discarded by protocol, so no result depends on it — but the behaviour itself is\n"
+              "reported as an outcome (answer-key seeking).\n")
     if bad:
-        print("RESULT: content exposure found. Those runs are compromised and must be repeated.")
+        print("RESULT: content exposure in SCORED runs: " + ", ".join(sorted(set(bad))) +
+              "\nThose runs must be repeated.")
     else:
-        print("RESULT: file names appear in directory listings only. No content was read.\n"
-              "The blinding holds: an agent that never saw the contents could not map a\n"
-              "blinded code to a genome or to its phenotype.")
+        print("RESULT: no scored run read either file. Where the names appear, they appear in a\n"
+              "directory listing or in the agent's own prose. The blinding holds: an agent that\n"
+              "never saw the contents could not map a blinded code to a genome or its phenotype.")
     sys.exit(1 if bad else 0)
 
 
