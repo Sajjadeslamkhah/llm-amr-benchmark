@@ -25,6 +25,16 @@ ANTIBIOTICS = ["ampicillin", "cefotaxime", "meropenem", "ciprofloxacin",
                "gentamicin", "trimethoprim/sulfamethoxazole"]
 
 
+def alan(r: dict, *adlar: str) -> str:
+    """İlk dolu sütun. AMRFinderPlus 4.x 'Type'/'Subtype'/'Element symbol' yazar;
+    eski sürümler 'Element type'/'Element subtype'/'Gene symbol' yazıyordu."""
+    for a in adlar:
+        v = r.get(a)
+        if v is not None and str(v).strip():
+            return str(v).strip()
+    return ""
+
+
 def tokens(value: str) -> set[str]:
     """Whole slash-separated tokens, upper case. 'GENTAMICIN/TOBRAMYCIN' -> {GENTAMICIN, TOBRAMYCIN}."""
     return {t.strip().upper() for t in (value or "").split("/") if t.strip()}
@@ -32,14 +42,14 @@ def tokens(value: str) -> set[str]:
 
 def call(rows: list[dict], antibiotic: str) -> tuple[str, str]:
     """Apply the reference rule. Returns (prediction, evidence)."""
-    amr = [r for r in rows if (r.get("Element type") or "").strip().upper() == "AMR"]
+    amr = [r for r in rows if alan(r, "Type", "Element type").upper() == "AMR"]
     hits: list[tuple[dict, str]] = []
 
     def gene(r: dict) -> str:
-        return (r.get("Element symbol") or r.get("Gene symbol") or r.get("Element name") or "?").strip()
+        return alan(r, "Element symbol", "Gene symbol", "Element name") or "?"
 
     for r in amr:
-        cls, sub = tokens(r.get("Class", "")), tokens(r.get("Subclass", ""))
+        cls, sub = tokens(alan(r, "Class")), tokens(alan(r, "Subclass"))
         if antibiotic == "ampicillin" and "BETA-LACTAM" in cls:
             hits.append((r, gene(r)))
         elif antibiotic == "cefotaxime" and sub & {"CEPHALOSPORIN", "CARBAPENEM"}:
@@ -52,8 +62,8 @@ def call(rows: list[dict], antibiotic: str) -> tuple[str, str]:
             hits.append((r, gene(r)))
 
     if antibiotic == "trimethoprim/sulfamethoxazole":
-        tmp = [gene(r) for r in amr if "TRIMETHOPRIM" in tokens(r.get("Class", "")) | tokens(r.get("Subclass", ""))]
-        sul = [gene(r) for r in amr if "SULFONAMIDE" in tokens(r.get("Class", "")) | tokens(r.get("Subclass", ""))]
+        tmp = [gene(r) for r in amr if "TRIMETHOPRIM" in tokens(alan(r, "Class")) | tokens(alan(r, "Subclass"))]
+        sul = [gene(r) for r in amr if "SULFONAMIDE" in tokens(alan(r, "Class")) | tokens(alan(r, "Subclass"))]
         if tmp and sul:
             return "R", "trimethoprim: " + ", ".join(sorted(set(tmp))) + "; sulfonamide: " + ", ".join(sorted(set(sul)))
         found = ("trimethoprim only: " + ", ".join(sorted(set(tmp)))) if tmp else \

@@ -14,8 +14,14 @@ spec.loader.exec_module(ref)
 
 
 def row(symbol, cls, sub, etype="AMR", subtype="AMR"):
+    """A row as AMRFinderPlus 4.x writes it: Type / Subtype / Element symbol."""
     return {"Element symbol": symbol, "Class": cls, "Subclass": sub,
-            "Element type": etype, "Element subtype": subtype}
+            "Type": etype, "Subtype": subtype}
+
+
+def eski_row(symbol, cls, sub, etype="AMR"):
+    """A row as older AMRFinderPlus versions wrote it, still accepted."""
+    return {"Gene symbol": symbol, "Class": cls, "Subclass": sub, "Element type": etype}
 
 
 def test_tokens_are_whole_words():
@@ -67,6 +73,36 @@ def test_stress_and_virulence_rows_are_ignored():
     rows = [row("blaX", "BETA-LACTAM", "CARBAPENEM", etype="STRESS"),
             row("vfX", "BETA-LACTAM", "CARBAPENEM", etype="VIRULENCE")]
     assert all(ref.call(rows, a)[0] == "S" for a in ref.ANTIBIOTICS)
+
+
+def test_real_amrfinder_4x_report_is_read(tmp_path):
+    """The 4.x header must be understood: with 'Element type' only, every call came back S."""
+    header = ("Protein id\tContig id\tStart\tStop\tStrand\tElement symbol\tElement name\tScope\t"
+              "Type\tSubtype\tClass\tSubclass\tMethod")
+    lines = [header,
+             "NA\tcontig_164\t6070\t6942\t+\tblaCTX-M-15\tESBL CTX-M-15\tcore\tAMR\tAMR\t"
+             "BETA-LACTAM\tCEPHALOSPORIN\tALLELEX",
+             "NA\tcontig_2\t24062\t26686\t-\tgyrA_S83L\tquinolone resistant GyrA\tcore\tAMR\tPOINT\t"
+             "QUINOLONE\tQUINOLONE\tPOINTX",
+             "NA\tcontig_22\t6414\t7250\t-\tsul1\tSul1\tcore\tAMR\tAMR\tSULFONAMIDE\tSULFONAMIDE\tEXACTX",
+             "NA\tcontig_22\t8719\t9189\t-\tdfrA17\tDfrA17\tcore\tAMR\tAMR\tTRIMETHOPRIM\tTRIMETHOPRIM\tEXACTX",
+             "NA\tcontig_22\t7247\t7591\t-\tqacEdelta1\tQacE delta 1\tcore\tSTRESS\tBIOCIDE\t"
+             "QUATERNARY AMMONIUM\tQUATERNARY AMMONIUM\tALLELEX"]
+    p = tmp_path / "ISO_001.amrfinder.tsv"
+    p.write_text("\n".join(lines) + "\n")
+    rows = ref.read_report(p)
+    calls = {a: ref.call(rows, a)[0] for a in ref.ANTIBIOTICS}
+    assert calls["ampicillin"] == "R"
+    assert calls["cefotaxime"] == "R"
+    assert calls["ciprofloxacin"] == "R"
+    assert calls["trimethoprim/sulfamethoxazole"] == "R"
+    assert calls["meropenem"] == "S"
+    assert calls["gentamicin"] == "S"
+
+
+def test_older_column_names_still_work():
+    assert ref.call([eski_row("blaCTX-M-15", "BETA-LACTAM", "CEPHALOSPORIN")], "cefotaxime")[0] == "R"
+    assert ref.call([eski_row("blaX", "BETA-LACTAM", "CARBAPENEM", etype="STRESS")], "meropenem")[0] == "S"
 
 
 def test_clean_genome_is_susceptible_everywhere():
