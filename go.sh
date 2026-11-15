@@ -115,8 +115,17 @@ case "${1:-}" in
     "$PY" scripts/leak_check.py
     ;;
   ref)
-    source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
-    "$PY" scripts/04_reference_arm.py
+    # Arka planda, uyku engelli: ~118 izolat x ~1 dk. Kesilse de kaldigi yerden devam eder
+    # (bitmis izolatin amrfinder raporu diskte durur ve atlanir).
+    mkdir -p runs
+    log="runs/ref_$(date +%Y%m%d_%H%M).log"
+    echo "Referans kolu basladi. Log: $log"
+    echo "Terminali kapatabilirsiniz. Mac prize takili, kapagi acik kalsin."
+    caffeinate -dimsu bash -c '
+      source "$HOME/miniforge3/etc/profile.d/conda.sh" && conda activate amr
+      '"$PY"' scripts/04_reference_arm.py
+    ' > "$log" 2>&1 &
+    echo "Arka planda calisiyor (pid $!)."
     ;;
   harness)
     mkdir -p data/summary
