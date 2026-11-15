@@ -103,35 +103,12 @@ case "${1:-}" in
     echo "Send me: data/summary/events_pilot.txt"
     ;;
   gece)
-    # Gozetimsiz calisma: once calisan ajanin bitmesini bekler (ayni anda iki ajan
-    # 4 cekirdegi bolusur ve sureleri karsilastirilamaz hale getirir), sonra Gemini'yi
-    # calistirir, ag hatasinda tekrar dener, en sonunda korleme denetimini yapar.
     export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
     mkdir -p runs
     log="runs/gece_$(date +%Y%m%d_%H%M).log"
     echo "Gozetimsiz calisma basladi. Log: $log"
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
-    caffeinate -dimsu bash -c '
-      cd "'"$PWD"'"
-      echo "=== baslangic $(date)"
-      while pgrep -f "05_run_agent.py" >/dev/null 2>&1; do
-        echo "--- calisan ajan var, bekleniyor ... $(date)"
-        sleep 120
-      done
-      for gecis in 1 2 3 4 5; do
-        echo "=== gemini gecis $gecis $(date)"
-        '"$PY"' scripts/05_run_agent.py --arm gemini --rep 1
-        satir=0
-        [ -f runs/gemini/rep1/predictions.tsv ] && satir=$(( $(wc -l < runs/gemini/rep1/predictions.tsv) - 1 ))
-        echo "--- gemini toplam $satir / 708 satir"
-        [ "$satir" -ge 708 ] && { echo "=== gemini tamam"; break; }
-        echo "--- eksik kaldi, 3 dakika sonra yeniden deneniyor"
-        sleep 180
-      done
-      echo "=== korleme denetimi $(date)"
-      '"$PY"' scripts/leak_check.py
-      echo "=== bitti $(date)"
-    ' > "$log" 2>&1 &
+    PY="$PY" caffeinate -dimsu bash scripts/gece.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
     ;;
   sizinti)
