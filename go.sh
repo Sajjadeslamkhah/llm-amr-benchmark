@@ -13,6 +13,7 @@
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh events   summarise the pilot event streams
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
+#   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
@@ -110,6 +111,42 @@ case "${1:-}" in
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
     PY="$PY" caffeinate -dimsu bash scripts/gece.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
+    ;;
+  analiz)
+    # Referans fenotipler ve korleme anahtari proje agacinin disinda (~/amr_gizli),
+    # cunku ajanlar calisma klasorunun disini okuyabiliyordu (2026-11-15 sapmasi).
+    GIZLI="${GIZLI:-$HOME/amr_gizli}"
+    REF="$GIZLI/reference_phenotypes.tsv"
+    KEY="$GIZLI/blinding_key.tsv"
+    if [ ! -f "$REF" ] || [ ! -f "$KEY" ]; then
+      echo "Bulunamadi: $REF veya $KEY"
+      echo "Dosyalar baska bir yerdeyse: GIZLI=/yol/klasor bash go.sh analiz"
+      exit 1
+    fi
+    args=()
+    for kol in claude gemini gpt; do
+      f="runs/$kol/rep1/predictions.tsv"
+      if [ -f "$f" ]; then
+        n=$(( $(wc -l < "$f") - 1 ))
+        if [ "$n" -ge 708 ]; then
+          args+=(--pred "$kol=$f")
+          echo "dahil: $kol ($n satir)"
+        else
+          echo "atlandi: $kol (sadece $n/708 satir, tamamlanmamis)"
+        fi
+      else
+        echo "atlandi: $kol (tahmin dosyasi yok)"
+      fi
+    done
+    if [ -f runs/amrfinderplus/predictions.tsv ]; then
+      args+=(--pred "ref=runs/amrfinderplus/predictions.tsv")
+      echo "dahil: ref (AMRFinderPlus)"
+    else
+      echo "UYARI: referans kolu yok, once: bash go.sh ref"
+    fi
+    if [ "${#args[@]}" -eq 0 ]; then echo "Hicbir kol hazir degil."; exit 1; fi
+    echo
+    "$PY" scripts/metrics.py --ref "$REF" --key "$KEY" "${args[@]}" --out results/
     ;;
   sizinti)
     "$PY" scripts/leak_check.py
