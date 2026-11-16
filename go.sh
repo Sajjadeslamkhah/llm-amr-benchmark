@@ -14,6 +14,7 @@
 #   bash go.sh events   summarise the pilot event streams
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
+#   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
@@ -147,6 +148,39 @@ case "${1:-}" in
     if [ "${#args[@]}" -eq 0 ]; then echo "Hicbir kol hazir degil."; exit 1; fi
     echo
     "$PY" scripts/metrics.py --ref "$REF" --key "$KEY" "${args[@]}" --out results/
+    ;;
+  uydurma)
+    # Olay akislarini denetimin bekledigi bicime cevirir, sonra mekanik uydurma
+    # denetimini calistirir. Veritabani yolu: AMRFINDER_DB=... ile verilebilir.
+    DB="${AMRFINDER_DB:-}"
+    if [ -z "$DB" ]; then
+      for c in "$HOME/miniforge3/envs/amr/share/amrfinderplus/data/latest" \
+               "$HOME/miniforge3/envs/amr/share/amrfinderplus/data"/* ; do
+        [ -f "$c/fam.tsv" ] && DB="$c" && break
+      done
+    fi
+    if [ -z "$DB" ] || [ ! -f "$DB/fam.tsv" ]; then
+      echo "AMRFinderPlus veritabani bulunamadi (fam.tsv aradim)."
+      echo "Yolu bulmak icin:  find \$HOME -name fam.tsv 2>/dev/null | head"
+      echo "Sonra:             AMRFINDER_DB=/bulunan/yol bash go.sh uydurma"
+      exit 1
+    fi
+    echo "veritabani: $DB"
+    mkdir -p results/audit
+    for kol in claude gemini gpt; do
+      f="runs/$kol/rep1/predictions.tsv"
+      [ -f "$f" ] || continue
+      n=$(( $(wc -l < "$f") - 1 ))
+      [ "$n" -ge 708 ] || { echo "atlandi: $kol ($n/708)"; continue; }
+      echo
+      echo "=== $kol"
+      "$PY" scripts/events_to_audit.py --run "runs/$kol/rep1" || exit 1
+      "$PY" scripts/hallucination_audit.py --run "runs/$kol/rep1" --catalog "$DB" \
+        --out "results/audit/${kol}_rep1.tsv" || exit 1
+    done
+    echo
+    echo "Aday bulgular: results/audit/"
+    wc -l results/audit/*.tsv 2>/dev/null
     ;;
   sizinti)
     "$PY" scripts/leak_check.py
