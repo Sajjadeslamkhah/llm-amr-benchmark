@@ -39,8 +39,35 @@ def write(tmp_path, events, batch="batch_001"):
     return tmp_path
 
 
+def test_claude_echoes_are_not_counted_twice(tmp_path):
+    """Claude Code repeats every tool input under wire_tool_inputs. Counting the echo
+    doubled the command total (249 instead of 124) and halved every per-command rate."""
+    events = CLAUDE + [{"type": "assistant", "wire_tool_inputs": {
+        "toolu_01": {"command": "amrfinder -n data/genomes/ISO_001.fasta"}}}]
+    cmds, _, seen, dropped = e2a.extract(write(tmp_path, events) / "batch_001" / "events.jsonl")
+    assert len(cmds) == 1, [c["cmd"] for c in cmds]
+    assert cmds[0]["tool"] == "bash"
+    assert "?" not in seen
+
+
+def test_an_unnamed_duplicate_is_dropped_even_from_an_unknown_echo_shape(tmp_path):
+    events = CLAUDE + [{"type": "x", "something_new": {"command": "amrfinder -n data/genomes/ISO_001.fasta"}}]
+    cmds, _, _, dropped = e2a.extract(write(tmp_path, events) / "batch_001" / "events.jsonl")
+    assert len(cmds) == 1
+    assert dropped == 1
+
+
+def test_the_same_command_run_twice_is_kept_twice(tmp_path):
+    """Deduplication must not merge a command the agent genuinely ran again."""
+    again = [{"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "toolu_02", "name": "Bash",
+         "input": {"command": "amrfinder -n data/genomes/ISO_001.fasta"}}]}}]
+    cmds, _, _, _ = e2a.extract(write(tmp_path, CLAUDE + again) / "batch_001" / "events.jsonl")
+    assert len(cmds) == 2
+
+
 def test_claude_command_and_its_separately_sent_output(tmp_path):
-    cmds, text, _ = e2a.extract(write(tmp_path, CLAUDE) / "batch_001" / "events.jsonl")
+    cmds, text, _, _ = e2a.extract(write(tmp_path, CLAUDE) / "batch_001" / "events.jsonl")
     assert len(cmds) == 1
     assert cmds[0]["cmd"].startswith("amrfinder -n")
     assert cmds[0]["tool"] == "bash"              # not "input", the key it sits under
@@ -49,21 +76,21 @@ def test_claude_command_and_its_separately_sent_output(tmp_path):
 
 
 def test_antigravity_command_and_sibling_output(tmp_path):
-    cmds, _, _ = e2a.extract(write(tmp_path, AGY) / "batch_001" / "events.jsonl")
+    cmds, _, _, _ = e2a.extract(write(tmp_path, AGY) / "batch_001" / "events.jsonl")
     assert cmds[0]["cmd"] == "ls data/genomes"
     assert cmds[0]["tool"] == "run_command"       # not "parameters"
     assert cmds[0]["stdout"] == "ISO_001.fasta"   # one dict above the command
 
 
 def test_codex_command_with_exit_code(tmp_path):
-    cmds, _, _ = e2a.extract(write(tmp_path, CODEX) / "batch_001" / "events.jsonl")
+    cmds, _, _, _ = e2a.extract(write(tmp_path, CODEX) / "batch_001" / "events.jsonl")
     assert cmds[0]["cmd"] == "head -1 out.tsv"
     assert cmds[0]["exit_code"] == 0
     assert cmds[0]["stdout"] == "ok"
 
 
 def test_all_three_shapes_in_one_log(tmp_path):
-    cmds, _, seen = e2a.extract(write(tmp_path, CLAUDE + AGY + CODEX) / "batch_001" / "events.jsonl")
+    cmds, _, seen, _ = e2a.extract(write(tmp_path, CLAUDE + AGY + CODEX) / "batch_001" / "events.jsonl")
     assert len(cmds) == 3
     assert set(seen) == {"bash", "run_command", "command_execution"}
 
@@ -112,7 +139,7 @@ def test_is_error_becomes_an_exit_code(tmp_path):
         {"type": "user", "message": {"content": [
             {"type": "tool_result", "tool_use_id": "t2", "is_error": False, "content": "4.2.7"}]}},
     ]
-    cmds, _, _ = e2a.extract(write(tmp_path, events) / "batch_001" / "events.jsonl")
+    cmds, _, _, _ = e2a.extract(write(tmp_path, events) / "batch_001" / "events.jsonl")
     by = {c["cmd"]: c for c in cmds}
     assert by["rgi main -i x"]["exit_code"] == 1
     assert by["amrfinder -V"]["exit_code"] == 0
@@ -120,5 +147,5 @@ def test_is_error_becomes_an_exit_code(tmp_path):
 
 def test_every_command_records_its_key_path(tmp_path):
     """So double counting can be located instead of guessed at."""
-    cmds, _, _ = e2a.extract(write(tmp_path, CLAUDE) / "batch_001" / "events.jsonl")
+    cmds, _, _, _ = e2a.extract(write(tmp_path, CLAUDE) / "batch_001" / "events.jsonl")
     assert cmds[0]["key_path"]

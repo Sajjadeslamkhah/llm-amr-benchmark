@@ -31,6 +31,10 @@ EXIT_KEYS = ("exit_code", "exitCode", "returncode", "ExitCode", "status_code")
 # a command for the H4 check, so it is counted separately rather than guessed at.
 SHELL_TOOLS = {"bash", "run_command", "shell", "command_execution", "local_shell",
                "run_terminal_command", "execute_command"}
+# Claude Code echoes every tool input a second time, in a wire_tool_inputs map keyed
+# by tool_use_id, and again inside tool_use_result. Counting those would double the
+# denominator of any per-command rate. The call itself is kept, the echoes dropped.
+ECHO_SEGMENTS = ("wire_tool_inputs", "tool_use_result")
 
 
 def walk(obj, path=(), parents=()):
@@ -99,6 +103,8 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
                 if isinstance(d.get("is_error"), bool):
                     errors[tid] = d["is_error"]
             cmd = first(d, CMD_KEYS)
+            if cmd and any(seg in path for seg in ECHO_SEGMENTS):
+                cmd = None          # an echo of a call already captured above
             if cmd:
                 name = tool_name(d, parents)
                 seen[name or "?"] += 1
@@ -136,13 +142,20 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
             r = d.get("response")
             if isinstance(r, str) and r.strip():
                 narrative.append(r)
+    # Safety net for any echo shape not yet known: an unnamed command whose text also
+    # appears with a tool name in the same log is the same call seen twice.
+    named = {c["cmd"] for c in cmds if c["tool"]}
+    before = len(cmds)
+    cmds = [c for c in cmds if c["tool"] or c["cmd"] not in named]
+    dropped = before - len(cmds)
+
     for c in cmds:                      # fill in what came in a later event
         cid = c.get("call_id")
         if not c["stdout"] and cid in results:
             c["stdout"] = results[cid]
         if c["exit_code"] is None and cid in errors:
             c["exit_code"] = 1 if errors[cid] else 0
-    return cmds, narrative, seen
+    return cmds, narrative, seen, dropped
 
 
 def main() -> None:
@@ -161,8 +174,10 @@ def main() -> None:
     all_cmds: list[dict] = []
     all_text: list[str] = []
     seen: Counter = Counter()
+    echoes = 0
     for p in logs:
-        c, t, s = extract(p)
+        c, t, s, dropped = extract(p)
+        echoes += dropped
         for row in c:
             row["batch"] = p.parent.name
         all_cmds += c
@@ -172,6 +187,8 @@ def main() -> None:
     shell = [c for c in all_cmds if c["tool"] in SHELL_TOOLS]
     print(f"{run}: {len(logs)} event logs")
     print(f"  commands found : {len(all_cmds)}  (of which shell tools: {len(shell)})")
+    if echoes:
+        print(f"  echoes dropped : {echoes}  (same call repeated in the log, not a second command)")
     print(f"  narrative chars: {sum(len(t) for t in all_text)}")
     print("  tool names seen: " + (", ".join(f"{k}={v}" for k, v in seen.most_common(8)) or "(none)"))
     withcode = sum(1 for c in all_cmds if c["exit_code"] is not None)
