@@ -51,3 +51,30 @@ These are choices, not facts, and are fixed before any run:
 - It uses presence of determinants only: no copy number, no promoter or expression context, no efflux up-regulation.
 - Decisions 1 and 2 above trade accuracy for transparency in opposite directions, so this arm is a reproducible baseline, not a ceiling for what genotypic prediction can achieve.
 - It is not a clinical tool and is not presented as one.
+
+## Known failure, found on 2026-11-16 after the rule was applied
+
+**Ampicillin: the rule is degenerate in *E. coli*.** `"BETA-LACTAM" in class` matches a
+beta-lactamase of any kind, and nearly every *E. coli* genome carries one, so the rule calls
+ampicillin resistant almost unconditionally. In this benchmark it called all 26 phenotypically
+susceptible isolates resistant: major error 26/26 = 100%, with no very major errors because it
+called nothing susceptible.
+
+The rule was pre-registered and frozen before any scored run, so it stays as the primary
+reference arm and this result is reported as it came out. Changing it now, after seeing the
+numbers, would be a post-hoc revision and would cost more in credibility than the arm is worth.
+
+What this does and does not show:
+
+- It is a property of class-level mapping, not of AMRFinderPlus. AMRFinderPlus reports the
+  determinants it finds; it does not claim to predict a phenotype, and it is not responsible
+  for this rule.
+- So no comparison in this study supports "the agents outperform AMRFinderPlus". The arm the
+  agents are compared against is this rule applied to AMRFinderPlus output, and that is how
+  every comparison must be worded.
+- Ciprofloxacin shows a milder form of the same thing (major error 30.6%): any quinolone
+  determinant is taken as resistance, although a single gyrA substitution need not reach a
+  clinical breakpoint.
+- A sensitivity analysis with a stricter mapping may be reported, labelled post-hoc and
+  exploratory, never in place of the frozen rule.
+
