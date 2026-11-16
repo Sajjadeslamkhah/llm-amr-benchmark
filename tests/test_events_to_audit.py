@@ -96,3 +96,29 @@ def test_every_command_records_which_batch_it_came_from(tmp_path):
     assert r.returncode == 0, r.stderr
     rows = [json.loads(x) for x in (tmp_path / "commands.log").read_text().splitlines()]
     assert rows[0]["batch"] == "batch_003"
+
+
+def test_is_error_becomes_an_exit_code(tmp_path):
+    """Claude Code reports failure as is_error. Without the mapping, H4 (commands
+    that did not run) would be measurable for one arm and not for another."""
+    events = [
+        {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "id": "t1", "name": "Bash", "input": {"command": "rgi main -i x"}}]}},
+        {"type": "user", "message": {"content": [
+            {"type": "tool_result", "tool_use_id": "t1", "is_error": True,
+             "content": "command not found: rgi"}]}},
+        {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "id": "t2", "name": "Bash", "input": {"command": "amrfinder -V"}}]}},
+        {"type": "user", "message": {"content": [
+            {"type": "tool_result", "tool_use_id": "t2", "is_error": False, "content": "4.2.7"}]}},
+    ]
+    cmds, _, _ = e2a.extract(write(tmp_path, events) / "batch_001" / "events.jsonl")
+    by = {c["cmd"]: c for c in cmds}
+    assert by["rgi main -i x"]["exit_code"] == 1
+    assert by["amrfinder -V"]["exit_code"] == 0
+
+
+def test_every_command_records_its_key_path(tmp_path):
+    """So double counting can be located instead of guessed at."""
+    cmds, _, _ = e2a.extract(write(tmp_path, CLAUDE) / "batch_001" / "events.jsonl")
+    assert cmds[0]["key_path"]

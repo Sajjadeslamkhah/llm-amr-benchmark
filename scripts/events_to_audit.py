@@ -76,6 +76,7 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
     narrative: list[str] = []
     seen: Counter = Counter()
     results: dict[str, str] = {}   # tool_use_id -> output, for CLIs that send it separately
+    errors: dict[str, bool] = {}   # tool_use_id -> is_error, same reason
     for line in p.read_text(errors="replace").splitlines():
         line = line.strip()
         if not line or not line.startswith("{"):
@@ -95,6 +96,8 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
                     txt = " ".join(x.get("text", "") for x in c if isinstance(x, dict))
                     if txt.strip():
                         results[tid] = txt
+                if isinstance(d.get("is_error"), bool):
+                    errors[tid] = d["is_error"]
             cmd = first(d, CMD_KEYS)
             if cmd:
                 name = tool_name(d, parents)
@@ -107,6 +110,15 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
                         out = first(up, OUT_KEYS) or ""
                     if code is None:
                         code = first(up, EXIT_KEYS)
+                if code is None:
+                    # Claude Code marks failure with is_error instead of an exit code.
+                    # Mapped to 1/0 so H4 is measurable for every arm, not just the
+                    # ones whose CLI happens to report a numeric status.
+                    for cand in (d,) + tuple(reversed(parents)):
+                        e = cand.get("is_error")
+                        if isinstance(e, bool):
+                            code = "1" if e else "0"
+                            break
                 # the id of the call, so a separately sent result can be matched to it
                 call_id = None
                 for cand in (d,) + tuple(reversed(parents)):
@@ -115,7 +127,8 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
                         call_id = v
                         break
                 cmds.append({"cmd": cmd, "exit_code": int(code) if code and str(code).lstrip("-").isdigit() else None,
-                             "stdout": out, "stderr": "", "tool": name, "source": p.name, "call_id": call_id})
+                             "stdout": out, "stderr": "", "tool": name, "source": p.name,
+                             "call_id": call_id, "key_path": ".".join(path)})
             # the agent's own prose: a text block, not a tool result
             t = d.get("text")
             if isinstance(t, str) and t.strip() and "tool_use_id" not in d:
@@ -123,9 +136,12 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
             r = d.get("response")
             if isinstance(r, str) and r.strip():
                 narrative.append(r)
-    for c in cmds:                      # fill in the outputs that came separately
-        if not c["stdout"] and c.get("call_id") in results:
-            c["stdout"] = results[c["call_id"]]
+    for c in cmds:                      # fill in what came in a later event
+        cid = c.get("call_id")
+        if not c["stdout"] and cid in results:
+            c["stdout"] = results[cid]
+        if c["exit_code"] is None and cid in errors:
+            c["exit_code"] = 1 if errors[cid] else 0
     return cmds, narrative, seen
 
 
@@ -134,6 +150,8 @@ def main() -> None:
     ap.add_argument("--run", required=True, help="a run directory, e.g. runs/claude/rep1")
     ap.add_argument("--allow-empty", action="store_true",
                     help="write the files even with no commands found (do not use for a real audit)")
+    ap.add_argument("--debug-paths", action="store_true",
+                    help="show which key paths the commands came from, to find double counting")
     a = ap.parse_args()
     run = Path(a.run)
     logs = sorted(run.glob("batch_*/events.jsonl"))
@@ -156,6 +174,13 @@ def main() -> None:
     print(f"  commands found : {len(all_cmds)}  (of which shell tools: {len(shell)})")
     print(f"  narrative chars: {sum(len(t) for t in all_text)}")
     print("  tool names seen: " + (", ".join(f"{k}={v}" for k, v in seen.most_common(8)) or "(none)"))
+    withcode = sum(1 for c in all_cmds if c["exit_code"] is not None)
+    print(f"  with exit code : {withcode} of {len(all_cmds)}")
+    if a.debug_paths:
+        paths = Counter((c["key_path"], c["tool"] or "(no name)") for c in all_cmds)
+        print("  key paths:")
+        for (kp, t), n in paths.most_common(12):
+            print(f"    {n:5d}  tool={t:18s} {kp}")
     for c in all_cmds[:3]:
         print(f"    sample: [{c['tool']}] exit={c['exit_code']} {c['cmd'][:90]}")
 
