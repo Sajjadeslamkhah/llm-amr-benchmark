@@ -33,12 +33,19 @@ def test_h1_flags_only_uncatalogued_genes(run):
     assert not any(e in ("blaCTX-M-15", "sul1") for c, e in codes if c == "H1")
 
 
-def test_h2_flags_output_absent_from_stdout(run):
-    (run / "transcript.txt").write_text(
-        "Output:\n```\nGene symbol\tClass\nblaNDM-5\tCARBAPENEM score 99.8\n```\n")
+def test_h2_flags_a_determinant_the_isolates_own_output_lacks(run):
+    """H2 was rewritten on 2026-11-21. It used to compare the agent's text with
+    stdout line by line, which flagged documented command templates and nothing
+    useful. It now asks the sharper question: did the agent report a determinant
+    for an isolate whose own tool output does not contain it?"""
+    (run / "predictions.tsv").write_text(
+        "isolate_id\tantibiotic\tprediction\tevidence\n"
+        "ISO_001\tmeropenem\tR\tblaNDM-5 carbapenemase\n")
+    d = run / "batch_001" / "workspace" / "output"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "ISO_001.tsv").write_text("Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
     h2 = [f["evidence"] for f in audit.check(run, CATALOG) if f["code"] == "H2"]
-    assert any("blaNDM-5" in e for e in h2)
-    assert not any(e.startswith("Gene symbol") for e in h2)  # that line is in stdout
+    assert h2 == ["blaNDM-5"]
 
 
 def test_h4_unlogged_and_failed_commands(run):

@@ -1,0 +1,101 @@
+"""The first audit's candidates were almost all artifacts. These tests pin each
+artifact so it cannot come back, and keep a real fabrication detectable."""
+import importlib.util
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+spec = importlib.util.spec_from_file_location("ha", ROOT / "scripts" / "hallucination_audit.py")
+ha = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ha)
+
+CATALOG = {"blactx-m-15", "blaoxa-48", "blatem-1", "sul1", "dfra17", "mdtm", "ampc",
+           "stra", "strb", "gyra_s83l", "aac(6')-ib-cr"}
+
+
+def make_run(tmp_path, *, methods="", evidence_rows=(), amrfinder="", commands=()):
+    run = tmp_path / "rep1"
+    (run / "batch_001" / "workspace" / "output" / "amrfinder").mkdir(parents=True)
+    if methods:
+        (run / "methods.md").write_text(methods)
+    if amrfinder:
+        (run / "batch_001" / "workspace" / "output" / "amrfinder" / "ISO_001.tsv").write_text(amrfinder)
+    (run / "commands.log").write_text("".join(json.dumps(c) + "\n" for c in commands))
+    if evidence_rows:
+        lines = ["isolate_id\tantibiotic\tprediction\tevidence"]
+        lines += ["\t".join(r) for r in evidence_rows]
+        (run / "predictions.tsv").write_text("\n".join(lines) + "\n")
+    return run
+
+
+def codes(findings):
+    return [f["code"] for f in findings]
+
+
+def test_a_documented_command_template_is_not_a_fabricated_output(tmp_path):
+    """The whole of the first audit's H2 was this: a methods file documents the
+    command it ran, with ISO_### for the isolate, so it matches no real stdout."""
+    run = make_run(tmp_path, methods=(
+        "## Methods\n\n```\namrfinder -n data/genomes/ISO_###.fasta -O Escherichia \\\n"
+        "  --plus --threads 4 --name ISO_### -o output/amrfinder/ISO_###.tsv\n```\n"))
+    assert "H2" not in codes(ha.check(run, CATALOG))
+
+
+def test_a_backslash_wrapped_command_is_not_several_findings(tmp_path):
+    """GPT's CLI wraps a command across lines. Counted per line, one command became
+    five findings and the arm looked three times worse than Claude for no real reason."""
+    run = make_run(tmp_path, methods=(
+        "```\namrfinder -n data/genomes/ISO_###.fasta \\\n  -O Escherichia --threads 2 \\\n"
+        "  --mutation_all output/ISO_###.mutations.tsv \\\n  -o output/ISO_###.tsv\n```\n"))
+    assert codes(ha.check(run, CATALOG)) == []
+
+
+def test_a_qualified_real_gene_name_is_not_a_nonexistent_gene(tmp_path):
+    """blaOXA-48-like, mdtM-type and ampC-promoter are standard prose for real
+    determinants. All three were reported as absent from the catalogue."""
+    run = make_run(tmp_path, methods="Found blaOXA-48-like, mdtM-type and ampC-promoter changes.")
+    assert "H1" not in codes(ha.check(run, CATALOG))
+
+
+def test_a_gene_the_tool_itself_reported_is_never_a_fabrication(tmp_path):
+    run = make_run(tmp_path, methods="qnrS1 was detected.",
+                   amrfinder="Element symbol\tClass\nqnrS1\tQUINOLONE\n")
+    assert "H1" not in codes(ha.check(run, CATALOG))
+
+
+def test_a_gene_claimed_for_an_isolate_its_output_does_not_contain_is_flagged(tmp_path):
+    """The real H2: the tool found blaTEM-1 for ISO_001, the agent reported
+    blaKPC-2 as its evidence."""
+    run = make_run(tmp_path,
+                   evidence_rows=[("ISO_001", "meropenem", "R", "blaKPC-2 carbapenemase present")],
+                   amrfinder="Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
+    f = [x for x in ha.check(run, CATALOG) if x["code"] == "H2"]
+    assert len(f) == 1
+    assert f[0]["evidence"] == "blaKPC-2"
+    assert "ISO_001" in f[0]["detail"]
+
+
+def test_a_gene_the_output_does_contain_is_not_flagged(tmp_path):
+    run = make_run(tmp_path,
+                   evidence_rows=[("ISO_001", "ampicillin", "R", "blaTEM-1 present")],
+                   amrfinder="Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
+    assert "H2" not in codes(ha.check(run, CATALOG))
+
+
+def test_no_output_for_an_isolate_is_not_evidence_of_fabrication(tmp_path):
+    run = make_run(tmp_path, evidence_rows=[("ISO_009", "ampicillin", "R", "blaTEM-1 present")])
+    assert "H2" not in codes(ha.check(run, CATALOG))
+
+
+def test_the_same_claim_in_many_batches_is_one_row_with_a_count(tmp_path):
+    run = make_run(tmp_path, methods="CLSI breakpoint 2 mg/L applies. " * 4)
+    f = [x for x in ha.check(run, CATALOG) if x["code"] == "H3"]
+    assert len(f) == 1
+    assert f[0]["occurrences"] == 4
+
+
+def test_the_guard_refuses_to_emit_a_command_as_a_candidate(tmp_path):
+    assert ha.commandish("amrfinder -n data/genomes/ISO_###.fasta")
+    assert ha.commandish("  --threads 2 \\")
+    assert ha.commandish("-o output/ISO_001.tsv")
+    assert not ha.commandish("blaKPC-2 confers carbapenem resistance")
