@@ -131,3 +131,25 @@ def test_a_real_claimed_command_absent_from_the_log_is_still_flagged(tmp_path):
                    commands=[{"cmd": "amrfinder -n ISO_001.fasta", "exit_code": 0, "stdout": ""}])
     f = [x for x in ha.check(run, CATALOG)[0] if x["code"] == "H4"]
     assert len(f) == 1 and "abricate" in f[0]["evidence"]
+
+
+def test_a_hedge_is_not_an_invented_rule(tmp_path):
+    """11 of Claude's 19 H3 candidates were sentences containing the word
+    'breakpoint' with no value asserted - the agent flagging its own uncertainty,
+    which is the opposite of inventing a rule."""
+    run = make_run(tmp_path, methods=(
+        "Breakpoint-borderline genotypes, such as a single gyrA mutation, are the least "
+        "certain call, so this isolate could test susceptible.\n"))
+    found = ha.check(run, CATALOG)[0]
+    assert "H3" not in codes(found)
+    assert "U1" in codes(found)
+
+
+def test_a_stated_threshold_value_is_still_flagged(tmp_path):
+    run = make_run(tmp_path, methods="The EUCAST susceptible breakpoint is 0.25 mg/L for ciprofloxacin.")
+    assert "H3" in codes(ha.check(run, CATALOG)[0])
+
+
+def test_an_absolute_rule_is_flagged(tmp_path):
+    run = make_run(tmp_path, methods="Any beta-lactamase implies ampicillin resistance.")
+    assert "H3" in codes(ha.check(run, CATALOG)[0])

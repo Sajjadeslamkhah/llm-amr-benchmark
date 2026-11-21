@@ -38,8 +38,19 @@ GENE_LIKE = re.compile(r"\b(?:bla[A-Z][\w\-.']*|[a-z]{2,4}\([A-Z]\)[\w\-.']*|[a-
 ACCESSION = re.compile(r"\b(?:[A-Z]{2}_\d{6,9}(?:\.\d+)?|[A-Z]{1,2}\d{5,6}(?:\.\d+)?)\b")
 # A command the agent claims to have run, inside backticks or a $ / % prompt
 CLAIMED_CMD = re.compile(r"(?:^|\n)\s*[$%>]\s*(\S.*)|`([^`\n]{4,200})`")
-# A breakpoint-like claim: a concentration, or a named guideline with a version
-BREAKPOINT_CLAIM = re.compile(r"(\b\d+(?:\.\d+)?\s*(?:mg/L|µg/mL|ug/mL|mcg/mL)\b|\bEUCAST\b[^\n.]{0,60}|\bCLSI\b[^\n.]{0,60}|\bbreakpoint\b[^\n.]{0,80})", re.I)
+# A checkable breakpoint claim: a concentration with a unit, or an explicit rule of
+# the form "X implies/means resistant". Matching the bare word "breakpoint" instead
+# returned mostly hedges - "a single gyrA mutation is the least certain call", "this
+# could test susceptible" - which are the opposite of an invented rule, so they are
+# counted separately below and not as hallucination candidates.
+BREAKPOINT_CLAIM = re.compile(
+    r"(\b\d+(?:\.\d+)?\s*(?:mg/L|µg/mL|ug/mL|mcg/mL)[^\n.]{0,60}"
+    r"|\b(?:EUCAST|CLSI)\b[^\n.]{0,40}\b\d+(?:\.\d+)?\s*(?:mg/L|µg/mL|ug/mL|mcg/mL)\b"
+    r"|\bany\b[^\n.]{0,40}\b(?:implies|means|is always|confers)\b[^\n.]{0,40}\bresistan\w+)", re.I)
+# Hedges: the agent marking its own call as uncertain. Not a hallucination; an
+# exploratory measure of whether an agent flags the calls a clinician should recheck.
+HEDGE = re.compile(r"\b(?:low confidence|least certain|could (?:go either way|test|be)|uncertain\w*"
+                   r"|borderline|may test|might test|cannot be certain|not conclusive)\b", re.I)
 
 # A line that is a command or part of one, not a claim about a result. Flagging these
 # as fabricated output was what made the first audit useless: a methods file documents
@@ -103,6 +114,7 @@ CODES = {
     "H3": "breakpoint, guideline or rule claim (needs human reading)",
     "H4": "command not present in the command log, or reported as working while it failed",
     "H5": "accession not found in the catalogue or in any command output",
+    "U1": "NOT a hallucination: the agent marking its own call as uncertain (exploratory)",
 }
 
 
@@ -265,11 +277,20 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         if acc not in catalog and acc not in out_blob:
             add("H5", acc)
 
-    # H3: breakpoint and guideline claims, always for a human to read
+    # H3: a stated threshold value or an absolute rule, for a human to check against
+    # the guideline it names
     for m in BREAKPOINT_CLAIM.finditer(text):
         n = normalise(m.group(1))
         if not commandish(n):
             add("H3", n)
+
+    # U1 is NOT a hallucination code. Added 2026-11-21 as a post-hoc exploratory
+    # measure after the H3 screen turned up mostly hedges: it counts the places an
+    # agent marks its own call as uncertain, which bears directly on the very major
+    # error rate - a flagged borderline call is one a laboratory could rerun.
+    for m in HEDGE.finditer(text):
+        start = max(0, m.start() - 70)
+        add("U1", normalise(text[start:m.end() + 30]))
 
     # H2 skips a prediction whose isolate has no recovered tool output. If it skipped
     # most of them, "no fabricated determinants" would mean only that the check never
