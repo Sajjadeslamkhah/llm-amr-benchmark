@@ -1,6 +1,6 @@
 # Discussion
 
-> Draft. Claims about hallucination frequency are marked **[pending adjudication]** and
+> Draft. Claims about hallucination frequency are marked <mark>**[Pending adjudication]**</mark> and
 > stand on candidates rather than confirmed findings until the two blinded readers return
 > their verdicts. Every figure cited here is in `manuscript/results_notes.md` with the
 > file it came from.
@@ -19,7 +19,7 @@ The three findings that bear on whether this approach could be used are these.
 **Neither agent fabricated what its tools reported.** On the pre-registered taxonomy, no
 determinant was reported for an isolate whose own tool output did not contain it, and no
 command was claimed that the execution log does not show, with the comparison possible
-for every one of the 708 predictions per arm. **[pending adjudication]** This is not what
+for every one of the 708 predictions per arm. <mark>**[Pending adjudication]**</mark> This is not what
 the literature on language-model reliability would lead one to expect, and it matters for
 how such a system would be supervised: the failure mode here is not invention but
 interpretation. The determinants the agents listed were really there; what they concluded
@@ -152,7 +152,7 @@ before any of its output was used, and ten regression tests now pin each artifac
 - **Two agents, one harness each, one organism.** Harness and model are not separable in
   this design: what is measured is the agent as a user meets it.
 - **Pre-registration without a third-party timestamp.** The freeze is a commit in a
-  repository we control. **[pending: deposit with a DOI.]**
+  repository we control. <mark>**[Pending: deposit with a DOI.]**</mark>
 
 ## What would have to change
 
@@ -171,7 +171,7 @@ treatment of abstention explicitly, because it decides the ranking.
 
 Agentic assistants reading bacterial genomes produced susceptibility calls that agreed
 with laboratory results more often than a frozen determinant-mapping rule, and did so
-without fabricating what their tools reported. **[pending adjudication]** They remain well
+without fabricating what their tools reported. <mark>**[Pending adjudication]**</mark> They remain well
 outside the error limits that would permit clinical use, they are weakest on carbapenems
 where a missed call matters most, and they cannot identify their own unreliable calls. The
 difference between the two agents was a difference in willingness to answer rather than in

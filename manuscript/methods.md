@@ -1,7 +1,7 @@
 # Methods
 
 > Draft. Every number here is produced by a script in `scripts/` and none is typed by
-> hand. Places where the study is not yet finished are marked **[pending]** rather than
+> hand. Places where the study is not yet finished are marked <mark>**[Pending]**</mark> rather than
 > filled with a plausible value. The frozen protocol is `PROTOCOL.md`; every change made
 > after the freeze is listed in its section 12 with the date and the reason, and the
 > substantive ones are stated in this section too.
@@ -16,8 +16,8 @@ perform best was specified. The unit of analysis is the isolate–antibiotic pai
 
 A limitation of the pre-registration should be stated plainly: the freeze is a commit
 in a repository the investigator controls, which is weaker evidence of timing than a
-third-party timestamp. **[pending: deposit the frozen package with OSF or Zenodo and
-cite the DOI here.]**
+third-party timestamp. <mark>**[Pending: deposit the frozen package with OSF or Zenodo and
+cite the DOI here.]**</mark>
 
 ## Reference standard and data source
 
@@ -37,7 +37,7 @@ different testing methods (disk diffusion, MIC, broth and agar dilution) and fro
 different standards (EUCAST, CLSI, or none stated) in versions that differ between
 submitting studies. This heterogeneity is a property of the reference standard, not of
 the agents, and it bounds the accuracy any genotype-based method can reach here. A
-sensitivity analysis stratified by recorded standard is pre-specified. **[pending]**
+sensitivity analysis stratified by recorded standard is pre-specified. <mark>**[Pending]**</mark>
 
 ## Eligibility and sample
 
@@ -164,7 +164,7 @@ does not claim to predict a phenotype. Second, and therefore, no comparison in t
 supports a claim that the agents outperform AMRFinderPlus: the arm they are compared
 against is this rule applied to AMRFinderPlus output, and every comparison is worded that
 way. A stricter mapping may be reported as a clearly labelled post-hoc sensitivity
-analysis. **[pending]**
+analysis. <mark>**[Pending]**</mark>
 
 ## Outcomes
 
@@ -236,7 +236,7 @@ reported as Cohen's κ, disagreements are resolved by discussion and the resolut
 recorded, and only then is the key opened. Only confirmed findings are counted. To
 estimate what the screen misses, one replicate per agent is additionally read end to end
 by a human. A reading by the other models is reported, if at all, as an exploratory
-comparison against the human verdicts. **[pending: adjudication not yet performed.]**
+comparison against the human verdicts. <mark>**[Pending: adjudication not yet performed.]**</mark>
 
 ## Statistical analysis
 
@@ -264,9 +264,9 @@ intermediate phenotype exists among the scored pairs, so the first cannot be inf
 and is reported for completeness. The fourth is reported with two checks printed beside
 it, because the strata differ in resistant share and the standard-blind reference arm's
 error rate also varies across them, so a difference between strata cannot be attributed
-to the standard. **[pending: the third, which requires each of the six breakpoints to be
+to the standard. <mark>**[Pending: the third, which requires each of the six breakpoints to be
 read off the current EUCAST table rather than entered from memory; 347 of 553 pairs carry
-a usable MIC.]**
+a usable MIC.]**</mark>
 
 The recorded testing standard is normalised before stratification: BV-BRC writes it as
 CLSI and clsi, EUCAST and eucast, and both names together in either order, which left one

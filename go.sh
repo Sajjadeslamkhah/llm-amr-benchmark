@@ -21,6 +21,7 @@
 #   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
 #   bash go.sh kontrol  referans ciftleri korleme anahtarina baglaniyor mu
 #   bash go.sh surum    KOSUDAN ONCE: harness surumu ve model kimligini kaydet
+#   bash go.sh eksik    makale taslaklarindaki eksikleri listele (manuscript/PENDING.md)
 #   bash go.sh koken    her kolun model kimligi, harness surumu, tarih, sure, web sayaclari
 #   bash go.sh paket    okuyucuya gonderilecek zip (sayfa + talimat; anahtar HARIC)
 #   bash go.sh hakem    korleme degerlendirme sayfasi (iki bagimsiz okuyucu icin)
@@ -296,6 +297,9 @@ PYIN
     } > "$out" 2>&1
     echo "$out"
     cat "$out"
+    ;;
+  eksik)
+    "$PY" scripts/pending.py
     ;;
   koken)
     "$PY" scripts/run_provenance.py --out results/provenance.tsv
