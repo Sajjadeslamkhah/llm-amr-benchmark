@@ -32,7 +32,18 @@ large majority of its *E. coli* AMR records: for ampicillin, 12,671 of 234,759 r
 are laboratory-derived (`data/summary/evidence_survey_2026-11-14.txt`). Including them
 would have compared one prediction against another.
 
-The recorded susceptible/resistant call was used as reported. These calls come from
+The recorded susceptible/resistant call was used as reported, which means the reference
+standard here is a clinical-breakpoint category. The EUCAST subcommittee has recommended
+since 2017, and reaffirmed in its 2025 update, that epidemiological cut-off values rather
+than clinical breakpoints be the primary comparator when genotype–phenotype concordance is
+assessed, with clinical breakpoints secondary.<sup>EUCAST2017,EUCAST2026</sup> This study
+uses the secondary comparator, deliberately: the question asked is whether an agent
+reproduces the call a laboratory would report, and that call is a clinical category. The
+consequence is that some disagreement counted here as error is disagreement with a
+breakpoint rather than with a wild-type boundary, and the figures are not comparable with
+studies scored against cut-off values.
+
+These calls come from
 different testing methods (disk diffusion, MIC, broth and agar dilution) and from
 different standards (EUCAST, CLSI, or none stated) in versions that differ between
 submitting studies. This heterogeneity is a property of the reference standard, not of

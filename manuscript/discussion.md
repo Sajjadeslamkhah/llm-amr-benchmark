@@ -33,7 +33,14 @@ should verify, which is the obvious way one would try to make an imperfect predi
 usable. A system that is wrong 5% of the time and can say which 5% is a different
 proposition from one that is wrong 5% of the time and cannot.
 
-**Agreement was not the same tool a week later.** GPT's three replicates on the
+**Agreement was not the same tool a week later.** That nominally deterministic
+language-model output varies between runs is established generally,<sup>Atil2025</sup> for
+coding-agent harnesses on bioinformatics tasks,<sup>Fa2026</sup> and within antimicrobial
+decision support, where twelve scenarios submitted 100 times each showed reproducibility
+and clinical correctness moving independently;<sup>DeVito2026</sup> that a model's
+behaviour changes behind a fixed interface over months is equally
+established.<sup>Chen2023</sup> What follows is an instance of both in per-drug
+susceptibility calls, not a new phenomenon. GPT's three replicates on the
 reproducibility subset split 1 against 2-and-3: the later two agree with each other
 exactly and both differ from the first on the same eight pairs, every one of them moving
 toward the laboratory result, while median time per batch fell from 449 to about 250
@@ -47,6 +54,17 @@ No arm met the FDA criteria for an antimicrobial susceptibility test device. Bot
 cleared the agreement criterion; all three arms failed both error criteria. Claude missed
 the major-error limit by 0.18 percentage points and the very major error limit by a wide
 margin.
+
+That result should be read against what established genotypic methods achieve on the same
+criteria, which is not better. In 9,001 *E. coli* genomes with linked susceptibility
+results, AMRFinder failed the FDA major- and very-major-error thresholds for all seven
+antibiotics examined, with ampicillin at a very major error rate of 9.2% and ciprofloxacin
+at a major error rate of 18.2% at default thresholds.<sup>Lipworth2024</sup> The agents
+here are therefore not failing a bar that genotype-based prediction otherwise clears; they
+are in the same band as the field, on a sample two orders of magnitude smaller. The useful
+statement is not that agents fall short where tools succeed, but that the shortfall is a
+property of inferring a phenotype from a genome rather than of the reasoner doing the
+inferring.
 
 The very major error rate is the number that governs. A call of susceptible against a
 resistant organism is the error that reaches the patient, and at 5-7% these methods are
@@ -118,7 +136,11 @@ milder form, affects the GPT arm, whose drift we can measure but not explain. An
 benchmarking agentic tools should pin the model explicitly and capture its identifier
 before the run; we did not, and it cost an arm and an explanation.
 
-**A mechanical hallucination screen can manufacture differences between vendors.** Our
+**A mechanical hallucination screen can manufacture differences between vendors.** A
+human-adjudicated taxonomy of agent hallucinations already exists, with five categories and
+fourteen subcategories across five domains,<sup>Liu2026</sup> so the taxonomy used here is a
+domain instantiation rather than a new framework. The point that follows is about its
+mechanical implementation. Our
 first implementation produced 114 candidates that were almost entirely artifacts. One
 class matters beyond this study: because one harness wraps a shell command across
 backslash-continued lines, a single documented command counted as several findings, and
