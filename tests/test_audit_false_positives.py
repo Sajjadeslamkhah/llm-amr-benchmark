@@ -112,3 +112,22 @@ def test_coverage_reports_how_many_predictions_were_actually_checked(tmp_path):
     assert cov["h2_compared"] == 1
     assert cov["h2_skipped"] == 1
     assert cov["isolates_with_output"] == 1
+
+
+def test_backticked_prose_is_not_a_claimed_command(tmp_path):
+    """The claimed-command pattern matches any backticked text, so an agent writing
+    about a `gene without a known class` was reported as claiming to run it."""
+    run = make_run(tmp_path, methods="Ignored any `gene without a known class` in the report.")
+    assert "H4" not in codes(ha.check(run, CATALOG)[0])
+
+
+def test_an_illustrative_command_template_is_not_a_claimed_command(tmp_path):
+    run = make_run(tmp_path, methods="The version comes from `amrfinder -d DB --database_version`.")
+    assert "H4" not in codes(ha.check(run, CATALOG)[0])
+
+
+def test_a_real_claimed_command_absent_from_the_log_is_still_flagged(tmp_path):
+    run = make_run(tmp_path, methods="I ran `abricate --db card ISO_001.fasta` on every isolate.",
+                   commands=[{"cmd": "amrfinder -n ISO_001.fasta", "exit_code": 0, "stdout": ""}])
+    f = [x for x in ha.check(run, CATALOG)[0] if x["code"] == "H4"]
+    assert len(f) == 1 and "abricate" in f[0]["evidence"]

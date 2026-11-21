@@ -240,11 +240,19 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
                 continue        # reported for some other isolate, a mix-up not an invention
             add("H2", token, f"{iso}, {(r.get('antibiotic') or '').strip()}")
 
-    # H4: claimed commands never logged, or logged with a non-zero exit code
+    # H4: claimed commands never logged, or logged with a non-zero exit code.
+    # The pattern also matches any backticked prose, so an agent writing `gene without a
+    # known class` produced a candidate command. Only text that actually starts with a
+    # program, and carries no placeholder, counts as a claim to have run something.
     for m in CLAIMED_CMD.finditer(text):
         claimed = normalise(m.group(1) or m.group(2) or "")
         if not claimed or " " not in claimed:
             continue
+        low = claimed.lstrip("( ").lower()
+        if not any(low.startswith(b) for b in BINARIES):
+            continue            # prose in backticks, not a command
+        if PLACEHOLDER.search(claimed) or re.search(r"\b(DB|PATH|FILE|INPUT|OUTPUT|XXX)\b", claimed):
+            continue            # an illustrative template, not a command it says it ran
         exact = [c for c in commands if normalise(c.get("cmd") or "") == claimed]
         if not exact:
             if not any(claimed in c for c in cmd_norm):
