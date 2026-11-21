@@ -15,6 +15,7 @@
 #   bash go.sh bitir    tekrar koslari bitince tum analizleri sirayla calistir
 #   bash go.sh tekrar   tekrarlanabilirlik: 40 izolatlik alt kumede rep2 ve rep3
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
+#   bash go.sh kompozisyon  suruklenme iddiasi icin bilesim kontrolu (rep4, tum izolatlar)
 #   bash go.sh duyarlilik  on belirlenmis duyarlilik analizleri (ara fenotip, test standardi)
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
@@ -136,6 +137,19 @@ case "${1:-}" in
     echo "Tekrar koslari basladi. Log: $log"
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
     PY="$PY" ARMS="$ARMS" caffeinate -dimsu bash scripts/tekrar.sh > "$log" 2>&1 &
+    echo "Arka planda calisiyor (pid $!)."
+    ;;
+  kompozisyon)
+    # Bilesim kontrolu (post-hoc, PROTOCOL.md bolum 12): rep1 ile ayni parti bilesimi,
+    # yalnizca tarih farkli. Tekrarlanabilirlik tekrari DEGIL; hicbir on-kayitli analize
+    # girmez, yalnizca scripts/kompozisyon_analiz.py okur.
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    mkdir -p runs
+    log="runs/kompozisyon_$(date +%Y%m%d_%H%M).log"
+    echo "Bilesim kontrolu basladi. Log: $log"
+    echo "Her kol icin 118 izolat, 10'luk 12 parti. Mac prize takili, kapagi acik kalsin."
+    echo "Terminali kapatabilirsiniz. Durum: bash go.sh durum"
+    PY="$PY" ARMS="$ARMS" caffeinate -dimsu bash scripts/kompozisyon.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
     ;;
   gece)
