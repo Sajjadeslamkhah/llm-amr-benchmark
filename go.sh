@@ -15,6 +15,7 @@
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
+#   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
@@ -181,6 +182,20 @@ case "${1:-}" in
     echo
     echo "Aday bulgular: results/audit/"
     wc -l results/audit/*.tsv 2>/dev/null
+    ;;
+  belirsizlik)
+    GIZLI="${GIZLI:-$HOME/amr_gizli}"
+    [ -f "$GIZLI/reference_phenotypes.tsv" ] || { echo "Bulunamadi: $GIZLI/reference_phenotypes.tsv"; exit 1; }
+    args=()
+    for kol in claude gemini gpt; do
+      f="runs/$kol/rep1/predictions.tsv"
+      [ -f "$f" ] || continue
+      n=$(( $(wc -l < "$f") - 1 ))
+      [ "$n" -ge 708 ] && args+=(--run "$kol=runs/$kol/rep1") || echo "atlandi: $kol ($n/708)"
+    done
+    [ "${#args[@]}" -gt 0 ] || { echo "Hicbir kol hazir degil."; exit 1; }
+    "$PY" scripts/uncertainty.py --ref "$GIZLI/reference_phenotypes.tsv" \
+      --key "$GIZLI/blinding_key.tsv" "${args[@]}" --out results/uncertainty.tsv
     ;;
   sizinti)
     "$PY" scripts/leak_check.py
