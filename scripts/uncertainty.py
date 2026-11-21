@@ -115,6 +115,8 @@ def main() -> None:
     truth = {(iso_of[g], abx): ph for (g, abx), ph in ref.items() if g in iso_of}
 
     rows = []
+    flagged_rows: list[tuple[str, str, tuple[str, str]]] = []
+    all_calls: dict[str, dict] = {}
     for spec in a.run:
         arm, rundir = spec.split("=", 1)
         run = Path(rundir)
@@ -141,9 +143,15 @@ def main() -> None:
         # that includes abstentions is wrong 100% of the time whatever it tracks.
         wrong = {k for k in made if calls[k] != truth[k]}
         vme_made = {k for k in wrong if truth[k] == "R"}
+        all_calls[arm] = calls
         for label, flagged in (("evidence", by_evidence), ("listed", listed),
                                ("either", by_evidence | listed)):
             fl = {k for k in made if k in flagged}
+            if label == "either":
+                flagged_rows += [(arm, label, k) for k in sorted(fl)]
+                # also the flags that fell on pairs the agent then declined
+                flagged_rows += [(arm, "flagged_but_abstained", k)
+                                 for k in sorted((by_evidence | listed) & abstained)]
             un = made - fl
             fw = len(fl & wrong)
             uw = len(un & wrong)
@@ -158,6 +166,18 @@ def main() -> None:
                 "vme_total": len(vme_made), "vme_flagged": len(fl & vme_made),
                 "abstained": len(abstained), "abstained_ref_R": sum(1 for k in abstained if truth[k] == "R"),
             })
+
+    # Write out which pairs were flagged, so the flags can be compared with other
+    # per-pair results. The replicate analysis found Claude's instability on borderline
+    # ciprofloxacin calls, which is where it said it was least certain; whether those
+    # are literally the same pairs is checkable and worth checking.
+    fp = Path(a.out).with_name(Path(a.out).stem + "_flagged_pairs.tsv")
+    with fp.open("w") as fh:
+        fh.write("arm\tsignal\tisolate_id\tantibiotic\tprediction\tlab\n")
+        for arm, sig, k in flagged_rows:
+            fh.write(f"{arm}\t{sig}\t{k[0]}\t{k[1]}\t{all_calls[arm].get(k, '')}"
+                     f"\t{truth.get(k, '')}\n")
+    print(f"{fp}")
 
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
