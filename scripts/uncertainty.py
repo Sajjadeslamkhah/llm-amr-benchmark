@@ -110,7 +110,12 @@ def main() -> None:
     ap.add_argument("--out", default="results/uncertainty.tsv")
     a = ap.parse_args()
 
-    ref = {(r["genome_id"], r["abx"]): r["pheno"] for r in read_tsv(Path(a.ref))}
+    # Only susceptible and resistant pairs. The reference file also holds one
+    # intermediate phenotype, which the protocol excludes from the primary analysis;
+    # keeping it made every call on it count as an error and put this script's totals
+    # one above metrics.py's (553 calls and 27 errors against 552 and 26).
+    ref = {(r["genome_id"], r["abx"]): r["pheno"] for r in read_tsv(Path(a.ref))
+           if r.get("pheno") in ("S", "R")}
     iso_of = {r["genome_id"]: r["isolate_id"] for r in read_tsv(Path(a.key))}
     truth = {(iso_of[g], abx): ph for (g, abx), ph in ref.items() if g in iso_of}
 

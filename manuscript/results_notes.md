@@ -97,6 +97,12 @@ correctly; two are wrong resistant calls that became correct susceptible calls. 
 harness version was 0.169.0 on both dates and the prompt, isolates and batching were
 identical.
 
+The arm also got faster. Median wall-clock seconds per batch (`results/provenance.tsv`):
+GPT 449 in replicate 1, 231 and 265 in replicates 2 and 3. Claude shows no such shift
+(560, 547, 562). Accuracy alone could be chance at eight pairs; accuracy and speed moving
+together over six days, with the harness version unchanged, is harder to read as anything
+but a change behind the CLI.
+
 Two consequences. The primary analysis rests on replicate 1 and therefore understates
 the GPT arm as it behaved six days later. And the cause cannot be established, because
 no model identifier is recorded for this arm — the logging gap described in the methods.
@@ -134,6 +140,11 @@ Source: `results/uncertainty.tsv` and `results/uncertainty_flagged_pairs.tsv`.
 
 Neither agent's expressed uncertainty identifies a single very major error: 0 of Claude's
 16 and 0 of GPT's 13.
+
+(An earlier run of this analysis counted 553 calls and 27 errors for Claude against
+metrics.py's 552 and 26: it had kept the one intermediate phenotype that the protocol
+excludes from the primary analysis, so every call on that pair scored as an error. Fixed
+2026-11-21; the figures below are the corrected ones.)
 
 The two express doubt in different ways, and neither way helps where it matters most.
 
