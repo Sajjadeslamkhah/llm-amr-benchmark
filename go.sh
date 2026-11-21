@@ -17,6 +17,7 @@
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
 #   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
 #   bash go.sh kontrol  referans ciftleri korleme anahtarina baglaniyor mu
+#   bash go.sh koken    her kolun model kimligi, harness surumu, tarih, sure, web sayaclari
 #   bash go.sh hakem    korleme degerlendirme sayfasi (iki bagimsiz okuyucu icin)
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
@@ -227,6 +228,9 @@ for arm in ("claude", "gpt", "amrfinderplus"):
     want = {(gid2iso[r["genome_id"]], r["abx"]) for r in ref if r["genome_id"] in gid2iso}
     print(f"{arm:14s}: {len(want - have)} baglanabilir ciftte cagri yok")
 PYIN
+    ;;
+  koken)
+    "$PY" scripts/run_provenance.py --out results/provenance.tsv
     ;;
   hakem)
     # Korleme degerlendirme sayfasi: tum kollarin adaylari TEK dosyada, karisik
