@@ -105,6 +105,19 @@ def main() -> None:
         kappa = _m.fleiss_kappa(table) if len(table) else float("nan")
         p, lo, hi = _m.wilson(same, len(common)) if common else (float("nan"),) * 3
 
+        # Where the replicates disagree, which one was right? A set of pairs on which
+        # two replicates agree with each other and both differ from a third is a
+        # systematic shift, not run-to-run noise, and it matters whether the shift moved
+        # toward the laboratory result or away from it.
+        truth = {}
+        if a.ref and a.key:
+            iso = {r["genome_id"]: r["isolate_id"] for r in read_tsv(Path(a.key))}
+            truth = {(iso[r["genome_id"]], r["abx"]): r["pheno"] for r in read_tsv(Path(a.ref))
+                     if r["genome_id"] in iso and r.get("pheno") in ("S", "R")}
+        differing = sorted(k for k in common if len({per_rep[r][k] for r in reps}) > 1)
+        correct_by_rep = {r: sum(1 for k in differing if truth.get(k) == per_rep[r][k])
+                          for r in reps} if truth else {}
+
         row = {"arm": arm, "replicates": len(reps), "pairs": len(common),
                "identical_all": same, "identical_prop": round(p, 4),
                "ci_lo": round(lo, 4), "ci_hi": round(hi, 4),
@@ -113,7 +126,18 @@ def main() -> None:
         for x, y in combinations(reps, 2):
             d = sum(1 for k in common if per_rep[x][k] != per_rep[y][k])
             row[f"disagree_{x}v{y}"] = d
+        row["differing_pairs"] = len(differing)
+        for r in reps:
+            row[f"correct_on_differing_rep{r}"] = correct_by_rep.get(r, "")
         rows.append(row)
+        if differing:
+            print(f"\n{arm}: {len(differing)} pairs where the replicates disagree")
+            if correct_by_rep:
+                print("  agreeing with the laboratory result: " +
+                      ", ".join(f"rep{r}={n}" for r, n in correct_by_rep.items()))
+            for k in differing[:12]:
+                calls_str = " ".join(f"rep{r}={per_rep[r][k]}" for r in reps)
+                print(f"    {k[0]} {k[1]:30s} lab={truth.get(k, '?')}  {calls_str}")
 
     if problems:
         print("EKSIK:")
