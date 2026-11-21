@@ -297,7 +297,15 @@ PYIN
     tmp=$(mktemp -d)
     cp "$sheet" "$tmp/adjudication_sheet.tsv"
     cp docs/DEGERLENDIRME_TR.md "$tmp/TALIMAT.md"
-    ( cd "$tmp" && zip -q "$OLDPWD/$out" adjudication_sheet.tsv TALIMAT.md )
+    # PDF de koy: okuyucu Markdown dosyasi acmak zorunda kalmasin
+    if "$PY" scripts/md_to_pdf.py docs/DEGERLENDIRME_TR.md "$tmp/TALIMAT.pdf" >/dev/null 2>&1; then
+      :
+    else
+      echo "UYARI: PDF uretilemedi, pakete yalnizca Markdown konuyor."
+      "$PY" scripts/md_to_pdf.py docs/DEGERLENDIRME_TR.md "$tmp/TALIMAT.pdf" 2>&1 | tail -4
+    fi
+    ( cd "$tmp" && zip -q "$OLDPWD/$out" adjudication_sheet.tsv TALIMAT.md \
+        $( [ -f TALIMAT.pdf ] && echo TALIMAT.pdf ) )
     rm -rf "$tmp"
     if unzip -l "$out" | grep -qi "key"; then
       echo "DUR: pakette anahtar dosyasi var. Gondermeyin."

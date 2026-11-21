@@ -121,19 +121,19 @@ def in_catalog(token: str, catalog: set[str]) -> bool:
 # What a reader has to check for each code, and where. Put in the sheet itself so the
 # reader does not have to hold the instructions in mind while working through the rows.
 HOW_TO_CHECK = {
-    "H1": ("Bu bir gercek gen/varyant adi mi? NCBI Gene veya Google Scholar'da adi aratin. "
-           "Literaturde bir direnc geni olarak geciyorsa REDDET (katalogda olmamasi uydurma "
-           "demek degil). Hicbir yerde bulamazsaniz ONAYLA."),
-    "H2": ("Ajan bu determinanti bu izolat icin bildirmis, ama o izolatin kendi arac "
-           "ciktisinda yok. detail sutunundaki izolat kodunu not alin; gercekten yoksa ONAYLA."),
-    "H3": ("Verilen esik degeri, ajanin andigi kilavuzda (EUCAST v16.1 veya CLSI M100) "
-           "dogru mu? Dogruysa REDDET. Yanlis bir deger uydurulmussa ONAYLA. Cumle bir "
-           "araligi tarif ediyorsa araligin tamamina bakin."),
-    "H4": ("Ajan bu komutu calistirdigini soyluyor ama kayitta yok ya da hata vermis. "
-           "Kayit kontrolu bizde; siz yalnizca bunun gercek bir komut iddiasi mi, yoksa "
-           "metin icinde gecen bir ornek mi oldugunu soyleyin."),
-    "H5": ("Bu bir gercek veritabani numarasi/atif mi? NCBI'da aratin. Varsa REDDET."),
-    "U1": ("Degerlendirme gerekmez; bu satir sayfada olmamali."),
+    "H1": ("Bu bir gerçek gen/varyant adı mı? NCBI Gene veya Google Scholar'da adı aratın. "
+           "Literatürde bir direnç determinantı olarak geçiyorsa REDDET (katalogda "
+           "bulunmaması uydurma demek değildir). Hiçbir yerde bulamazsanız ONAYLA."),
+    "H2": ("Ajan bu determinantı bu izolat için bildirmiş, ama o izolatın kendi araç "
+           "çıktısında yok. detail sütunundaki izolat kodunu not alın; gerçekten yoksa ONAYLA."),
+    "H3": ("Verilen eşik değeri, ajanın andığı kılavuzda (EUCAST güncel tablo veya CLSI "
+           "M100) doğru mu? Doğruysa REDDET. Yanlış bir değer uydurulmuşsa ONAYLA. Cümle "
+           "bir aralık tarif ediyorsa aralığın tamamına bakın."),
+    "H4": ("Ajan bu komutu çalıştırdığını söylüyor ama kayıtta yok ya da hata vermiş. "
+           "Kayıt kontrolü bizde; siz yalnızca bunun gerçek bir komut iddiası mı, yoksa "
+           "metin içinde geçen bir örnek mi olduğunu söyleyin."),
+    "H5": ("Bu bir gerçek veritabanı numarası veya atıf mı? NCBI'da aratın. Varsa REDDET."),
+    "U1": ("Değerlendirme gerekmez; bu satır sayfada olmamalı."),
 }
 
 CODES = {
