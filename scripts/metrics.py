@@ -30,6 +30,34 @@ def wilson(k: int, n: int, z: float = 1.959964) -> tuple[float, float, float]:
     return p, max(0.0, c - h), min(1.0, c + h)
 
 
+def fda_criteria(ca: float, vme: float, vme_lo: float, vme_hi: float,
+                 me: float) -> dict:
+    """The FDA AST-device criteria, as the guidance states them.
+
+    FDA, Class II Special Controls Guidance Document: Antimicrobial Susceptibility Test
+    (AST) Systems, 28 August 2009, section X.A:
+      - percent category agreement > 89.9%
+      - major error rate < 3% of susceptible organisms tested
+      - very major errors: the upper 95% confidence limit of the true rate < 7.5% AND
+        the lower 95% confidence limit < 1.5%
+
+    The very major error criterion is NOT a flat 1.5%, which is how the protocol first
+    paraphrased it. It is stated in confidence limits, and at this sample size the
+    difference is material. Written out here so the comparison is computed rather than
+    asserted in prose.
+
+    These criteria were written for devices that measure a phenotype against a reference
+    method. Genotype-based prediction is a different task, so they are reference lines,
+    not a regulatory standard this study is held to.
+    """
+    return {
+        "fda_ca_met": ca > 0.899,
+        "fda_maj_met": me < 0.03,
+        "fda_vmj_met": (vme_hi < 0.075) and (vme_lo < 0.015),
+        "fda_all_met": (ca > 0.899) and (me < 0.03) and (vme_hi < 0.075) and (vme_lo < 0.015),
+    }
+
+
 def evaluate(df: pd.DataFrame, nocall_as_error: bool = True) -> dict:
     """df columns: pheno (reference S/R), prediction (S/R/NA)."""
     d = df[df["pheno"].isin(["S", "R"])].copy()
@@ -47,6 +75,7 @@ def evaluate(df: pd.DataFrame, nocall_as_error: bool = True) -> dict:
     for name, k, m in (("CA", agree, n), ("VME", vme, nR), ("ME", me, nS)):
         p, lo, hi = wilson(k, m)
         out.update({f"{name}_k": k, f"{name}_n": m, name: p, f"{name}_lo": lo, f"{name}_hi": hi})
+    out.update(fda_criteria(out["CA"], out["VME"], out["VME_lo"], out["VME_hi"], out["ME"]))
     return out
 
 

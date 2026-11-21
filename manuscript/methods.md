@@ -169,9 +169,20 @@ pairs); major error (ME, predicted R when the reference is S, over reference-S p
 missing, malformed or explicitly uncertain prediction is a no-call, counted as an error in
 the primary analysis and excluded in a pre-specified sensitivity analysis.
 
-Results are displayed against the AST-evaluation thresholds CA ≥ 90%, VME ≤ 1.5% and
-ME ≤ 3%, as reference lines rather than pass/fail hypotheses. **[pending: confirm and cite
-the source of these thresholds.]**
+Results are displayed against the criteria in the US FDA *Class II Special Controls
+Guidance Document: Antimicrobial Susceptibility Test (AST) Systems* (28 August 2009,
+section X.A): percent category agreement above 89.9%; a major error rate below 3% of the
+susceptible organisms tested; and, for very major errors, an upper 95% confidence limit of
+the true rate below 7.5% together with a lower limit below 1.5%. The very major error
+criterion is stated in confidence limits rather than as a flat 1.5%, and at this sample
+size the difference matters, so each criterion is computed by `scripts/metrics.py` rather
+than asserted.
+
+These criteria were written for devices that measure a phenotype against a reference
+method. Genotype-based prediction is a different task with a different error structure, so
+they serve here as reference lines and not as a standard this study is held to. They are
+nonetheless the criteria a laboratory would apply before using such a result clinically,
+which is why they are reported.
 
 Reproducibility is Fleiss' κ across three replicates on a pre-specified random subset of
 40 isolates, drawn with the same seed before any run, plus the proportion of pairs given
