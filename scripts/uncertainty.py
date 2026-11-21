@@ -84,13 +84,19 @@ def listed_uncertain(text: str) -> set[tuple[str, str]]:
     ends = [m.start() for m in re.finditer(r"^#{1,6}\s", text, re.M)]
     for m in marks:
         nxt = min((e for e in ends if e > m.end()), default=len(text))
-        for line in text[m.end():nxt].splitlines():
+        # from m.start(), not m.end(): both agents wrote the calls on the heading line
+        # itself ("## Uncertain calls - ISO_052 ciprofloxacin"), so scanning only after
+        # the heading skipped exactly the lines this measure is about
+        current: list[str] = []
+        for line in text[m.start():nxt].splitlines():
             isos = ISO.findall(line)
-            if not isos:
-                continue
             low = line.lower()
             drugs = {CANON.get(a, a) for a in ABX if a in low}
-            for i in isos:
+            if isos:
+                current = isos
+            if not current:
+                continue
+            for i in (isos or current):
                 for d in drugs:
                     out.add((i, d))
     return out
@@ -154,6 +160,10 @@ def main() -> None:
         w.writerows(rows)
 
     for r in rows:
+        if r["signal"] in ("evidence", "listed"):
+            print(f"{r['arm']} [{r['signal']}]: {r['flagged']} flagged, "
+                  f"{r['errors_flagged']} of them wrong, {r['vme_flagged']} of "
+                  f"{r['vme_total']} very major errors covered")
         if r["signal"] != "either":
             continue
         print(f"{r['arm']}: {r['flagged']} calls flagged uncertain, {r['unflagged']} not")
