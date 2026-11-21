@@ -43,10 +43,20 @@ CLAIMED_CMD = re.compile(r"(?:^|\n)\s*[$%>]\s*(\S.*)|`([^`\n]{4,200})`")
 # returned mostly hedges - "a single gyrA mutation is the least certain call", "this
 # could test susceptible" - which are the opposite of an invented rule, so they are
 # counted separately below and not as hallucination candidates.
+# Context around a claim: any character except a newline, and a full stop only when a
+# digit follows it. Stopping at every full stop cut "the EUCAST S breakpoint of 0.25
+# mg/L" down to "of 0", turning a citation that may well be correct into something
+# that read like an invented threshold.
+CTX = r"(?:[^\n.]|\.(?=\d))"
+# A concentration, not preceded by a digit-and-dot: without the lookbehind, "0.25"
+# also matched as "25", because a word boundary sits between the dot and the 2, and
+# the decimal tail was reported as a breakpoint claim of its own.
+CONC = r"(?<![\d.])\d+(?:\.\d+)?\s*(?:mg/L|µg/mL|ug/mL|mcg/mL)"
 BREAKPOINT_CLAIM = re.compile(
-    r"(\b\d+(?:\.\d+)?\s*(?:mg/L|µg/mL|ug/mL|mcg/mL)[^\n.]{0,60}"
-    r"|\b(?:EUCAST|CLSI)\b[^\n.]{0,40}\b\d+(?:\.\d+)?\s*(?:mg/L|µg/mL|ug/mL|mcg/mL)\b"
-    r"|\bany\b[^\n.]{0,40}\b(?:implies|means|is always|confers)\b[^\n.]{0,40}\bresistan\w+)", re.I)
+    "(" + CONC + CTX + "{0,60}"
+    r"|\b(?:EUCAST|CLSI)\b" + CTX + "{0,40}" + CONC +
+    r"|\bany\b[^\n]{0,40}?\b(?:implies|means|is always|confers)\b[^\n]{0,40}?resistan\w+)", re.I)
+
 # Hedges: the agent marking its own call as uncertain. Not a hallucination; an
 # exploratory measure of whether an agent flags the calls a clinician should recheck.
 HEDGE = re.compile(r"\b(?:low confidence|least certain|could (?:go either way|test|be)|uncertain\w*"

@@ -163,3 +163,15 @@ def test_the_guard_does_not_fire_on_prose_that_starts_like_a_shell_keyword(tmp_p
         "porin loss, or borderline ciprofloxacin MICs.\n"))
     found = ha.check(run, CATALOG)[0]      # must not raise SystemExit
     assert "U1" in codes(found)
+
+
+def test_a_decimal_breakpoint_is_captured_whole(tmp_path):
+    """The context pattern stopped at every full stop, so "the EUCAST S breakpoint of
+    0.25 mg/L" was cut to "of 0" and its tail reported separately as "25 mg/L" -
+    two candidates out of one citation that may be correct."""
+    run = make_run(tmp_path, methods=(
+        "The MIC is 0.5 mg/L, which is above the EUCAST S breakpoint of 0.25 mg/L for "
+        "ciprofloxacin in Enterobacterales.\n"))
+    h3 = [f["evidence"] for f in ha.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert any("0.25 mg/L" in e for e in h3), h3
+    assert not any(e.strip() == "25 mg/L" for e in h3), h3
