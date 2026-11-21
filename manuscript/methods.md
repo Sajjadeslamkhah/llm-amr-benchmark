@@ -98,8 +98,15 @@ goes looking for the answer key when it can is reported as an outcome in its own
 | A3 | GPT | Codex CLI 0.169.0 |
 | REF | AMRFinderPlus 4.2.7, database 2026-10-29.1 | pre-specified mapping rule |
 
-**[pending: the exact model identifier, plan tier and run date for each arm, from each
-run's `meta.json`.]**
+Run dates, wall-clock duration per batch, exit codes and the invoked binary are recorded
+for every batch and collected by `scripts/run_provenance.py`. The model identifier is
+recorded only where the harness writes it into its event stream: the Claude arm ran
+`claude-opus-5-5`, and for the GPT and Gemini arms neither the harness metadata nor the
+event stream contains a model identifier, so the serving model version for those two arms
+is not known and cannot be recovered after the fact. This is a limitation of the logging,
+reported as such; the harness version, the invoked binary and the run date are known for
+all three. Model identity is captured before each run from this point on
+(`bash go.sh surum`). **[pending: plan tier per arm.]**
 
 Each agent ran in its vendor's own command-line harness with default settings. This is a
 design choice: it measures the agent as a user would meet it, not the underlying model in
@@ -115,7 +122,8 @@ Batch size was identical for every arm.
 Network access was restricted differently by each harness, and is reported per arm rather
 than assumed. For GPT, `--sandbox workspace-write` runs model-issued commands without
 network access. For Claude, `--disallowed-tools WebSearch WebFetch` removes the web tools
-and each run records its web-search and web-fetch counts, but shell commands are not
+and each run records its web-search and web-fetch counts, both of which were zero across
+all 12 batches, but shell commands are not
 OS-sandboxed on macOS, so network access from a command is not blocked at that level; this
 residual gap is reported. For Gemini, `--sandbox` enables terminal restrictions and no
 documented switch removes web tools.

@@ -23,6 +23,9 @@ from pathlib import Path
 MODEL_KEYS = ("model", "model_id", "modelId", "model_name", "slug")
 VERSION_KEYS = ("version", "harness_version", "cli_version", "agy_version")
 TIER_KEYS = ("plan", "tier", "plan_tier", "subscription")
+# The harness writes these; the first key list was guessed and matched none of them.
+DATE_KEYS = ("started_utc", "started", "start", "started_at", "date", "timestamp")
+DUR_KEYS = ("wall_clock_seconds", "duration_seconds", "seconds", "duration_s", "elapsed")
 
 
 def dig(obj, keys: tuple[str, ...]) -> set[str]:
@@ -39,6 +42,23 @@ def dig(obj, keys: tuple[str, ...]) -> set[str]:
         elif isinstance(o, list):
             stack.extend(o)
     return found
+
+
+def numbers(obj, keys: tuple[str, ...]) -> list[float]:
+    """Every numeric value under any of these keys. dig() only returns strings, and
+    the harness writes wall_clock_seconds as a number, so durations were all missed."""
+    out: list[float] = []
+    stack = [obj]
+    while stack:
+        o = stack.pop()
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if k in keys and isinstance(v, (int, float)) and not isinstance(v, bool):
+                    out.append(float(v))
+                stack.append(v)
+        elif isinstance(o, list):
+            stack.extend(o)
+    return out
 
 
 def from_events(p: Path) -> dict:
@@ -90,6 +110,8 @@ def main() -> None:
         dates: set[str] = set()
         durations: list[float] = []
         web = defaultdict(int)
+        binaries: set[str] = set()
+        failed: list[str] = []
         batches = sorted(rep.glob("batch_*"))
         for b in batches:
             meta = b / "meta.json"
@@ -101,19 +123,18 @@ def main() -> None:
                 models |= dig(m, MODEL_KEYS)
                 versions |= dig(m, VERSION_KEYS)
                 tiers |= dig(m, TIER_KEYS)
-                for k in ("started", "start", "started_at", "date", "timestamp"):
-                    for v in dig(m, (k,)):
-                        dates.add(v[:10])
-                for k in ("seconds", "duration_s", "elapsed", "duration_seconds"):
-                    for v in dig(m, (k,)):
-                        try:
-                            durations.append(float(v))
-                        except ValueError:
-                            pass
-                for k in ("seconds", "duration_s", "elapsed", "duration_seconds"):
-                    v = m.get(k)
-                    if isinstance(v, (int, float)):
-                        durations.append(float(v))
+                for v in dig(m, DATE_KEYS):
+                    dates.add(v[:10])
+                durations += numbers(m, DUR_KEYS)
+                for v in dig(m, ("command",)):
+                    if "/" in v and not v.startswith("-"):
+                        binaries.add(Path(v).name)
+                cmd = m.get("command")
+                if isinstance(cmd, list) and cmd:
+                    binaries.add(Path(str(cmd[0])).name)
+                code = m.get("exit_code")
+                if isinstance(code, int) and code != 0:
+                    failed.append(f"{b.name}:{code}")
             ev = b / "events.jsonl"
             if ev.exists():
                 e = from_events(ev)
@@ -122,6 +143,8 @@ def main() -> None:
                 web["fetch"] += int(e["web_fetch"])
         rows.append({
             "arm": arm, "replicate": rep.name, "batches": len(batches),
+            "binary": "; ".join(sorted(binaries)) or "(not recorded)",
+            "nonzero_exit_batches": "; ".join(failed) or "none",
             "model_ids": "; ".join(sorted(models)) or "(not recorded)",
             "harness_version": "; ".join(sorted(versions)) or "(not recorded)",
             "plan_tier": "; ".join(sorted(tiers)) or "(not recorded)",
@@ -144,7 +167,8 @@ def main() -> None:
             continue
         print(f"{r['arm']} {r['replicate']}: {r['batches']} batches, {r['run_dates']}")
         print(f"  model   : {r['model_ids']}")
-        print(f"  harness : {r['harness_version']}   plan: {r['plan_tier']}")
+        print(f"  harness : {r['binary']} {r['harness_version']}   plan: {r['plan_tier']}")
+        print(f"  batch s : median {r['median_batch_seconds']}   failed: {r['nonzero_exit_batches']}")
         print(f"  web tools: {r['web_search_requests']} searches, {r['web_fetch_requests']} fetches")
     print(f"\n{out}")
     if any(r["model_ids"] == "(not recorded)" for r in rows if r["batches"]):

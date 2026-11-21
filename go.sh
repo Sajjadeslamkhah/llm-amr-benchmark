@@ -17,6 +17,7 @@
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
 #   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
 #   bash go.sh kontrol  referans ciftleri korleme anahtarina baglaniyor mu
+#   bash go.sh surum    KOSUDAN ONCE: harness surumu ve model kimligini kaydet
 #   bash go.sh koken    her kolun model kimligi, harness surumu, tarih, sure, web sayaclari
 #   bash go.sh hakem    korleme degerlendirme sayfasi (iki bagimsiz okuyucu icin)
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
@@ -228,6 +229,27 @@ for arm in ("claude", "gpt", "amrfinderplus"):
     want = {(gid2iso[r["genome_id"]], r["abx"]) for r in ref if r["genome_id"] in gid2iso}
     print(f"{arm:14s}: {len(want - have)} baglanabilir ciftte cagri yok")
 PYIN
+    ;;
+  surum)
+    # Model kimligi ve harness surumunu KOSUDAN ONCE kaydet. rep1'de bu yapilmadi:
+    # Claude kendi olay akisina model adini yaziyor, Codex ve Antigravity yazmiyor,
+    # ve kosu bittikten sonra hangi surumun hizmet verdigi geriye donuk bilinemiyor.
+    out="results/harness_$(date +%Y%m%d_%H%M).txt"
+    mkdir -p results
+    {
+      echo "# Harness and model identity, recorded $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      echo "# Written before a run. A blank model line means the CLI does not report it."
+      for b in claude codex agy; do
+        echo
+        echo "## $b"
+        command -v "$b" || { echo "(not installed)"; continue; }
+        "$b" --version 2>&1 | head -3
+        echo "-- model as the CLI reports it:"
+        "$b" --help 2>&1 | grep -i -m5 -E "model|--model" || echo "(--help names no model)"
+      done
+    } > "$out" 2>&1
+    echo "$out"
+    cat "$out"
     ;;
   koken)
     "$PY" scripts/run_provenance.py --out results/provenance.tsv
