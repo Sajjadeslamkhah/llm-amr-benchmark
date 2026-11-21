@@ -12,6 +12,7 @@
 #   bash go.sh run <arm> <rep> [max batches]  real run, resumable, in the background
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh events   summarise the pilot event streams
+#   bash go.sh tekrar   tekrarlanabilirlik: 40 izolatlik alt kumede rep2 ve rep3
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
@@ -112,6 +113,16 @@ case "${1:-}" in
     head -40 runs/gpt/rep0/stdout.txt >> data/summary/events_pilot.txt 2>&1 || true
     wc -l data/summary/events_pilot.txt
     echo "Send me: data/summary/events_pilot.txt"
+    ;;
+  tekrar)
+    # Tekrarlanabilirlik koslari: 40 izolatlik alt kume, her kol icin rep2 ve rep3.
+    # Model kimligini kosudan ONCE kaydeder (tam kosularda bu yapilmadi).
+    mkdir -p runs
+    log="runs/tekrar_$(date +%Y%m%d_%H%M).log"
+    echo "Tekrar koslari basladi. Log: $log"
+    echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
+    PY="$PY" ARMS="$ARMS" caffeinate -dimsu bash scripts/tekrar.sh > "$log" 2>&1 &
+    echo "Arka planda calisiyor (pid $!)."
     ;;
   gece)
     export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
