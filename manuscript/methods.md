@@ -120,7 +120,12 @@ event stream contains a model identifier, so the serving model version for those
 is not known and cannot be recovered after the fact. This is a limitation of the logging,
 reported as such; the harness version, the invoked binary and the run date are known for
 all three. Model identity is captured before each run from this point on
-(`bash go.sh surum`). **[pending: plan tier per arm.]**
+(`bash go.sh surum`).
+
+Each agent ran on the investigator's own subscription: Claude on a Max plan, GPT on a Pro
+plan. The plan tier is reported because it governs rate limits and, on some plans, which
+model a harness selects by default. It was the Gemini arm's weekly subscription quota that
+split that arm across a week before it was withdrawn.
 
 Each agent ran in its vendor's own command-line harness with default settings. This is a
 design choice: it measures the agent as a user would meet it, not the underlying model in
