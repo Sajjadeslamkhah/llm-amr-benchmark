@@ -34,3 +34,18 @@ def test_tmp_smx_synonyms_collapse_to_one_name():
 def test_wilson_interval_brackets_the_point_estimate():
     p, lo, hi = u.wilson(1, 6)
     assert lo < p < hi
+
+
+def test_an_abstention_is_not_counted_as_a_flagged_error():
+    """A no-call is an error by definition under the pre-registered scoring, so a
+    flag set containing abstentions is wrong 100% of the time whatever it tracks.
+    This asks the question only of the calls the agent actually made."""
+    truth = {("ISO_001", "ampicillin"): "R", ("ISO_002", "ampicillin"): "R",
+             ("ISO_003", "ampicillin"): "S"}
+    calls = {("ISO_001", "ampicillin"): "NA", ("ISO_003", "ampicillin"): "S"}
+    made = {k for k, p in calls.items() if p in ("S", "R") and k in truth}
+    abstained = {k for k in truth if k not in made}
+    assert made == {("ISO_003", "ampicillin")}
+    # the NA row and the row that is absent altogether both count as abstentions
+    assert abstained == {("ISO_001", "ampicillin"), ("ISO_002", "ampicillin")}
+    assert sum(1 for k in abstained if truth[k] == "R") == 2

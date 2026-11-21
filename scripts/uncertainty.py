@@ -129,35 +129,34 @@ def main() -> None:
             if HEDGE.search(r.get("evidence") or ""):
                 by_evidence.add(k)
 
-        # A no-call IS an uncertainty signal, and for one arm it is the only one.
-        # GPT never wrote an uncertain-calls list; its methods file states the rule
-        # instead - an isolated determinant "is assigned NA because clinical
-        # resistance is uncertain". Leaving no-calls out measured Claude's way of
-        # showing doubt and missed GPT's entirely.
-        nocall = {k for k, p in calls.items() if p not in ("S", "R")}
+        # Abstention. A pair is abstained when the agent wrote NA for it OR wrote no
+        # row for it at all: Claude's 8 no-calls and 14 of GPT's 24 are missing rows,
+        # not NA values, so reading only the rows present missed most of them.
+        made = {k for k, p in calls.items() if p in ("S", "R") and k in truth}
+        abstained = {k for k in truth if k not in made}
 
+        # Whether a flag predicts an error is asked ONLY of calls the agent made.
+        # Counting an abstention as an error made the question circular: under the
+        # pre-registered scoring a no-call is an error by definition, so a flag set
+        # that includes abstentions is wrong 100% of the time whatever it tracks.
+        wrong = {k for k in made if calls[k] != truth[k]}
+        vme_made = {k for k in wrong if truth[k] == "R"}
         for label, flagged in (("evidence", by_evidence), ("listed", listed),
-                               ("nocall", nocall),
-                               ("either", by_evidence | listed | nocall)):
-            n_flag = sum(1 for k in calls if k in flagged and k in truth)
-            # wrong = disagrees with the laboratory result; a no-call counts as wrong,
-            # as in the primary analysis
-            wrong = {k for k, p in calls.items() if k in truth and p != truth[k]}
-            vme = {k for k in wrong if truth[k] == "R"}
-            fw = sum(1 for k in wrong if k in flagged)
-            fv = sum(1 for k in vme if k in flagged)
-            n_unflag = sum(1 for k in calls if k in truth and k not in flagged)
-            uw = len(wrong) - fw
-            p_f, lo_f, hi_f = wilson(fw, n_flag)
-            p_u, lo_u, hi_u = wilson(uw, n_unflag)
+                               ("either", by_evidence | listed)):
+            fl = {k for k in made if k in flagged}
+            un = made - fl
+            fw = len(fl & wrong)
+            uw = len(un & wrong)
+            p_f, lo_f, hi_f = wilson(fw, len(fl))
+            p_u, lo_u, hi_u = wilson(uw, len(un))
             rows.append({
-                "arm": arm, "signal": label,
-                "flagged": n_flag, "unflagged": n_unflag,
+                "arm": arm, "signal": label, "calls_made": len(made),
+                "flagged": len(fl), "unflagged": len(un),
                 "errors_total": len(wrong), "errors_flagged": fw,
                 "error_rate_flagged": round(p_f, 4), "erf_lo": round(lo_f, 4), "erf_hi": round(hi_f, 4),
                 "error_rate_unflagged": round(p_u, 4), "eru_lo": round(lo_u, 4), "eru_hi": round(hi_u, 4),
-                "vme_total": len(vme), "vme_flagged": fv,
-                "vme_caught": round(fv / len(vme), 4) if vme else float("nan"),
+                "vme_total": len(vme_made), "vme_flagged": len(fl & vme_made),
+                "abstained": len(abstained), "abstained_ref_R": sum(1 for k in abstained if truth[k] == "R"),
             })
 
     out = Path(a.out)
@@ -168,18 +167,17 @@ def main() -> None:
         w.writerows(rows)
 
     for r in rows:
-        if r["signal"] in ("evidence", "listed"):
-            print(f"{r['arm']} [{r['signal']}]: {r['flagged']} flagged, "
-                  f"{r['errors_flagged']} of them wrong, {r['vme_flagged']} of "
-                  f"{r['vme_total']} very major errors covered")
         if r["signal"] != "either":
             continue
-        print(f"{r['arm']}: {r['flagged']} calls flagged uncertain, {r['unflagged']} not")
+        print(f"{r['arm']}: made {r['calls_made']} calls, abstained on {r['abstained']} "
+              f"({r['abstained_ref_R']} of those are resistant in the laboratory data)")
+        print(f"  flagged {r['flagged']} of the calls it made, {r['unflagged']} not")
         print(f"  error rate   flagged {r['error_rate_flagged']:.3f} "
               f"[{r['erf_lo']:.3f}-{r['erf_hi']:.3f}]   "
               f"unflagged {r['error_rate_unflagged']:.3f} "
               f"[{r['eru_lo']:.3f}-{r['eru_hi']:.3f}]")
-        print(f"  of {r['vme_total']} very major errors, {r['vme_flagged']} were flagged")
+        print(f"  of {r['vme_total']} very major errors among the calls it made, "
+              f"{r['vme_flagged']} were flagged")
 
     if all(r["flagged"] == 0 for r in rows):
         raise SystemExit(
