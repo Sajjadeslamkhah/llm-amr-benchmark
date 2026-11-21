@@ -186,7 +186,11 @@ which is why they are reported.
 
 Reproducibility is Fleiss' κ across three replicates on a pre-specified random subset of
 40 isolates, drawn with the same seed before any run, plus the proportion of pairs given
-an identical call in all three. **[pending: replicates not yet run.]**
+an identical call in all three. The first replicate is the corresponding part of the full
+run and two further runs were made per arm (`scripts/tekrar.sh`), giving 168 scorable
+pairs per arm. Replicates ran one after another rather than concurrently, since two agents
+sharing four cores would make the wall-clock outcome incomparable, and the harness
+identity was recorded before each run.
 
 ### Hallucination taxonomy
 
@@ -247,10 +251,21 @@ agent made, since under the primary scoring an abstention is an error by definit
 would otherwise make the measure circular. Both additions are labelled post-hoc wherever
 they appear.
 
-Pre-specified sensitivity analyses: intermediate phenotypes counted as non-susceptible;
-no-calls excluded; phenotypes reinterpreted from MIC values with EUCAST Breakpoint Tables
-v16.1 where MICs are available; and stratification by the recorded testing standard.
-**[pending]**
+Pre-specified sensitivity analyses (`scripts/sensitivity.py`): intermediate phenotypes
+counted as non-susceptible; no-calls excluded; phenotypes reinterpreted from MIC values
+with EUCAST Breakpoint Tables v16.1 where MICs are available; and stratification by the
+recorded testing standard. The first, second and fourth were carried out. Only one
+intermediate phenotype exists among the scored pairs, so the first cannot be informative
+and is reported for completeness. The fourth is reported with two checks printed beside
+it, because the strata differ in resistant share and the standard-blind reference arm's
+error rate also varies across them, so a difference between strata cannot be attributed
+to the standard. **[pending: the third, which requires each of the six breakpoints to be
+read off the current EUCAST table rather than entered from memory; 347 of 553 pairs carry
+a usable MIC.]**
+
+The recorded testing standard is normalised before stratification: BV-BRC writes it as
+CLSI and clsi, EUCAST and eucast, and both names together in either order, which left one
+stratum split four ways.
 
 All numbers are produced by `scripts/metrics.py` and the scripts downstream of it.
 
