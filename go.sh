@@ -21,6 +21,7 @@
 #   bash go.sh kontrol  referans ciftleri korleme anahtarina baglaniyor mu
 #   bash go.sh surum    KOSUDAN ONCE: harness surumu ve model kimligini kaydet
 #   bash go.sh koken    her kolun model kimligi, harness surumu, tarih, sure, web sayaclari
+#   bash go.sh paket    okuyucuya gonderilecek zip (sayfa + talimat; anahtar HARIC)
 #   bash go.sh hakem    korleme degerlendirme sayfasi (iki bagimsiz okuyucu icin)
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
@@ -285,6 +286,29 @@ PYIN
     ;;
   koken)
     "$PY" scripts/run_provenance.py --out results/provenance.tsv
+    ;;
+  paket)
+    # Okuyucuya gonderilecek tek dosya. Anahtar DISARIDA kalir ve bu kontrol edilir:
+    # anahtarin kazara paylasilmasi korlemeyi tamamen bozar ve geri alinamaz.
+    sheet="results/audit/adjudication_sheet.tsv"
+    [ -f "$sheet" ] || { echo "Once: bash go.sh hakem"; exit 1; }
+    out="results/degerlendirme_paketi.zip"
+    rm -f "$out"
+    tmp=$(mktemp -d)
+    cp "$sheet" "$tmp/adjudication_sheet.tsv"
+    cp docs/DEGERLENDIRME_TR.md "$tmp/TALIMAT.md"
+    ( cd "$tmp" && zip -q "$OLDPWD/$out" adjudication_sheet.tsv TALIMAT.md )
+    rm -rf "$tmp"
+    if unzip -l "$out" | grep -qi "key"; then
+      echo "DUR: pakette anahtar dosyasi var. Gondermeyin."
+      rm -f "$out"
+      exit 1
+    fi
+    echo "Gonderilecek dosya: $out"
+    unzip -l "$out"
+    echo
+    echo "Satir sayisi (baslik haric): $(( $(wc -l < "$sheet") - 1 ))"
+    echo "Anahtar dosyasi pakette DEGIL, yerinde duruyor: results/audit/adjudication_sheet.key.tsv"
     ;;
   hakem)
     # Korleme degerlendirme sayfasi: tum kollarin adaylari TEK dosyada, karisik
