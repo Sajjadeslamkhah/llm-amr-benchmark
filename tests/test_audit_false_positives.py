@@ -153,3 +153,13 @@ def test_a_stated_threshold_value_is_still_flagged(tmp_path):
 def test_an_absolute_rule_is_flagged(tmp_path):
     run = make_run(tmp_path, methods="Any beta-lactamase implies ampicillin resistance.")
     assert "H3" in codes(ha.check(run, CATALOG)[0])
+
+
+def test_the_guard_does_not_fire_on_prose_that_starts_like_a_shell_keyword(tmp_path):
+    """U1's evidence is a window of prose. "for example, borderline ciprofloxacin
+    MICs" begins with a word commandish() reads as a shell for-loop."""
+    run = make_run(tmp_path, methods=(
+        "Calls can be borderline, for example carbapenem resistance from ESBL plus "
+        "porin loss, or borderline ciprofloxacin MICs.\n"))
+    found = ha.check(run, CATALOG)[0]      # must not raise SystemExit
+    assert "U1" in codes(found)

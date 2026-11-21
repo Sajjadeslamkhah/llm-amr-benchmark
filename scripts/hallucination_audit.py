@@ -315,8 +315,10 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
 
     # Guard: no finding may be a command. If one is, the detector has regressed to
     # what made the first audit unusable, and that must be loud, not silent.
-    # H4 is exempt: its evidence IS a command, one the agent said it ran.
-    bad = [f for f in deduped if f["code"] != "H4" and commandish(f["evidence"])]
+    # H4 is exempt: its evidence IS a command, one the agent said it ran. U1 is exempt
+    # too: its evidence is a window of the agent's prose, which can legitimately begin
+    # with a word commandish() treats as a shell keyword ("for example ...").
+    bad = [f for f in deduped if f["code"] not in ("H4", "U1") and commandish(f["evidence"])]
     if bad:
         raise SystemExit("Detector regression: these candidates are commands, not claims:\n  " +
                          "\n  ".join(f'{f["code"]}  {f["evidence"][:100]}' for f in bad[:5]))
