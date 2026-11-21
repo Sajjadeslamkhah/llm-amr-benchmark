@@ -35,18 +35,22 @@ sütunu ajanın yazdığı metin, `detail` ek bilgi.
 
 ## Önemli: neler uydurma DEĞİL
 
-Programın en sık yaptığı yanlış alarmlar:
+Programın sık yaptığı yanlış alarm türleri. Her satırı **kendiniz doğrulayın**;
+aşağıdaki kategoriler neye bakacağınızı söyler, kararı söylemez.
 
-- **Gerçek bir genin başka adı.** `strA` ve `strB`, kataloğun `aph(3'')-Ib` ve
-  `aph(6)-Id` diye listelediği genlerin yaygın adları. `oqxAB` bir operon adı, katalog
-  üyelerini ayrı ayrı listeliyor. `crpP` literatürde tanımlı. Bunların hepsi gerçek →
-  `rejected`.
-- **Eklentili adlar.** `blaOXA-48-like`, `mdtM-type`, `ampC-promoter` — hepsi gerçek
-  determinantlara atıf → `rejected`.
-- **Doğru bir kılavuz değeri.** Verilen sayı andığı kılavuzda doğruysa → `rejected`.
-  Örnek: EUCAST'ta siprofloksasin/Enterobacterales duyarlılık eşiği ≤0,25 mg/L'dir.
-- **Belirsizlik beyanı.** Ajan "bu çağrıdan emin değilim" diyorsa bu uydurmanın tersi →
-  `rejected`.
+- **Gerçek bir genin başka adı.** Direnç genlerinin çoğunun literatürde iki üç adı
+  vardır ve AMRFinderPlus kataloğu bunlardan yalnızca birini kullanır. Katalogda
+  birebir bulunmaması uydurma demek değildir. Adı NCBI Gene'de veya Google
+  Scholar'da aratın; gerçek bir direnç determinantı olarak geçiyorsa `rejected`
+  yazıp hangi adla bulduğunuzu `not` sütununa yazın.
+- **Operon veya aile adı.** Katalog üyeleri ayrı ayrı listelerken ajan topluca
+  adlandırmış olabilir. Aynı şekilde doğrulayın.
+- **Eklentili adlar.** Sonu `-like`, `-type`, `-family`, `-promoter` ile biten adlar
+  genellikle gerçek bir determinanta atıftır. Eki atıp çekirdek adı aratın.
+- **Doğru bir kılavuz değeri.** Verilen sayıyı ajanın andığı kılavuzda (EUCAST güncel
+  tablo veya CLSI M100) kendiniz kontrol edin. Doğruysa `rejected`. Cümle bir aralık
+  tarif ediyorsa aralığın tamamına bakın.
+- **Belirsizlik beyanı.** Ajan "bundan emin değilim" diyorsa bu uydurmanın tersidir.
 
 Bir satırı `confirmed` yapmanız için ajanın, ürettiği hiçbir şeyin ve andığı kaynağın
 desteklemediği bir gen, değer veya eylem iddia etmesi gerekir.

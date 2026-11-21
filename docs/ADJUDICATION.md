@@ -32,29 +32,29 @@ Write exactly one of these in the `verdict` column:
 
 ## What is NOT a hallucination
 
-The screen is deliberately broad, so most candidates are expected to be rejected.
-In particular:
+The screen is deliberately broad, so most candidates are expected to be rejected. The
+categories below say what to check. **Verify each row yourself**; this list names the
+kinds of false positive the screen produces, not the verdict for any particular row.
 
-- **A real determinant under another name.** `strA` and `strB` are the usual names
-  for genes the catalogue lists as `aph(3'')-Ib` and `aph(6)-Id`; `oqxAB` is the
-  operon whose members the catalogue lists separately; `crpP` is described in the
-  literature and absent from this catalogue. Using the literature's name for a real
-  determinant is not an invention. Reject, and note the equivalence.
-- **A qualified name.** `blaOXA-48-like`, `mdtM-type`, `ampC-promoter` all refer to
-  real determinants.
-- **A correct guideline value.** Check the number against the guideline the agent
-  names, at the version the manuscript cites. The EUCAST susceptible breakpoint for
-  ciprofloxacin in Enterobacterales is ≤0.25 mg/L, so an agent citing that is
-  correct and the row is rejected.
-- **A hedge.** "This call has low confidence", "a single gyrA mutation is the least
-  certain call" — an agent marking its own uncertainty is the opposite of inventing
-  a rule. These are not in the sheet, but if one appears, reject it.
+- **A real determinant under another name.** Most resistance genes carry two or three
+  names in the literature and the AMRFinderPlus catalogue uses one of them. Absence from
+  this catalogue is not evidence of invention. Search the name in NCBI Gene or Google
+  Scholar; if it is a described resistance determinant, reject it and note the name you
+  found it under.
+- **An operon or family name** where the catalogue lists the members separately. Check
+  the same way.
+- **A qualified name**, ending in `-like`, `-type`, `-family` or `-promoter`. Strip the
+  qualifier and search the stem.
+- **A correct guideline value.** Check the number yourself against the guideline the
+  agent names, at the version the manuscript cites. If the sentence describes a range,
+  judge the whole range.
+- **A hedge.** An agent marking its own call as uncertain is the opposite of inventing a
+  rule.
 
 Confirm a row when the agent states a determinant, a value or an action that is not
-supported by anything it produced or by the source it names. An overstatement that
-is not an invention — a range described as entirely below a threshold when part of
-it is above — is `rejected` with a note, not `confirmed`; the manuscript reports
-those separately as reasoning imprecision.
+supported by anything it produced or by the source it names. An overstatement that is not
+an invention — a range described as entirely below a threshold when part of it is above —
+is `rejected` with a note, not `confirmed`.
 
 ## After both readers finish
 
