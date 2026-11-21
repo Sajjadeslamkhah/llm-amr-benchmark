@@ -16,6 +16,7 @@
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
 #   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
+#   bash go.sh kontrol  referans ciftleri korleme anahtarina baglaniyor mu
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
@@ -196,6 +197,35 @@ case "${1:-}" in
     [ "${#args[@]}" -gt 0 ] || { echo "Hicbir kol hazir degil."; exit 1; }
     "$PY" scripts/uncertainty.py --ref "$GIZLI/reference_phenotypes.tsv" \
       --key "$GIZLI/blinding_key.tsv" "${args[@]}" --out results/uncertainty.tsv
+    ;;
+  kontrol)
+    # Her kolda hata yazilan ama aslinda hicbir kolun tahmin uretmedigi ciftler var mi:
+    # metrics 560 cift goruyor, belirsizlik analizi 553. Fark bir baglama sorunuysa
+    # o cesitler her kola hata olarak yaziliyor, ki bu ajan hatasi degil.
+    GIZLI="${GIZLI:-$HOME/amr_gizli}"
+    "$PY" - "$GIZLI" <<'PYIN'
+import csv, sys
+from pathlib import Path
+g = Path(sys.argv[1])
+rd = lambda p: list(csv.DictReader(open(p, encoding="utf-8"), delimiter="\t"))
+ref = rd(g / "reference_phenotypes.tsv")
+key = rd(g / "blinding_key.tsv")
+gid2iso = {r["genome_id"]: r["isolate_id"] for r in key}
+missing = [r for r in ref if r["genome_id"] not in gid2iso]
+print(f"referans cift sayisi : {len(ref)}")
+print(f"korleme anahtarinda  : {len(ref) - len(missing)}")
+print(f"anahtarda OLMAYAN    : {len(missing)}")
+if missing:
+    print("  genome_id'ler:", sorted({r["genome_id"] for r in missing}))
+    print("  antibiyotikler:", sorted({r["abx"] for r in missing}))
+for arm in ("claude", "gpt", "amrfinderplus"):
+    f = Path("runs") / arm / ("rep1/predictions.tsv" if arm != "amrfinderplus" else "predictions.tsv")
+    if not f.exists():
+        continue
+    have = {(r["isolate_id"], r["antibiotic"]) for r in rd(f) if (r.get("prediction") or "").strip() in ("S", "R")}
+    want = {(gid2iso[r["genome_id"]], r["abx"]) for r in ref if r["genome_id"] in gid2iso}
+    print(f"{arm:14s}: {len(want - have)} baglanabilir ciftte cagri yok")
+PYIN
     ;;
   sizinti)
     "$PY" scripts/leak_check.py
