@@ -15,6 +15,7 @@
 #   bash go.sh bitir    tekrar koslari bitince tum analizleri sirayla calistir
 #   bash go.sh tekrar   tekrarlanabilirlik: 40 izolatlik alt kumede rep2 ve rep3
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
+#   bash go.sh duyarlilik  on belirlenmis duyarlilik analizleri (ara fenotip, test standardi)
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
 #   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
@@ -144,6 +145,18 @@ case "${1:-}" in
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
     PY="$PY" caffeinate -dimsu bash scripts/gece.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
+    ;;
+  duyarlilik)
+    GIZLI="${GIZLI:-$HOME/amr_gizli}"
+    [ -f "$GIZLI/reference_phenotypes.tsv" ] || { echo "Bulunamadi: $GIZLI"; exit 1; }
+    args=()
+    for kol in $ARMS; do
+      f="runs/$kol/rep1/predictions.tsv"
+      [ -f "$f" ] && args+=(--pred "$kol=$f")
+    done
+    [ -f runs/amrfinderplus/predictions.tsv ] && args+=(--pred "ref=runs/amrfinderplus/predictions.tsv")
+    "$PY" scripts/sensitivity.py --ref "$GIZLI/reference_phenotypes.tsv" \
+      --key "$GIZLI/blinding_key.tsv" "${args[@]}" --out results/sensitivity
     ;;
   analiz)
     # Referans fenotipler ve korleme anahtari proje agacinin disinda (~/amr_gizli),
