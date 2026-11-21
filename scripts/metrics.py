@@ -96,6 +96,21 @@ def main() -> None:
     ref = pd.read_csv(a.ref, sep="\t", dtype=str)
     key = pd.read_csv(a.key, sep="\t", dtype=str) if a.key else None
 
+    # Score only the pairs the agents were actually given. 02_select_isolates.py picks
+    # 120 isolates and writes their phenotypes; 03_fetch_genomes.py then applies QC and
+    # 118 survived, so two isolates kept their reference phenotypes without ever being
+    # presented. Their 8 pairs have no prediction in any arm and were being counted as
+    # a no-call, hence an error, against every arm - including the reference arm. They
+    # are not a property of any agent, so they are dropped, and the number dropped is
+    # printed rather than silently absorbed into the denominator.
+    if key is not None:
+        before = len(ref)
+        ref = ref[ref["genome_id"].isin(set(key["genome_id"]))]
+        if before != len(ref):
+            print(f"dropped {before - len(ref)} reference pairs whose isolate is not in the "
+                  f"blinding key (selected, then failed QC, so never shown to any agent); "
+                  f"{len(ref)} pairs scored")
+
     rows, correct, called = [], {}, {}
     for spec in a.pred:
         arm, path = spec.split("=", 1)
