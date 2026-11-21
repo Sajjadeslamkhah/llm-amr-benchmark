@@ -221,14 +221,18 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
     # output does not contain. This replaces a line-by-line text comparison that
     # flagged documented command templates and counted one command as several
     # findings whenever the CLI wrapped it across lines.
+    compared = skipped = 0
     for r in data["preds"]:
         iso = (r.get("isolate_id") or "").strip()
         ev = r.get("evidence") or ""
         if not iso or not ev:
+            skipped += 1
             continue
         truth = data["per_isolate"].get(iso, "")
         if not truth.strip():
-            continue            # nothing to compare against; not evidence of anything
+            skipped += 1        # nothing to compare against; not evidence of anything
+            continue
+        compared += 1
         for token in sorted(set(GENE_LIKE.findall(ev))):
             if token in truth or normalise_gene(token) in truth:
                 continue
@@ -259,6 +263,12 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         if not commandish(n):
             add("H3", n)
 
+    # H2 skips a prediction whose isolate has no recovered tool output. If it skipped
+    # most of them, "no fabricated determinants" would mean only that the check never
+    # ran, which is the one conclusion this audit must never report by accident.
+    coverage = {"h2_compared": compared, "h2_skipped": skipped,
+                "isolates_with_output": len(data["per_isolate"])}
+
     # One claim repeated in twelve batches is one thing to adjudicate, not twelve.
     # Counting repeats separately inflated every total and, because the three CLIs
     # repeat their logs differently, made the arms look different when they were not.
@@ -281,7 +291,7 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
     if bad:
         raise SystemExit("Detector regression: these candidates are commands, not claims:\n  " +
                          "\n  ".join(f'{f["code"]}  {f["evidence"][:100]}' for f in bad[:5]))
-    return deduped
+    return deduped, coverage
 
 
 def main() -> None:
@@ -299,8 +309,16 @@ def main() -> None:
     rows = []
     for run in a.run:
         p = Path(run)
-        for f in check(p, catalog):
+        found, cov = check(p, catalog)
+        for f in found:
             rows.append({"run": str(p), **f, "verdict": ""})
+        n_cmp, n_skip = cov["h2_compared"], cov["h2_skipped"]
+        total = n_cmp + n_skip
+        print(f"  H2 coverage: {n_cmp} of {total} predictions compared against their own "
+              f"isolate's tool output ({cov['isolates_with_output']} isolates with recovered output)")
+        if total and n_cmp / total < 0.8:
+            print("  WARNING: most predictions could not be checked. A zero H2 count here means\n"
+                  "           the check did not run, NOT that nothing was fabricated. Do not report it.")
 
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -28,7 +28,7 @@ def run(tmp_path):
 def test_h1_flags_only_uncatalogued_genes(run):
     (run / "transcript.txt").write_text(
         "Found blaCTX-M-15 and sul1, plus blaZZZ-9 which confers resistance.")
-    codes = [(f["code"], f["evidence"]) for f in audit.check(run, CATALOG)]
+    codes = [(f["code"], f["evidence"]) for f in audit.check(run, CATALOG)[0]]
     assert ("H1", "blaZZZ-9") in codes
     assert not any(e in ("blaCTX-M-15", "sul1") for c, e in codes if c == "H1")
 
@@ -44,7 +44,7 @@ def test_h2_flags_a_determinant_the_isolates_own_output_lacks(run):
     d = run / "batch_001" / "workspace" / "output"
     d.mkdir(parents=True, exist_ok=True)
     (d / "ISO_001.tsv").write_text("Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
-    h2 = [f["evidence"] for f in audit.check(run, CATALOG) if f["code"] == "H2"]
+    h2 = [f["evidence"] for f in audit.check(run, CATALOG)[0] if f["code"] == "H2"]
     assert h2 == ["blaNDM-5"]
 
 
@@ -52,7 +52,7 @@ def test_h4_unlogged_and_failed_commands(run):
     (run / "transcript.txt").write_text(
         "I ran `abricate --db card ISO_001.fasta` to confirm.\n"
         "Then `resfinder.py -i ISO_001.fasta` gave the resistance profile.\n")
-    h4 = {f["evidence"]: f["detail"] for f in audit.check(run, CATALOG) if f["code"] == "H4"}
+    h4 = {f["evidence"]: f["detail"] for f in audit.check(run, CATALOG)[0] if f["code"] == "H4"}
     assert h4["abricate --db card ISO_001.fasta"] == "not in command log"
     assert h4["resfinder.py -i ISO_001.fasta"] == "exit_code=127"
 
@@ -60,7 +60,7 @@ def test_h4_unlogged_and_failed_commands(run):
 def test_h5_and_h3(run):
     (run / "transcript.txt").write_text(
         "Per NG_050414.1 and NG_999999.9, the EUCAST v16.1 breakpoint is 2 mg/L.")
-    out = audit.check(run, CATALOG)
+    out = audit.check(run, CATALOG)[0]
     assert [f["evidence"] for f in out if f["code"] == "H5"] == ["NG_999999.9"]
     assert any(f["code"] == "H3" for f in out)
 
@@ -69,7 +69,7 @@ def test_clean_run_has_no_h1_h2_h4(run):
     (run / "transcript.txt").write_text(
         "I ran `amrfinder -n ISO_001.fasta --organism Escherichia`.\n"
         "```\nblaCTX-M-15\tBETA-LACTAM\n```\nSo ISO_001 is resistant.\n")
-    codes = {f["code"] for f in audit.check(run, CATALOG)}
+    codes = {f["code"] for f in audit.check(run, CATALOG)[0]}
     assert not codes & {"H1", "H2", "H4"}
 
 

@@ -38,7 +38,7 @@ def test_a_documented_command_template_is_not_a_fabricated_output(tmp_path):
     run = make_run(tmp_path, methods=(
         "## Methods\n\n```\namrfinder -n data/genomes/ISO_###.fasta -O Escherichia \\\n"
         "  --plus --threads 4 --name ISO_### -o output/amrfinder/ISO_###.tsv\n```\n"))
-    assert "H2" not in codes(ha.check(run, CATALOG))
+    assert "H2" not in codes(ha.check(run, CATALOG)[0])
 
 
 def test_a_backslash_wrapped_command_is_not_several_findings(tmp_path):
@@ -47,20 +47,20 @@ def test_a_backslash_wrapped_command_is_not_several_findings(tmp_path):
     run = make_run(tmp_path, methods=(
         "```\namrfinder -n data/genomes/ISO_###.fasta \\\n  -O Escherichia --threads 2 \\\n"
         "  --mutation_all output/ISO_###.mutations.tsv \\\n  -o output/ISO_###.tsv\n```\n"))
-    assert codes(ha.check(run, CATALOG)) == []
+    assert codes(ha.check(run, CATALOG)[0]) == []
 
 
 def test_a_qualified_real_gene_name_is_not_a_nonexistent_gene(tmp_path):
     """blaOXA-48-like, mdtM-type and ampC-promoter are standard prose for real
     determinants. All three were reported as absent from the catalogue."""
     run = make_run(tmp_path, methods="Found blaOXA-48-like, mdtM-type and ampC-promoter changes.")
-    assert "H1" not in codes(ha.check(run, CATALOG))
+    assert "H1" not in codes(ha.check(run, CATALOG)[0])
 
 
 def test_a_gene_the_tool_itself_reported_is_never_a_fabrication(tmp_path):
     run = make_run(tmp_path, methods="qnrS1 was detected.",
                    amrfinder="Element symbol\tClass\nqnrS1\tQUINOLONE\n")
-    assert "H1" not in codes(ha.check(run, CATALOG))
+    assert "H1" not in codes(ha.check(run, CATALOG)[0])
 
 
 def test_a_gene_claimed_for_an_isolate_its_output_does_not_contain_is_flagged(tmp_path):
@@ -69,7 +69,7 @@ def test_a_gene_claimed_for_an_isolate_its_output_does_not_contain_is_flagged(tm
     run = make_run(tmp_path,
                    evidence_rows=[("ISO_001", "meropenem", "R", "blaKPC-2 carbapenemase present")],
                    amrfinder="Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
-    f = [x for x in ha.check(run, CATALOG) if x["code"] == "H2"]
+    f = [x for x in ha.check(run, CATALOG)[0] if x["code"] == "H2"]
     assert len(f) == 1
     assert f[0]["evidence"] == "blaKPC-2"
     assert "ISO_001" in f[0]["detail"]
@@ -79,17 +79,17 @@ def test_a_gene_the_output_does_contain_is_not_flagged(tmp_path):
     run = make_run(tmp_path,
                    evidence_rows=[("ISO_001", "ampicillin", "R", "blaTEM-1 present")],
                    amrfinder="Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
-    assert "H2" not in codes(ha.check(run, CATALOG))
+    assert "H2" not in codes(ha.check(run, CATALOG)[0])
 
 
 def test_no_output_for_an_isolate_is_not_evidence_of_fabrication(tmp_path):
     run = make_run(tmp_path, evidence_rows=[("ISO_009", "ampicillin", "R", "blaTEM-1 present")])
-    assert "H2" not in codes(ha.check(run, CATALOG))
+    assert "H2" not in codes(ha.check(run, CATALOG)[0])
 
 
 def test_the_same_claim_in_many_batches_is_one_row_with_a_count(tmp_path):
     run = make_run(tmp_path, methods="CLSI breakpoint 2 mg/L applies. " * 4)
-    f = [x for x in ha.check(run, CATALOG) if x["code"] == "H3"]
+    f = [x for x in ha.check(run, CATALOG)[0] if x["code"] == "H3"]
     assert len(f) == 1
     assert f[0]["occurrences"] == 4
 
@@ -99,3 +99,16 @@ def test_the_guard_refuses_to_emit_a_command_as_a_candidate(tmp_path):
     assert ha.commandish("  --threads 2 \\")
     assert ha.commandish("-o output/ISO_001.tsv")
     assert not ha.commandish("blaKPC-2 confers carbapenem resistance")
+
+
+def test_coverage_reports_how_many_predictions_were_actually_checked(tmp_path):
+    """A zero H2 count is only meaningful if the check ran. Two isolates are
+    claimed, one has tool output and one has none."""
+    run = make_run(tmp_path,
+                   evidence_rows=[("ISO_001", "ampicillin", "R", "blaTEM-1 present"),
+                                  ("ISO_002", "ampicillin", "R", "blaTEM-1 present")],
+                   amrfinder="Element symbol\tClass\nblaTEM-1\tBETA-LACTAM\n")
+    _, cov = ha.check(run, CATALOG)
+    assert cov["h2_compared"] == 1
+    assert cov["h2_skipped"] == 1
+    assert cov["isolates_with_output"] == 1
