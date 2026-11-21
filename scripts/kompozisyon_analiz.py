@@ -19,7 +19,8 @@ Replicate 4 holds composition at replicate 1's value and moves only the date:
 
 What this script will not do
 ---------------------------
-It reports counts and the isolates they come from. It computes no p-value and declares no
+It reports counts, the isolates they come from, and the matched per-batch timing of
+replicate 1 against replicate 4. It computes no p-value and declares no
 significance: the moved set is a handful of pairs from a handful of isolates, the three
 replicates are not independent of each other, and nothing at this size supports a test. The
 verdict line names which way the counts point and how few they are.
@@ -29,6 +30,7 @@ shrink the common set and change every count below.
 """
 import argparse
 import csv
+import json
 import sys
 from collections import Counter
 from pathlib import Path
@@ -50,6 +52,33 @@ def calls(path: Path) -> dict[tuple[str, str], str]:
         if k[0]:
             out[k] = v if v in ("S", "R") else "NA"
     return out
+
+
+def batch_seconds(run: Path) -> list[float]:
+    """Wall-clock seconds per batch from the runner's own meta.json files.
+
+    Only replicate 1 and replicate 4 are comparable this way: they hold the same 118
+    isolates in the same 12 batches of mixed composition, so a median over one is a
+    median over the same unit as the other. Replicates 2 and 3 have 4 subset-only
+    batches, which is what made the 449-versus-231/265 comparison unmatched.
+    """
+    out = []
+    for m in sorted(run.glob("batch_[0-9][0-9][0-9]/meta.json")):
+        try:
+            v = json.loads(m.read_text()).get("wall_clock_seconds")
+        except (ValueError, OSError):
+            continue
+        if isinstance(v, (int, float)):
+            out.append(float(v))
+    return out
+
+
+def median(xs: list[float]) -> float | str:
+    if not xs:
+        return ""
+    s = sorted(xs)
+    n = len(s)
+    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2
 
 
 def truth_map(path: Path) -> dict[tuple[str, str], str]:
@@ -141,6 +170,14 @@ def main() -> None:
             "na_rep1": sum(1 for k in common if per["1"][k] == "NA"),
             "na_rep4": sum(1 for k in common if per["4"][k] == "NA"),
         }
+        # Matched timing: rep1 and rep4 share composition and batch count.
+        s1 = batch_seconds(ROOT / a.runs / arm / "rep1")
+        s4 = batch_seconds(ROOT / a.runs / arm / "rep4")
+        row["median_seconds_per_batch_rep1"] = median(s1)
+        row["median_seconds_per_batch_rep4"] = median(s4)
+        row["batches_timed_rep1"] = len(s1)
+        row["batches_timed_rep4"] = len(s4)
+
         if truth:
             row["moved_rep4_matches_lab"] = sum(
                 1 for k in moved if truth.get(k) and per["4"][k] == truth[k])
@@ -173,6 +210,12 @@ def main() -> None:
         else:
             print("  rep1 ile rep2/3 arasinda degisen cift yok; bu kol icin "
                   "ayristirilacak bir sey yok")
+        if s1 and s4:
+            print(f"  eslesmis sure (ayni bilesim, ayni parti sayisi): parti basina ortanca "
+                  f"rep1={median(s1):.0f} s ({len(s1)} parti), "
+                  f"rep4={median(s4):.0f} s ({len(s4)} parti)")
+        else:
+            print("  eslesmis sure hesaplanamadi: meta.json dosyalari eksik")
 
     for p in problems:
         print(f"EKSIK: {p}", file=sys.stderr)
