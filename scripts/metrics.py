@@ -96,7 +96,7 @@ def main() -> None:
     ref = pd.read_csv(a.ref, sep="\t", dtype=str)
     key = pd.read_csv(a.key, sep="\t", dtype=str) if a.key else None
 
-    rows, correct = [], {}
+    rows, correct, called = [], {}, {}
     for spec in a.pred:
         arm, path = spec.split("=", 1)
         m = ref.merge(load_pred(path, key), on=["genome_id", "abx"], how="left")
@@ -105,13 +105,30 @@ def main() -> None:
             for abx, g in m.groupby("abx"):
                 rows.append({"arm": arm, "analysis": label, "abx": abx, **evaluate(g, nc)})
         mm = m[m["pheno"].isin(["S", "R"])].set_index(["genome_id", "abx"])
-        correct[arm] = mm["prediction"].fillna("NA").str.upper() == mm["pheno"]
+        pr = mm["prediction"].fillna("NA").str.upper()
+        correct[arm] = pr == mm["pheno"]
+        called[arm] = pr.isin(["S", "R"])
     pd.DataFrame(rows).to_csv(out / "performance.tsv", sep="\t", index=False)
 
+    # Two comparisons. "primary" scores a no-call as an error, as pre-registered.
+    # "both_called" restricts to the pairs on which BOTH arms made a call, which is the
+    # only comparison of accuracy as such: without it, an arm that declines more often
+    # looks less accurate when it may simply be more cautious. GPT declined 24 calls to
+    # Claude's 8 and states abstention as its rule for uncertain genotypes, so the
+    # primary comparison between them is in part a comparison of willingness to call.
     comps = []
     for x, y in itertools.combinations(correct, 2):
         b, c, p = mcnemar_exact(correct[x], correct[y].reindex(correct[x].index, fill_value=False))
-        comps.append({"arm_a": x, "arm_b": y, "a_only_correct": b, "b_only_correct": c, "p": p})
+        comps.append({"arm_a": x, "arm_b": y, "analysis": "primary",
+                      "a_only_correct": b, "b_only_correct": c, "p": p})
+        shared = called[x] & called[y].reindex(called[x].index, fill_value=False)
+        if shared.any():
+            cx = correct[x][shared]
+            cy = correct[y].reindex(cx.index, fill_value=False)
+            b2, c2, p2 = mcnemar_exact(cx, cy)
+            comps.append({"arm_a": x, "arm_b": y, "analysis": "both_called",
+                          "a_only_correct": b2, "b_only_correct": c2, "p": p2,
+                          "n_pairs": int(shared.sum())})
     if comps:
         for row, padj in zip(comps, holm([r["p"] for r in comps])):
             row["p_holm"] = padj

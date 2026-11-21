@@ -129,8 +129,16 @@ def main() -> None:
             if HEDGE.search(r.get("evidence") or ""):
                 by_evidence.add(k)
 
+        # A no-call IS an uncertainty signal, and for one arm it is the only one.
+        # GPT never wrote an uncertain-calls list; its methods file states the rule
+        # instead - an isolated determinant "is assigned NA because clinical
+        # resistance is uncertain". Leaving no-calls out measured Claude's way of
+        # showing doubt and missed GPT's entirely.
+        nocall = {k for k, p in calls.items() if p not in ("S", "R")}
+
         for label, flagged in (("evidence", by_evidence), ("listed", listed),
-                               ("either", by_evidence | listed)):
+                               ("nocall", nocall),
+                               ("either", by_evidence | listed | nocall)):
             n_flag = sum(1 for k in calls if k in flagged and k in truth)
             # wrong = disagrees with the laboratory result; a no-call counts as wrong,
             # as in the primary analysis
