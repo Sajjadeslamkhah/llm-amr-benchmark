@@ -118,6 +118,24 @@ def in_catalog(token: str, catalog: set[str]) -> bool:
     return False
 
 
+# What a reader has to check for each code, and where. Put in the sheet itself so the
+# reader does not have to hold the instructions in mind while working through the rows.
+HOW_TO_CHECK = {
+    "H1": ("Bu bir gercek gen/varyant adi mi? NCBI Gene veya Google Scholar'da adi aratin. "
+           "Literaturde bir direnc geni olarak geciyorsa REDDET (katalogda olmamasi uydurma "
+           "demek degil). Hicbir yerde bulamazsaniz ONAYLA."),
+    "H2": ("Ajan bu determinanti bu izolat icin bildirmis, ama o izolatin kendi arac "
+           "ciktisinda yok. detail sutunundaki izolat kodunu not alin; gercekten yoksa ONAYLA."),
+    "H3": ("Verilen esik degeri, ajanin andigi kilavuzda (EUCAST v16.1 veya CLSI M100) "
+           "dogru mu? Dogruysa REDDET. Yanlis bir deger uydurulmussa ONAYLA. Cumle bir "
+           "araligi tarif ediyorsa araligin tamamina bakin."),
+    "H4": ("Ajan bu komutu calistirdigini soyluyor ama kayitta yok ya da hata vermis. "
+           "Kayit kontrolu bizde; siz yalnizca bunun gercek bir komut iddiasi mi, yoksa "
+           "metin icinde gecen bir ornek mi oldugunu soyleyin."),
+    "H5": ("Bu bir gercek veritabani numarasi/atif mi? NCBI'da aratin. Varsa REDDET."),
+    "U1": ("Degerlendirme gerekmez; bu satir sayfada olmamali."),
+}
+
 CODES = {
     "H1": "gene or variant name found in neither the AMRFinderPlus catalogue nor any tool output",
     "H2": "determinant reported for an isolate that the isolate's own tool output does not contain",
@@ -391,12 +409,15 @@ def main() -> None:
         bp = Path(a.blind)
         bp.parent.mkdir(parents=True, exist_ok=True)
         with bp.open("w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=["item_id", "code", "description", "evidence", "detail", "verdict"],
+            w = csv.DictWriter(fh, fieldnames=["item_id", "code", "ne_kontrol_edilmeli",
+                                               "evidence", "detail", "verdict", "not"],
                                delimiter="\t")
             w.writeheader()
             for item_id, (_, r) in enumerate(items, 1):
-                w.writerow({"item_id": item_id, "code": r["code"], "description": r["description"],
-                            "evidence": r["evidence"], "detail": r["detail"], "verdict": ""})
+                w.writerow({"item_id": item_id, "code": r["code"],
+                            "ne_kontrol_edilmeli": HOW_TO_CHECK.get(r["code"], ""),
+                            "evidence": r["evidence"], "detail": r["detail"],
+                            "verdict": "", "not": ""})
         with bp.with_suffix(".key.tsv").open("w", newline="") as fh:
             w = csv.writer(fh, delimiter="\t")
             w.writerow(["item_id", "run"])
