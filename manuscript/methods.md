@@ -94,7 +94,7 @@ goes looking for the answer key when it can is reported as an outcome in its own
 | Arm | Agent | Harness |
 |---|---|---|
 | A1 | Claude | Claude Code 2.1.325 |
-| A2 | Gemini | Antigravity CLI (`agy`) 1.5.8 |
+| A2 | Gemini | Antigravity CLI (`agy`) 1.5.8 and 1.5.14 (see below) |
 | A3 | GPT | Codex CLI 0.169.0 |
 | REF | AMRFinderPlus 4.2.7, database 2026-10-29.1 | pre-specified mapping rule |
 
@@ -236,7 +236,8 @@ affect interpretation are stated where they arise above, and the material ones a
 Gemini harness was changed from Gemini CLI to Antigravity CLI before any scored run,
 because the former was retired for the account tier used; the Gemini arm was interrupted
 by a weekly subscription quota and completed a week later, so it is not contemporaneous
-with the other two arms, and the model identifier for each run date is reported; two
+with the other two arms; over that week the Antigravity CLI updated from 1.5.8 to 1.5.14,
+so that arm spans two harness versions, and which batches ran on each is reported; two
 batches were run concurrently on two occasions, so wall-clock time is not comparable for
 those batches and they are excluded from the timing outcome; the blinding gap and the
 reference-rule failure described above; and the scoring correction that removed the 8 pairs

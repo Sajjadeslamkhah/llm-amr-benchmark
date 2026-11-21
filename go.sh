@@ -245,7 +245,13 @@ PYIN
         command -v "$b" || { echo "(not installed)"; continue; }
         "$b" --version 2>&1 | head -3
         echo "-- model as the CLI reports it:"
-        "$b" --help 2>&1 | grep -i -m5 -E "model|--model" || echo "(--help names no model)"
+        case "$b" in
+          agy)   "$b" models 2>&1 | head -20 ;;
+          codex) "$b" --config 2>&1 | grep -i -m3 model || \
+                 grep -i -m3 "^model" "$HOME/.codex/config.toml" 2>/dev/null || \
+                 echo "(no configured model found; Codex does not log the serving model)" ;;
+          claude) echo "(recorded per run in the event stream)" ;;
+        esac
       done
     } > "$out" 2>&1
     echo "$out"
