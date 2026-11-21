@@ -12,6 +12,7 @@
 #   bash go.sh run <arm> <rep> [max batches]  real run, resumable, in the background
 #   bash go.sh pilotall  pilot all three arms overnight, in the background
 #   bash go.sh events   summarise the pilot event streams
+#   bash go.sh bitir    tekrar koslari bitince tum analizleri sirayla calistir
 #   bash go.sh tekrar   tekrarlanabilirlik: 40 izolatlik alt kumede rep2 ve rep3
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
@@ -113,6 +114,16 @@ case "${1:-}" in
     head -40 runs/gpt/rep0/stdout.txt >> data/summary/events_pilot.txt 2>&1 || true
     wc -l data/summary/events_pilot.txt
     echo "Send me: data/summary/events_pilot.txt"
+    ;;
+  bitir)
+    # Tekrar koslari bitene kadar bekler, sonra insan gerektirmeyen her seyi hesaplar.
+    mkdir -p runs
+    log="runs/bitir_$(date +%Y%m%d_%H%M).log"
+    echo "Zincir basladi. Log: $log"
+    echo "Tekrar koslari bitince analizler kendiliginden calisacak."
+    PY="$PY" ARMS="$ARMS" GIZLI="${GIZLI:-$HOME/amr_gizli}" \
+      caffeinate -dimsu bash scripts/bitir.sh > "$log" 2>&1 &
+    echo "Arka planda calisiyor (pid $!)."
     ;;
   tekrar)
     # Tekrarlanabilirlik koslari: 40 izolatlik alt kume, her kol icin rep2 ve rep3.
