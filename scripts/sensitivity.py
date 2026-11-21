@@ -99,10 +99,37 @@ def main() -> None:
            .fillna({"testing_standard": "not stated"})
            .drop_duplicates(subset=["genome_id", "abx"], keep="first"))
     ref_s = ref_all[ref_all["pheno"].isin(["S", "R"])].merge(std, on=["genome_id", "abx"], how="left")
-    ref_s["testing_standard"] = ref_s["testing_standard"].fillna("not stated").replace("", "not stated")
+    # BV-BRC records the standard inconsistently: CLSI and clsi, EUCAST and eucast, and
+    # both names together in either order. Left as written, one stratum was split into
+    # four and three of the pieces fell below the reporting threshold.
+    def norm_std(v: str) -> str:
+        t = (v or "").strip().upper().replace(" ", "")
+        if not t:
+            return "not stated"
+        names = {n for n in ("EUCAST", "CLSI") if n in t}
+        if names == {"EUCAST", "CLSI"}:
+            return "both named"
+        if names:
+            return names.pop()
+        return v.strip()
+
+    ref_s["testing_standard"] = ref_s["testing_standard"].fillna("").map(norm_std)
     print("\n(iv) pairs per recorded testing standard:")
     for s, n in ref_s["testing_standard"].value_counts().items():
         print(f"    {s}: {n}")
+    # The strata are not matched on antibiotic, and a difference between them could
+    # follow from which drugs fell into each one rather than from the standard. Printed
+    # so the comparison is read with that in view.
+    comp = (ref_s.pivot_table(index="abx", columns="testing_standard", values="genome_id",
+                              aggfunc="count", fill_value=0))
+    print("\n     antibiotic composition of each stratum:")
+    print(comp.to_string().replace("\n", "\n     "))
+    rfrac = (ref_s.assign(isR=ref_s["pheno"].eq("R"))
+             .groupby("testing_standard")["isR"].mean())
+    print("\n     resistant share of each stratum: " +
+          ", ".join(f"{k}={v:.2f}" for k, v in rfrac.items()))
+    comp.to_csv(out / "standard_composition.tsv", sep="\t")
+
     for s, g in ref_s.groupby("testing_standard"):
         if len(g) < 20:
             print(f"    skipped '{s}' ({len(g)} pairs, too few to report)")
