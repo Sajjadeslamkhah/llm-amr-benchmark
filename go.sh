@@ -27,6 +27,10 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 PY="${PY:-$HOME/miniforge3/bin/python}"
+# Gemini (A2) 2026-11-21'de calismadan cikarildi: Antigravity CLI cok modelli ve hangi
+# modelin hizmet verdigi hicbir yerde kayitli degil (PROTOCOL.md, 12. bolum). Verisi
+# repoda duruyor ama hicbir analize girmiyor.
+ARMS="${ARMS:-claude gpt}"
 DB="${AMRFINDER_DB:-$HOME/miniforge3/envs/amr/share/amrfinderplus/data/2026-10-29.1}"
 
 case "${1:-}" in
@@ -130,7 +134,7 @@ case "${1:-}" in
       exit 1
     fi
     args=()
-    for kol in claude gemini gpt; do
+    for kol in $ARMS; do
       f="runs/$kol/rep1/predictions.tsv"
       if [ -f "$f" ]; then
         n=$(( $(wc -l < "$f") - 1 ))
@@ -172,7 +176,7 @@ case "${1:-}" in
     fi
     echo "veritabani: $DB"
     mkdir -p results/audit
-    for kol in claude gemini gpt; do
+    for kol in $ARMS; do
       f="runs/$kol/rep1/predictions.tsv"
       [ -f "$f" ] || continue
       n=$(( $(wc -l < "$f") - 1 ))
@@ -191,7 +195,7 @@ case "${1:-}" in
     GIZLI="${GIZLI:-$HOME/amr_gizli}"
     [ -f "$GIZLI/reference_phenotypes.tsv" ] || { echo "Bulunamadi: $GIZLI/reference_phenotypes.tsv"; exit 1; }
     args=()
-    for kol in claude gemini gpt; do
+    for kol in $ARMS; do
       f="runs/$kol/rep1/predictions.tsv"
       [ -f "$f" ] || continue
       n=$(( $(wc -l < "$f") - 1 ))
@@ -272,7 +276,7 @@ PYIN
     fi
     [ -f "$DB/fam.tsv" ] || { echo "AMRFinderPlus veritabani bulunamadi"; exit 1; }
     args=()
-    for kol in claude gemini gpt; do
+    for kol in $ARMS; do
       f="runs/$kol/rep1/predictions.tsv"
       [ -f "$f" ] || continue
       n=$(( $(wc -l < "$f") - 1 ))

@@ -94,9 +94,23 @@ goes looking for the answer key when it can is reported as an outcome in its own
 | Arm | Agent | Harness |
 |---|---|---|
 | A1 | Claude | Claude Code 2.1.325 |
-| A2 | Gemini | Antigravity CLI (`agy`) 1.5.8 and 1.5.14 (see below) |
 | A3 | GPT | Codex CLI 0.169.0 |
 | REF | AMRFinderPlus 4.2.7, database 2026-10-29.1 | pre-specified mapping rule |
+
+A third agent arm (A2, Gemini in Antigravity CLI) was run and then withdrawn before any
+of its results were analysed. Antigravity CLI turned out to be a multi-model harness:
+`agy models` lists three Flash-tier Gemini variants alongside Claude and GPT-OSS models.
+The runs were issued without `--model`, so whichever model was default served them, and
+that identity is recorded nowhere retrievable — not in the harness metadata, the
+stream-json events, the CLI configuration or the CLI log — and cannot be recovered
+afterwards. Reporting an arm whose model is unknown would not answer the question this
+study asks, so it is excluded. Its data and logs remain in the repository and the decision
+is recorded in `PROTOCOL.md` section 12 with its date.
+
+This is worth stating as a methodological observation for anyone benchmarking agent
+command-line tools: a vendor's own CLI may serve other vendors' models, may expose only a
+reduced tier of its own, and need not record which model answered. Pinning `--model`
+explicitly, and capturing it before the run, is a requirement rather than a refinement.
 
 Run dates, wall-clock duration per batch, exit codes and the invoked binary are recorded
 for every batch and collected by `scripts/run_provenance.py`. The model identifier is
