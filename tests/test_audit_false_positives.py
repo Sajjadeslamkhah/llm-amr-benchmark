@@ -88,7 +88,10 @@ def test_no_output_for_an_isolate_is_not_evidence_of_fabrication(tmp_path):
 
 
 def test_the_same_claim_in_many_batches_is_one_row_with_a_count(tmp_path):
-    run = make_run(tmp_path, methods="CLSI breakpoint 2 mg/L applies. " * 4)
+    # Identical padding before each repeat, so the lead-in H3 now carries is the same
+    # for all four and they are genuinely the same claim.
+    pad = "x" * 100
+    run = make_run(tmp_path, methods=(pad + " CLSI breakpoint 2 mg/L applies.") * 4)
     f = [x for x in ha.check(run, CATALOG)[0] if x["code"] == "H3"]
     assert len(f) == 1
     assert f[0]["occurrences"] == 4
@@ -175,3 +178,15 @@ def test_a_decimal_breakpoint_is_captured_whole(tmp_path):
     h3 = [f["evidence"] for f in ha.check(run, CATALOG)[0] if f["code"] == "H3"]
     assert any("0.25 mg/L" in e for e in h3), h3
     assert not any(e.strip() == "25 mg/L" for e in h3), h3
+
+
+def test_a_breakpoint_claim_is_shown_with_what_precedes_it(tmp_path):
+    """A window starting at the matched number hid the range it belonged to: the
+    sentence "an MIC of about 0.12-0.5 mg/L, which is at or below the EUCAST S
+    breakpoint of 0.25 mg/L" appeared as a flat contradiction, and an adjudicator
+    shown only the tail would reject a defensible claim."""
+    run = make_run(tmp_path, methods=(
+        "A single gyrA S83L on its own gives an MIC of about 0.12-0.5 mg/L, which is "
+        "at or below the EUCAST S breakpoint of 0.25 mg/L.\n"))
+    h3 = [f["evidence"] for f in ha.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert any("0.12-0.5 mg/L" in e for e in h3), h3

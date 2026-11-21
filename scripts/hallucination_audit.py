@@ -290,7 +290,12 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
     # H3: a stated threshold value or an absolute rule, for a human to check against
     # the guideline it names
     for m in BREAKPOINT_CLAIM.finditer(text):
-        n = normalise(m.group(1))
+        # Include what comes before the number. A window starting at the match showed
+        # "0.5 mg/L, which is at or below the EUCAST S breakpoint of 0.25 mg/L", which
+        # reads as a contradiction; the sentence actually says "an MIC of about
+        # 0.12-0.5 mg/L", a range. An adjudicator shown only the tail would reject a
+        # defensible claim, so the claim is presented whole.
+        n = normalise(text[max(0, m.start() - 90):m.end()])
         if not commandish(n):
             add("H3", n)
 
