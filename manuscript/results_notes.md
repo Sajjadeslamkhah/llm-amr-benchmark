@@ -179,7 +179,8 @@ two agents converge.
 
 **(iii) Reinterpreting phenotypes from MIC values.** 347 of 553 pairs carry a usable MIC.
 Not yet done: each of the six breakpoints has to be read off the current EUCAST table
-rather than entered from memory. <mark>**[Pending]**</mark>
+rather than entered from memory. <mark>**[Pending: read the six Enterobacterales
+breakpoints off the current EUCAST table, then rerun scripts/sensitivity.py with them.]**</mark>
 
 **(iv) Stratified by the recorded testing standard.** EUCAST 184 pairs, CLSI 176, not
 stated 179, both names 13 (too few to report).

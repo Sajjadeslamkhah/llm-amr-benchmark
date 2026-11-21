@@ -19,7 +19,7 @@ from pathlib import Path
 
 MD = Path("manuscript")
 OUT = MD / "PENDING.md"
-MARK = re.compile(r"<mark>\*\*\[(PENDING[^\]]*)\]\*\*</mark>", re.S)
+MARK = re.compile(r"<mark>\*\*\[(pending[^\]]*)\]\*\*</mark>", re.S | re.I)
 
 # Substring of the marker text -> who has to act. Longest match wins.
 WAITING = [
@@ -29,6 +29,8 @@ WAITING = [
     ("breakpoint", "investigator — read the six values off the current EUCAST table"),
     ("eucast table", "investigator — read the six values off the current EUCAST table"),
     ("stricter mapping", "optional, post-hoc — not required for submission"),
+    ("optional.", "optional, post-hoc — not required for submission"),
+    ("doi", "investigator — deposit and cite the DOI"),
     ("plan tier", "investigator"),
 ]
 
@@ -47,8 +49,15 @@ def main() -> None:
         text = f.read_text()
         for m in MARK.finditer(text):
             line = text[: m.start()].count("\n") + 1
+            # the note at the top of each draft explains the marker rather than being one
+            start = text.rfind("\n", 0, m.start()) + 1
+            if text[start:m.start()].lstrip().startswith(">") or text[start:].startswith(">"):
+                continue
+            if all(l.lstrip().startswith((">", "")) and l.lstrip().startswith(">")
+                   for l in text[:m.start()].splitlines()[-1:] if l.strip()):
+                continue
             body = re.sub(r"\s+", " ", m.group(1)).strip()
-            body = re.sub(r"^PENDING:?\s*", "", body) or "(no detail given)"
+            body = re.sub(r"^pending:?\s*", "", body, flags=re.I) or "(no detail given)"
             # the nearest heading above it, for context
             heads = re.findall(r"^(#{1,3})\s+(.*)$", text[: m.start()], re.M)
             section = heads[-1][1] if heads else ""

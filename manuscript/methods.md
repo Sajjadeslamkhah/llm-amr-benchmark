@@ -37,7 +37,8 @@ different testing methods (disk diffusion, MIC, broth and agar dilution) and fro
 different standards (EUCAST, CLSI, or none stated) in versions that differ between
 submitting studies. This heterogeneity is a property of the reference standard, not of
 the agents, and it bounds the accuracy any genotype-based method can reach here. A
-sensitivity analysis stratified by recorded standard is pre-specified. <mark>**[Pending]**</mark>
+sensitivity analysis stratified by recorded standard is pre-specified; it was carried
+out and is reported with the two checks that bound its interpretation.
 
 ## Eligibility and sample
 
@@ -164,7 +165,10 @@ does not claim to predict a phenotype. Second, and therefore, no comparison in t
 supports a claim that the agents outperform AMRFinderPlus: the arm they are compared
 against is this rule applied to AMRFinderPlus output, and every comparison is worded that
 way. A stricter mapping may be reported as a clearly labelled post-hoc sensitivity
-analysis. <mark>**[Pending]**</mark>
+analysis. <mark>**[Pending: optional. A stricter ampicillin rule, distinguishing a
+chromosomal blaEC at basal expression from an acquired beta-lactamase, would show how
+much of the reference arm's gap is the rule rather than the method. Not required for
+submission, and must be labelled post-hoc wherever it appears.]**</mark>
 
 ## Outcomes
 
