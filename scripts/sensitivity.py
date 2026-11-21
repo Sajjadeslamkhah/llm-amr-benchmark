@@ -145,6 +145,36 @@ def main() -> None:
     print("    EUCAST table, not entered from memory")
 
     df = pd.DataFrame(rows)
+
+    # Is a stratified difference about the standard, or about the strata? Two checks,
+    # both needed before the comparison means anything.
+    #
+    #  (a) expected agreement from each stratum's resistant share alone, using the arm's
+    #      overall very major and major error rates. A stratum that is mostly resistant
+    #      scores lower whenever an arm errs more often on resistant pairs, with no
+    #      involvement of the standard.
+    #  (b) the reference arm is standard-blind: it reads determinants and never consults
+    #      a breakpoint table. Any variation in ITS error rate across the strata must
+    #      come from the isolates, so it bounds how much of the agents' variation can be
+    #      attributed to the standard at all.
+    overall = {r["arm"]: r for r in table(ref_all[ref_all["pheno"].isin(["S", "R"])], "overall")}
+    print("\n     observed vs expected agreement per stratum (expected from the")
+    print("     stratum's resistant share and the arm's overall VME and ME):")
+    for _, r in df[df["analysis"].str.startswith("iv_standard_")].iterrows():
+        st = r["analysis"].replace("iv_standard_", "")
+        f = float(rfrac.get(st, float("nan")))
+        o = overall[r["arm"]]
+        exp = 1 - (f * o["VME"] + (1 - f) * o["ME"])
+        print(f"     {st:12s} {r['arm']:7s} resistant share {f:.2f}  "
+              f"observed {r['CA']:.3f}  expected {exp:.3f}  difference {r['CA'] - exp:+.3f}")
+    refrows = df[(df["analysis"].str.startswith("iv_standard_")) & (df["arm"] == "ref")]
+    if len(refrows) > 1:
+        print(f"\n     the standard-blind reference arm's VME across strata: " +
+              ", ".join(f"{r['analysis'].replace('iv_standard_', '')}={r['VME']:.3f}"
+                        for _, r in refrows.iterrows()))
+        print("     a method that never reads a breakpoint table should not vary with the")
+        print("     standard; where it does, the strata differ in the isolates they hold.")
+
     df.to_csv(out / "sensitivity.tsv", sep="\t", index=False)
     cols = ["analysis", "arm", "n_pairs", "CA", "VME", "ME", "fda_all_met"]
     print("\n" + df[cols].to_string(index=False, float_format=lambda v: f"{v:.4f}"))
