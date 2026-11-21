@@ -106,8 +106,10 @@ def test_refuses_to_write_an_empty_commands_log(tmp_path):
 
 def test_writes_the_three_files_when_commands_are_found(tmp_path):
     write(tmp_path, CLAUDE + AGY)
-    (tmp_path / "batch_001" / "output").mkdir()
-    (tmp_path / "batch_001" / "output" / "methods.md").write_text("AMRFinderPlus 4.2.7 was run.")
+    # the harness puts the agent's workspace one level down, so this is where it lands
+    d = tmp_path / "batch_001" / "workspace" / "output"
+    d.mkdir(parents=True)
+    (d / "methods.md").write_text("AMRFinderPlus 4.2.7 was run.")
     r = subprocess.run([sys.executable, str(SCRIPT), "--run", str(tmp_path)],
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr

@@ -210,12 +210,17 @@ def main() -> None:
 
     (run / "commands.log").write_text("".join(json.dumps(c, ensure_ascii=False) + "\n" for c in all_cmds))
     (run / "transcript.txt").write_text("\n\n".join(all_text))
-    methods = [f"===== {m.parent.parent.name} =====\n{m.read_text(errors='replace')}"
-               for m in sorted(run.glob("batch_*/output/methods.md"))]
+    # The harness copies the task into batch_NNN/workspace/, so the agent writes
+    # workspace/output/methods.md. Searched below each batch rather than at one
+    # fixed depth: a wrong path here silently left the agent's own methods
+    # statement out of the audit, so H2 and H3 rested on the narrative alone.
+    found = {m.resolve(): m for b in sorted(run.glob("batch_*")) for m in b.rglob("methods.md")}
+    methods = [f"===== {m.relative_to(run)} =====\n{m.read_text(errors='replace')}"
+               for m in sorted(found.values())]
     if methods:
         (run / "methods.md").write_text("\n\n".join(methods))
-    print(f"  wrote commands.log, transcript.txt" + (f", methods.md ({len(methods)} files)" if methods else
-          "  [no methods.md found under batch_*/output/]"))
+    print("  wrote commands.log, transcript.txt" + (f", methods.md ({len(methods)} agent files)" if methods else
+          "  [WARNING: no methods.md found under any batch - H2/H3 will rest on the narrative alone]"))
 
 
 if __name__ == "__main__":
