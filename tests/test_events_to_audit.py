@@ -151,3 +151,27 @@ def test_every_command_records_its_key_path(tmp_path):
     """So double counting can be located instead of guessed at."""
     cmds, _, _, _ = e2a.extract(write(tmp_path, CLAUDE) / "batch_001" / "events.jsonl")
     assert cmds[0]["key_path"]
+
+
+CODEX_PAIR = [
+    {"type": "item.started", "item": {"id": "it_1", "type": "command_execution",
+     "command": "amrfinder -n ISO_001.fasta"}},
+    {"type": "item.completed", "item": {"id": "it_1", "type": "command_execution",
+     "command": "amrfinder -n ISO_001.fasta", "aggregated_output": "blaTEM-1", "exit_code": 0}},
+]
+
+
+def test_codex_start_and_completed_are_one_command(tmp_path):
+    """Codex writes item.started then item.completed for the same command. Counting
+    both gave 651 commands where 325 ran, and left half of them with no exit code."""
+    cmds, _, _, _ = e2a.extract(write(tmp_path, CODEX_PAIR) / "batch_001" / "events.jsonl")
+    assert len(cmds) == 1, [(c["cmd"], c["exit_code"]) for c in cmds]
+    assert cmds[0]["exit_code"] == 0
+    assert cmds[0]["stdout"] == "blaTEM-1"
+
+
+def test_two_codex_commands_with_different_ids_both_count(tmp_path):
+    second = [{"type": "item.completed", "item": {"id": "it_2", "type": "command_execution",
+               "command": "amrfinder -n ISO_002.fasta", "exit_code": 0}}]
+    cmds, _, _, _ = e2a.extract(write(tmp_path, CODEX_PAIR + second) / "batch_001" / "events.jsonl")
+    assert len(cmds) == 2

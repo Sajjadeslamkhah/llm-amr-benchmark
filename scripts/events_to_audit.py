@@ -35,6 +35,11 @@ SHELL_TOOLS = {"bash", "run_command", "shell", "command_execution", "local_shell
 # by tool_use_id, and again inside tool_use_result. Counting those would double the
 # denominator of any per-command rate. The call itself is kept, the echoes dropped.
 ECHO_SEGMENTS = ("wire_tool_inputs", "tool_use_result")
+# Codex writes two events per command, item.started and item.completed, carrying the
+# same command text and the same item id; only the second has an exit code. Counting
+# both gave 651 commands where 325 ran. The start event is skipped: the completed one
+# is the command, with its result.
+START_EVENTS = ("item.started", "turn.started", "command_execution.started")
 
 
 def walk(obj, path=(), parents=()):
@@ -89,6 +94,8 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
             ev = json.loads(line)
         except json.JSONDecodeError:
             continue
+        if isinstance(ev.get("type"), str) and (ev["type"] in START_EVENTS or ev["type"].endswith(".started")):
+            continue            # the matching .completed event carries the same command
         for path, d, parents in walk(ev):
             # a tool result that arrives in its own event, keyed back to the call
             tid = d.get("tool_use_id") or d.get("toolUseId")
@@ -142,11 +149,23 @@ def extract(p: Path) -> tuple[list[dict], list[str], Counter]:
             r = d.get("response")
             if isinstance(r, str) and r.strip():
                 narrative.append(r)
-    # Safety net for any echo shape not yet known: an unnamed command whose text also
-    # appears with a tool name in the same log is the same call seen twice.
-    named = {c["cmd"] for c in cmds if c["tool"]}
+    # Safety nets for any repetition shape not yet known.
     before = len(cmds)
+    # (a) an unnamed command whose text also appears with a tool name is the same call
+    named = {c["cmd"] for c in cmds if c["tool"]}
     cmds = [c for c in cmds if c["tool"] or c["cmd"] not in named]
+    # (b) two records sharing a call id and command text are one call reported twice;
+    #     keep the one that carries an exit code
+    best: dict[tuple, dict] = {}
+    rest: list[dict] = []
+    for c in cmds:
+        if not c.get("call_id"):
+            rest.append(c)
+            continue
+        k = (c["call_id"], c["cmd"])
+        if k not in best or (best[k]["exit_code"] is None and c["exit_code"] is not None):
+            best[k] = c
+    cmds = list(best.values()) + rest
     dropped = before - len(cmds)
 
     for c in cmds:                      # fill in what came in a later event
