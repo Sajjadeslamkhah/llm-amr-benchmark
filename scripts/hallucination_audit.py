@@ -377,7 +377,10 @@ def main() -> None:
     if a.blind:
         import random
         rng = random.Random(20261114)
-        items = list(enumerate(rows))
+        # U1 is not a hallucination claim and there is nothing to confirm or reject in
+        # it, so it stays out of the adjudication sheet: 64 descriptive rows would bury
+        # the handful of candidates that do need a verdict. It remains in the full file.
+        items = [(i, r) for i, r in enumerate(rows) if r["code"] != "U1"]
         rng.shuffle(items)
         bp = Path(a.blind)
         bp.parent.mkdir(parents=True, exist_ok=True)

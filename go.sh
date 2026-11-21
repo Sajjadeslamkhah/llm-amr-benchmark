@@ -17,6 +17,7 @@
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
 #   bash go.sh belirsizlik  ajanin kendi belirsizlik isareti hatalarini yakaliyor mu (post-hoc)
 #   bash go.sh kontrol  referans ciftleri korleme anahtarina baglaniyor mu
+#   bash go.sh hakem    korleme degerlendirme sayfasi (iki bagimsiz okuyucu icin)
 #   bash go.sh sizinti  ajanlar referans fenotipleri/korleme anahtarini gordu mu
 #   bash go.sh ref       run the AMRFinderPlus reference arm (after the freeze)
 #   bash go.sh update    git pull
@@ -226,6 +227,34 @@ for arm in ("claude", "gpt", "amrfinderplus"):
     want = {(gid2iso[r["genome_id"]], r["abx"]) for r in ref if r["genome_id"] in gid2iso}
     print(f"{arm:14s}: {len(want - have)} baglanabilir ciftte cagri yok")
 PYIN
+    ;;
+  hakem)
+    # Korleme degerlendirme sayfasi: tum kollarin adaylari TEK dosyada, karisik
+    # sirada, kol adi cikarilmis. Okuyucu hangi ajani degerlendirdigini bilmez.
+    DB="${AMRFINDER_DB:-}"
+    if [ -z "$DB" ]; then
+      for c in "$HOME/miniforge3/envs/amr/share/amrfinderplus/data/latest" \
+               "$HOME/miniforge3/envs/amr/share/amrfinderplus/data"/* ; do
+        [ -f "$c/fam.tsv" ] && DB="$c" && break
+      done
+    fi
+    [ -f "$DB/fam.tsv" ] || { echo "AMRFinderPlus veritabani bulunamadi"; exit 1; }
+    args=()
+    for kol in claude gemini gpt; do
+      f="runs/$kol/rep1/predictions.tsv"
+      [ -f "$f" ] || continue
+      n=$(( $(wc -l < "$f") - 1 ))
+      [ "$n" -ge 708 ] && args+=(--run "runs/$kol/rep1") || echo "atlandi: $kol ($n/708)"
+    done
+    [ "${#args[@]}" -gt 0 ] || { echo "Hicbir kol hazir degil."; exit 1; }
+    mkdir -p results/audit
+    "$PY" scripts/hallucination_audit.py "${args[@]}" --catalog "$DB" \
+      --out results/audit/all_arms.tsv \
+      --blind results/audit/adjudication_sheet.tsv
+    echo
+    echo "Okuyuculara verilecek dosya : results/audit/adjudication_sheet.tsv"
+    echo "Kol adlarini cozen anahtar   : results/audit/adjudication_sheet.key.tsv"
+    echo "Anahtari okuyuculara VERMEYIN; degerlendirme bitene kadar acilmaz."
     ;;
   sizinti)
     "$PY" scripts/leak_check.py
