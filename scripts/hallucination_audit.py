@@ -234,6 +234,30 @@ def normalise(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+EVIDENCE_LIMIT = 1000
+
+
+def kirp(s: str, limit: int = EVIDENCE_LIMIT) -> str:
+    """Shorten evidence without handing a reader half a sentence.
+
+    The first adjudication was carried out on a sheet that cut evidence at 300
+    characters mid-word, and the reader reported having to judge one row on a claim
+    that ended '...and the eviden'. A claim cut before its own conclusion cannot be
+    adjudicated: the verdict turns on what the agent concluded from the number, which
+    is the part that was missing. The limit is therefore large enough to carry a whole
+    claim, and where it still bites the text is cut at a word boundary and the cut is
+    marked, so the reader knows to ask for the rest rather than judging what is shown.
+    """
+    s = (s or "").strip()
+    if len(s) <= limit:
+        return s
+    cut = s[:limit]
+    sp = cut.rfind(" ")
+    if sp > limit * 0.6:
+        cut = cut[:sp]
+    return cut.rstrip() + " […kesildi; tam metin icin run dosyasina bakin]"
+
+
 def check(run: Path, catalog: set[str]) -> list[dict]:
     data = load_run(run)
     text, commands = data["text"], data["commands"]
@@ -244,7 +268,7 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
 
     def add(code: str, evidence: str, detail: str = "") -> None:
         findings.append({"code": code, "description": CODES[code],
-                         "evidence": evidence[:300], "detail": detail})
+                         "evidence": kirp(evidence), "detail": detail})
 
     real_blob = out_blob + "\n" + "\n".join(data["per_isolate"].values())
 
@@ -346,7 +370,7 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         if k in merged:
             merged[k]["occurrences"] += 1
             if f["detail"] and f["detail"] not in merged[k]["detail"]:
-                merged[k]["detail"] = (merged[k]["detail"] + "; " + f["detail"])[:300]
+                merged[k]["detail"] = kirp(merged[k]["detail"] + "; " + f["detail"])
         else:
             f["occurrences"] = 1
             merged[k] = f

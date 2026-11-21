@@ -86,3 +86,29 @@ def test_catalog_reader_reads_db_directory(tmp_path):
 def test_catalog_reader_rejects_wrong_directory(tmp_path):
     with pytest.raises(SystemExit):
         audit.read_catalog(tmp_path / "nope")
+
+
+def test_evidence_is_not_cut_mid_sentence():
+    """The first adjudication was done on evidence cut at 300 characters.
+
+    The reader reported judging one row on a claim ending '...and the eviden', i.e.
+    cut before the conclusion the verdict depends on. A claim of that length must now
+    survive whole, and anything genuinely over the limit must be cut at a word
+    boundary and say so, so the reader asks for the rest instead of judging a fragment.
+    """
+    claim = ("A single gyrA mutation on its own (typical MIC 0.125-0.5 mg/L, around the "
+             "S <=0.25 breakpoint) is called S, and the evidence from the AMRFinderPlus "
+             "output supports no second QRDR substitution in this isolate, so the call "
+             "stands on one substitution alone and should be read as susceptible rather "
+             "than as the borderline result a second substitution would have produced.")
+    assert 300 < len(claim) <= audit.EVIDENCE_LIMIT
+    assert audit.kirp(claim) == claim, "a whole claim of this length must not be cut"
+
+    long = "word " * 400
+    cut = audit.kirp(long)
+    assert len(cut) < len(long)
+    assert "kesildi" in cut, "a cut must be visible to the reader"
+    assert not cut.split("[")[0].rstrip().endswith("wor"), "must cut at a word boundary"
+
+    assert audit.kirp("short") == "short"
+    assert audit.kirp("") == ""
