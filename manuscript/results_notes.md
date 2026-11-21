@@ -165,6 +165,53 @@ overall, 2 are laboratory-resistant.
 wrongly, GPT declined it. The difficulty sits in the isolate, a borderline single-gyrA
 genotype, rather than in either agent.
 
+## Sensitivity analyses
+
+Source: `results/sensitivity/sensitivity.tsv`.
+
+**(i) Intermediate phenotypes as non-susceptible.** Only one pair among the scored
+isolates carries an intermediate phenotype, so this analysis cannot differ from the
+primary one in any meaningful way (Claude CA 95.1% against 95.3%). Reported for
+completeness, not as evidence.
+
+**(ii) No-calls excluded.** In the accuracy table above; it is the analysis on which the
+two agents converge.
+
+**(iii) Reinterpreting phenotypes from MIC values.** 347 of 553 pairs carry a usable MIC.
+Not yet done: each of the six breakpoints has to be read off the current EUCAST table
+rather than entered from memory. **[pending]**
+
+**(iv) Stratified by the recorded testing standard.** EUCAST 184 pairs, CLSI 176, not
+stated 179, both names 13 (too few to report).
+
+| Stratum | Claude CA | GPT CA | REF CA | Resistant share |
+|---|---|---|---|---|
+| CLSI | 91.5% | 90.3% | 88.6% | 0.73 |
+| EUCAST | 96.7% | 93.5% | 87.0% | 0.34 |
+| not stated | 97.8% | 92.7% | 83.8% | 0.21 |
+
+The agents look about five points worse on CLSI-derived phenotypes than on
+EUCAST-derived ones, and it is tempting to read that as the agents reasoning with EUCAST
+breakpoints — both cite EUCAST in their methods files — and disagreeing more with
+phenotypes a different standard produced. **The data do not support that reading, and it
+is set aside.**
+
+Two checks refuse it. First, the strata differ sharply in resistant share (0.73, 0.34,
+0.21), and an arm that errs more often on resistant pairs scores lower in a
+resistant-heavy stratum with no involvement of the standard. Against what each stratum's
+resistant share alone predicts, every arm falls short in the CLSI stratum by a similar
+margin: Claude −0.027, GPT −0.045, **the reference rule −0.022**. Second, the reference
+rule never consults a breakpoint table — it maps detected determinants to a call — and
+its very major error rate nonetheless varies more than fivefold across the same strata
+(8.5%, 1.6%, 2.7%). A standard-blind method cannot vary with the standard.
+
+What the stratification does show is a property of the reference data: in the
+CLSI-labelled records, resistance is less often explained by a determinant any of these
+methods can detect. The strata are not interchangeable, and a benchmark that pools AMR
+phenotypes from a public repository without recording which standard produced each one
+is comparing across unequal difficulty. That is worth stating for benchmark design; it
+says nothing about either agent's handling of breakpoints.
+
 ## What is not yet done
 
 - Blinded adjudication by two readers (`results/audit/adjudication_sheet.tsv`), Cohen's κ
