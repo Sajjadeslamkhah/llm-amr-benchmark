@@ -88,10 +88,9 @@ def test_no_output_for_an_isolate_is_not_evidence_of_fabrication(tmp_path):
 
 
 def test_the_same_claim_in_many_batches_is_one_row_with_a_count(tmp_path):
-    # Identical padding before each repeat, so the lead-in H3 now carries is the same
-    # for all four and they are genuinely the same claim.
-    pad = "x" * 100
-    run = make_run(tmp_path, methods=(pad + " CLSI breakpoint 2 mg/L applies.") * 4)
+    # An identical sentence before each repeat, so the lead-in H3 now carries snaps to
+    # the same boundary for all four and they are genuinely the same claim.
+    run = make_run(tmp_path, methods="Filler sentence. CLSI breakpoint 2 mg/L applies. " * 4)
     f = [x for x in ha.check(run, CATALOG)[0] if x["code"] == "H3"]
     assert len(f) == 1
     assert f[0]["occurrences"] == 4
@@ -190,3 +189,14 @@ def test_a_breakpoint_claim_is_shown_with_what_precedes_it(tmp_path):
         "at or below the EUCAST S breakpoint of 0.25 mg/L.\n"))
     h3 = [f["evidence"] for f in ha.check(run, CATALOG)[0] if f["code"] == "H3"]
     assert any("0.12-0.5 mg/L" in e for e in h3), h3
+
+
+def test_a_claim_starts_at_a_sentence_or_word_boundary(tmp_path):
+    """A window cut mid-token is harder to judge, and the adjudication instructions
+    ask the reader to decide from the row alone."""
+    run = make_run(tmp_path, methods=(
+        "Determinants include aac(6')-Ib-cr and qepA. A single gyrA mutation on its own "
+        "gives a typical MIC of 0.125-0.5 mg/L, around the S breakpoint.\n"))
+    h3 = [f["evidence"] for f in ha.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert h3, h3
+    assert h3[0].startswith("A single gyrA"), h3[0]

@@ -295,7 +295,13 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         # reads as a contradiction; the sentence actually says "an MIC of about
         # 0.12-0.5 mg/L", a range. An adjudicator shown only the tail would reject a
         # defensible claim, so the claim is presented whole.
-        n = normalise(text[max(0, m.start() - 90):m.end()])
+        lead = text[max(0, m.start() - 110):m.start()]
+        # Start at a sentence boundary if there is one in the lead-in, else at a word
+        # boundary: a window cut mid-token ("cr, qepA) ...") is harder for an
+        # adjudicator to judge, and the instructions ask them to judge from the row alone.
+        cut = max(lead.rfind(". "), lead.rfind("! "), lead.rfind("? "))
+        lead = lead[cut + 2:] if cut >= 0 else lead[lead.find(" ") + 1:] if " " in lead else lead
+        n = normalise(lead + text[m.start():m.end()])
         if not commandish(n):
             add("H3", n)
 
