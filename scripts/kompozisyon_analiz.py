@@ -135,6 +135,11 @@ def main() -> None:
         if not tp.exists():
             sys.exit(f"Referans dosyasi yok: {tp}")
         truth = truth_map(tp)
+        # The reference file is keyed by genome_id and the predictions by isolate_id, so
+        # passing it directly matches nothing. Fail loudly rather than reporting zeroes.
+        if not truth:
+            sys.exit(f"--truth hicbir cifte eslesmedi: {tp}. Referans dosyasi genome_id "
+                     f"ile anahtarli, tahminler isolate_id ile; --ref/--key kullanin.")
 
     rows, problems = [], []
     for arm in arms:
