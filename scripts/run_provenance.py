@@ -28,6 +28,20 @@ DATE_KEYS = ("started_utc", "started", "start", "started_at", "date", "timestamp
 DUR_KEYS = ("wall_clock_seconds", "duration_seconds", "seconds", "duration_s", "elapsed")
 
 
+def _median(xs):
+    """Conventional median: the mean of the two middle values when n is even.
+
+    This script previously took sorted(xs)[n // 2], the upper of the two middle values,
+    while scripts/kompozisyon_analiz.py took the conventional median. With 12 batches
+    the two differ by enough to matter in a figure the manuscript quotes (GPT replicate
+    1 came out as 449 s under the old convention and 426 s under this one), so both
+    scripts now use the same definition and the manuscript's figures are re-read.
+    """
+    s = sorted(xs)
+    n = len(s)
+    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2
+
+
 def dig(obj, keys: tuple[str, ...]) -> set[str]:
     """Every value under any of these keys, anywhere in the object."""
     found: set[str] = set()
@@ -112,7 +126,10 @@ def main() -> None:
         web = defaultdict(int)
         binaries: set[str] = set()
         failed: list[str] = []
-        batches = sorted(rep.glob("batch_*"))
+        # batch_[0-9][0-9][0-9] and not batch_*: scripts/kompozisyon.sh archives an
+        # attempt that produced nothing as batch_###_attemptNN, and a failed attempt's
+        # duration is not a batch duration. batch_* would silently pull them in.
+        batches = sorted(rep.glob("batch_[0-9][0-9][0-9]"))
         for b in batches:
             meta = b / "meta.json"
             if meta.exists():
@@ -149,7 +166,7 @@ def main() -> None:
             "harness_version": "; ".join(sorted(versions)) or "(not recorded)",
             "plan_tier": "; ".join(sorted(tiers)) or "(not recorded)",
             "run_dates": "; ".join(sorted(dates)) or "(not recorded)",
-            "median_batch_seconds": round(sorted(durations)[len(durations) // 2], 1) if durations else "",
+            "median_batch_seconds": round(_median(durations), 1) if durations else "",
             "web_search_requests": web["search"], "web_fetch_requests": web["fetch"],
         })
 
