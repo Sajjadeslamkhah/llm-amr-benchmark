@@ -98,6 +98,10 @@ def main() -> None:
                     help="repeatable; default claude and gpt")
     ap.add_argument("--runs", default="runs")
     ap.add_argument("--subset", default="data/selection/reproducibility_subset.txt")
+    ap.add_argument("--ref", default="",
+                    help="reference phenotypes; restricts to pairs with a laboratory "
+                         "S or R, which is the set reproducibility.py reports on")
+    ap.add_argument("--key", default="", help="blinding key, needed with --ref")
     ap.add_argument("--truth", default="",
                     help="optional reference phenotypes, kept outside the repository")
     ap.add_argument("--out", default="results/kompozisyon.tsv")
@@ -108,6 +112,22 @@ def main() -> None:
     if not sub_file.exists():
         sys.exit(f"Alt kume dosyasi yok: {sub_file}")
     subset = {l.strip() for l in sub_file.read_text().splitlines() if l.strip()}
+
+    # The manuscript's reproducibility figures come from reproducibility.py, which scores
+    # only pairs carrying a laboratory phenotype. Reporting this control on the full grid
+    # instead would give a number the reader cannot lay over the manuscript's, so both
+    # scopes are reported and the scored one is named first.
+    scorable: set[tuple[str, str]] | None = None
+    if a.ref and a.key:
+        kp, rp = Path(a.key).expanduser(), Path(a.ref).expanduser()
+        if not kp.exists() or not rp.exists():
+            sys.exit(f"--ref/--key bulunamadi: {rp} / {kp}")
+        iso_of = {r["genome_id"]: r["isolate_id"] for r in read_tsv(kp)}
+        scorable = {(iso_of[r["genome_id"]], r["abx"]) for r in read_tsv(rp)
+                    if r.get("genome_id") in iso_of and r.get("pheno") in ("S", "R")}
+        scorable = {q for q in scorable if q[0] in subset}
+    elif a.ref or a.key:
+        sys.exit("--ref ve --key birlikte verilmeli")
 
     truth = {}
     if a.truth:
@@ -137,85 +157,93 @@ def main() -> None:
                 f"beklenen {expected}; eksik tekrar sayimlari degistirir")
             continue
 
-        # Replicate 2 and 3 have to agree before "the date B call" means anything.
-        rep23 = {k for k in common if per["2"][k] == per["3"][k]}
-        moved = sorted(k for k in rep23 if per["1"][k] != per["2"][k])
+        scope_list = [("full_grid", common)]
+        if scorable is not None:
+            scope_list = [("scored", common & scorable), ("full_grid", common)]
+        for scope, common in scope_list:
+            if not common:
+                problems.append(f"{arm} {scope}: kapsamda cift yok")
+                continue
+            # Replicate 2 and 3 have to agree before "the date B call" means anything.
+            rep23 = {k for k in common if per["2"][k] == per["3"][k]}
+            moved = sorted(k for k in rep23 if per["1"][k] != per["2"][k])
 
-        verdict = Counter()
-        detail = []
-        for k in moved:
-            r1, r23, r4 = per["1"][k], per["2"][k], per["4"][k]
-            if r4 == r23 and r4 != r1:
-                side = "zaman"          # temporal
-            elif r4 == r1 and r4 != r23:
-                side = "bilesim"        # composition
+            verdict = Counter()
+            detail = []
+            for k in moved:
+                r1, r23, r4 = per["1"][k], per["2"][k], per["4"][k]
+                if r4 == r23 and r4 != r1:
+                    side = "zaman"          # temporal
+                elif r4 == r1 and r4 != r23:
+                    side = "bilesim"        # composition
+                else:
+                    side = "ucuncu"         # neither
+                verdict[side] += 1
+                detail.append((k, r1, r23, r4, side, truth.get(k, "")))
+
+            isolates_moved = {k[0] for k in moved}
+            row = {
+                "arm": arm,
+                "scope": scope,
+                "pairs_in_all_four": len(common),
+                "rep2_rep3_agree": len(rep23),
+                "moved_rep1_vs_rep23": len(moved),
+                "isolates_contributing_moved": len(isolates_moved),
+                "rep4_sides_with_rep23_temporal": verdict["zaman"],
+                "rep4_sides_with_rep1_composition": verdict["bilesim"],
+                "rep4_third_state": verdict["ucuncu"],
+                "agree_rep4_rep1": sum(1 for k in common if per["4"][k] == per["1"][k]),
+                "agree_rep4_rep2": sum(1 for k in common if per["4"][k] == per["2"][k]),
+                "agree_rep4_rep3": sum(1 for k in common if per["4"][k] == per["3"][k]),
+                "na_rep1": sum(1 for k in common if per["1"][k] == "NA"),
+                "na_rep4": sum(1 for k in common if per["4"][k] == "NA"),
+            }
+            # Matched timing: rep1 and rep4 share composition and batch count.
+            s1 = batch_seconds(ROOT / a.runs / arm / "rep1")
+            s4 = batch_seconds(ROOT / a.runs / arm / "rep4")
+            row["median_seconds_per_batch_rep1"] = median(s1)
+            row["median_seconds_per_batch_rep4"] = median(s4)
+            row["batches_timed_rep1"] = len(s1)
+            row["batches_timed_rep4"] = len(s4)
+
+            if truth:
+                row["moved_rep4_matches_lab"] = sum(
+                    1 for k in moved if truth.get(k) and per["4"][k] == truth[k])
+                row["moved_with_lab_phenotype"] = sum(1 for k in moved if truth.get(k))
+            rows.append(row)
+
+            print(f"\n=== {arm}  [{scope}]")
+            print(f"  dort tekrarin tamaminda {len(common)} cift, "
+                  f"rep2 ve rep3 {len(rep23)} ciftte ayni")
+            print(f"  rep1 ile rep2/3 arasinda degisen: {len(moved)} cift, "
+                  f"{len(isolates_moved)} ayri izolattan")
+            if moved:
+                print(f"  rep4 rep2/3 tarafinda (zaman): {verdict['zaman']}")
+                print(f"  rep4 rep1 tarafinda (bilesim): {verdict['bilesim']}")
+                print(f"  ucuncu bir durum: {verdict['ucuncu']}")
+                w = max(len(f"{k[0]} {k[1]}") for k, *_ in detail)
+                for k, r1, r23, r4, side, lab in detail:
+                    lab_s = f"  lab={lab}" if lab else ""
+                    print(f"    {k[0]} {k[1]:<{w - len(k[0])}}  "
+                          f"rep1={r1} rep2/3={r23} rep4={r4}  -> {side}{lab_s}")
+                if verdict["zaman"] > verdict["bilesim"]:
+                    print(f"  => sayilar zaman yonunde ({verdict['zaman']} / {len(moved)}). "
+                          f"{len(moved)} cift ve {len(isolates_moved)} izolat bir testi "
+                          f"desteklemez; bu bir yon, bir kanit degil.")
+                elif verdict["bilesim"] > verdict["zaman"]:
+                    print(f"  => sayilar bilesim yonunde ({verdict['bilesim']} / {len(moved)}). "
+                          f"Suruklenme iddiasi bu hâliyle geri cekilmeli.")
+                else:
+                    print("  => sayilar iki yone esit dagildi; ikisi de ayrilamiyor.")
             else:
-                side = "ucuncu"         # neither
-            verdict[side] += 1
-            detail.append((k, r1, r23, r4, side, truth.get(k, "")))
-
-        isolates_moved = {k[0] for k in moved}
-        row = {
-            "arm": arm,
-            "pairs_in_all_four": len(common),
-            "rep2_rep3_agree": len(rep23),
-            "moved_rep1_vs_rep23": len(moved),
-            "isolates_contributing_moved": len(isolates_moved),
-            "rep4_sides_with_rep23_temporal": verdict["zaman"],
-            "rep4_sides_with_rep1_composition": verdict["bilesim"],
-            "rep4_third_state": verdict["ucuncu"],
-            "agree_rep4_rep1": sum(1 for k in common if per["4"][k] == per["1"][k]),
-            "agree_rep4_rep2": sum(1 for k in common if per["4"][k] == per["2"][k]),
-            "agree_rep4_rep3": sum(1 for k in common if per["4"][k] == per["3"][k]),
-            "na_rep1": sum(1 for k in common if per["1"][k] == "NA"),
-            "na_rep4": sum(1 for k in common if per["4"][k] == "NA"),
-        }
-        # Matched timing: rep1 and rep4 share composition and batch count.
-        s1 = batch_seconds(ROOT / a.runs / arm / "rep1")
-        s4 = batch_seconds(ROOT / a.runs / arm / "rep4")
-        row["median_seconds_per_batch_rep1"] = median(s1)
-        row["median_seconds_per_batch_rep4"] = median(s4)
-        row["batches_timed_rep1"] = len(s1)
-        row["batches_timed_rep4"] = len(s4)
-
-        if truth:
-            row["moved_rep4_matches_lab"] = sum(
-                1 for k in moved if truth.get(k) and per["4"][k] == truth[k])
-            row["moved_with_lab_phenotype"] = sum(1 for k in moved if truth.get(k))
-        rows.append(row)
-
-        print(f"\n=== {arm}")
-        print(f"  dort tekrarin tamaminda {len(common)} cift, "
-              f"rep2 ve rep3 {len(rep23)} ciftte ayni")
-        print(f"  rep1 ile rep2/3 arasinda degisen: {len(moved)} cift, "
-              f"{len(isolates_moved)} ayri izolattan")
-        if moved:
-            print(f"  rep4 rep2/3 tarafinda (zaman): {verdict['zaman']}")
-            print(f"  rep4 rep1 tarafinda (bilesim): {verdict['bilesim']}")
-            print(f"  ucuncu bir durum: {verdict['ucuncu']}")
-            w = max(len(f"{k[0]} {k[1]}") for k, *_ in detail)
-            for k, r1, r23, r4, side, lab in detail:
-                lab_s = f"  lab={lab}" if lab else ""
-                print(f"    {k[0]} {k[1]:<{w - len(k[0])}}  "
-                      f"rep1={r1} rep2/3={r23} rep4={r4}  -> {side}{lab_s}")
-            if verdict["zaman"] > verdict["bilesim"]:
-                print(f"  => sayilar zaman yonunde ({verdict['zaman']} / {len(moved)}). "
-                      f"{len(moved)} cift ve {len(isolates_moved)} izolat bir testi "
-                      f"desteklemez; bu bir yon, bir kanit degil.")
-            elif verdict["bilesim"] > verdict["zaman"]:
-                print(f"  => sayilar bilesim yonunde ({verdict['bilesim']} / {len(moved)}). "
-                      f"Suruklenme iddiasi bu hâliyle geri cekilmeli.")
+                print("  rep1 ile rep2/3 arasinda degisen cift yok; bu kol icin "
+                      "ayristirilacak bir sey yok")
+            if s1 and s4:
+                print(f"  eslesmis sure (ayni bilesim, ayni parti sayisi): parti basina ortanca "
+                      f"rep1={median(s1):.0f} s ({len(s1)} parti), "
+                      f"rep4={median(s4):.0f} s ({len(s4)} parti)")
             else:
-                print("  => sayilar iki yone esit dagildi; ikisi de ayrilamiyor.")
-        else:
-            print("  rep1 ile rep2/3 arasinda degisen cift yok; bu kol icin "
-                  "ayristirilacak bir sey yok")
-        if s1 and s4:
-            print(f"  eslesmis sure (ayni bilesim, ayni parti sayisi): parti basina ortanca "
-                  f"rep1={median(s1):.0f} s ({len(s1)} parti), "
-                  f"rep4={median(s4):.0f} s ({len(s4)} parti)")
-        else:
-            print("  eslesmis sure hesaplanamadi: meta.json dosyalari eksik")
+                print("  eslesmis sure hesaplanamadi: meta.json dosyalari eksik")
 
     for p in problems:
         print(f"EKSIK: {p}", file=sys.stderr)
