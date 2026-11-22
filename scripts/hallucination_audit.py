@@ -235,6 +235,7 @@ def normalise(s: str) -> str:
 
 
 EVIDENCE_LIMIT = 1000
+TAIL_CAP = 300
 
 
 def kirp(s: str, limit: int = EVIDENCE_LIMIT) -> str:
@@ -343,7 +344,16 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         # adjudicator to judge, and the instructions ask them to judge from the row alone.
         cut = max(lead.rfind(". "), lead.rfind("! "), lead.rfind("? "))
         lead = lead[cut + 2:] if cut >= 0 else lead[lead.find(" ") + 1:] if " " in lead else lead
-        n = normalise(lead + text[m.start():m.end()])
+        # Include what comes after the number, to the end of its sentence. The match
+        # itself stops 60 characters past the concentration, which cut one claim at
+        # "...is called S, and the eviden" and sent it to an adjudicator without the
+        # conclusion the verdict turns on. A fixed character count cannot know where a
+        # claim ends, so the tail runs to the sentence boundary, capped so a run-on
+        # paragraph cannot pull the whole narrative into one row.
+        tail = text[m.end():m.end() + TAIL_CAP]
+        stop = re.search(r"\.(?!\d)|\n", tail)
+        tail = tail[:stop.start() + 1] if stop else tail
+        n = normalise(lead + text[m.start():m.end()] + tail)
         if not commandish(n):
             add("H3", n)
 

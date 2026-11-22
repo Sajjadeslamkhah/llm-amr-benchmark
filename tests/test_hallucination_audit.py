@@ -112,3 +112,24 @@ def test_evidence_is_not_cut_mid_sentence():
 
     assert audit.kirp("short") == "short"
     assert audit.kirp("") == ""
+
+
+def test_h3_evidence_reaches_the_end_of_the_claim(run):
+    """The real cause of the truncation reader 1 reported.
+
+    BREAKPOINT_CLAIM stops 60 characters past the concentration. On the sheet sent to
+    reader 1 that cut a claim at '...is called S, and the eviden', so the row he had to
+    judge ended before the conclusion the verdict depends on. A character count cannot
+    know where a claim ends; the evidence now runs to the sentence boundary.
+    """
+    (run / "transcript.txt").write_text(
+        "A single gyrA mutation on its own (typical MIC 0.125-0.5 mg/L, around the "
+        "S <=0.25 breakpoint) is called S, and the evidence in this isolate shows no "
+        "second QRDR substitution, so the call rests on one substitution alone. "
+        "The next sentence must stay out of this row.")
+    h3 = [f["evidence"] for f in audit.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert h3, "the claim should still be flagged"
+    claim = max(h3, key=len)
+    assert "one substitution alone." in claim, "the claim must reach its own conclusion"
+    assert "and the eviden" not in claim.replace("and the evidence", "")
+    assert "next sentence" not in claim, "the row must stop at the sentence boundary"
