@@ -138,8 +138,15 @@ def sign_flip(diffs: np.ndarray, rng) -> tuple[float, int, str]:
         return hits / (2 ** nz.size), int(nz.size), "exact over sign flips"
     draws = rng.choice((-1.0, 1.0), size=(PERM, nz.size))
     null = draws @ nz
-    p = (np.abs(null) >= abs(obs) - 1e-12).sum() / PERM
-    return float(max(p, 1.0 / PERM)), int(nz.size), f"sampled, {PERM} draws"
+    hits = int((np.abs(null) >= abs(obs) - 1e-12).sum())
+    if hits == 0:
+        # No draw reached the observed value, so the sample cannot resolve the p any
+        # further: the honest statement is a bound. Printing 1/PERM as if it were the
+        # estimate put "5e-05" beside an exact McNemar of 2.36e-09 and made the
+        # clustered test look four orders of magnitude weaker, when it was only out of
+        # resolution. The bound is reported as a bound.
+        return 1.0 / PERM, int(nz.size), f"bound: 0 of {PERM} draws reached it, so p < {1.0 / PERM:.0e}"
+    return hits / PERM, int(nz.size), f"sampled, {PERM} draws"
 
 
 def icc_oneway(df: pd.DataFrame, col: str) -> float:
@@ -246,13 +253,15 @@ def main() -> None:
         print(f"    uyusmayan cift {len(disc)} ({b} / {c}), "
               f"{disc['isolate_id'].nunique()} ayri izolattan")
         print(f"    McNemar tam (duzeltilmemis, bagimsizlik varsayar) p = {mcn:.3g}")
-        print(f"    izolat isaret testi p = {p:.3g}  ({k_iso} izolat farkli, {how})")
+        lead = "p <" if how.startswith("bound") else "p ="
+        print(f"    izolat isaret testi {lead} {p:.3g}  ({k_iso} izolat farkli, {how})")
         print(f"    esli fark {d_obs*100:+.2f} puan, izolat bootstrap "
               f"[{dlo*100:+.2f}, {dhi*100:+.2f}]")
         rows.append({"arm": f"{x}_vs_{y}", "metric": "paired_difference",
                      "k": b, "n": b + c, "estimate": d_obs,
                      "cluster_lo": dlo, "cluster_hi": dhi,
                      "mcnemar_exact_p": mcn, "cluster_permutation_p": p,
+                     "cluster_permutation_p_is_bound": how.startswith("bound"),
                      "isolates_differing": k_iso, "permutation_mode": how,
                      "discordant_pairs": len(disc),
                      "isolates_in_discordant": int(disc["isolate_id"].nunique()),

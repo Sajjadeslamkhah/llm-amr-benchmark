@@ -135,3 +135,21 @@ def test_rates_scores_a_no_call_against_agreement_but_not_as_a_very_major_error(
     assert r["ca"] == pytest.approx(0.75)
     assert r["vme"] == pytest.approx(0.0)
     assert r["me"] == pytest.approx(0.0)
+
+
+def test_sign_flip_reports_a_bound_when_the_sample_cannot_resolve_it():
+    """With many strongly one-sided isolates no draw reaches the observed value, and the
+    p is then a bound rather than an estimate. Printing 1/PERM as the estimate put
+    "5e-05" next to an exact McNemar of 2.36e-09 and made the clustered test look four
+    orders of magnitude weaker than it is."""
+    d = np.ones(60) * 3
+    p, k, how = kum.sign_flip(d, np.random.default_rng(0))
+    assert k == 60
+    assert how.startswith("bound")
+    assert p == pytest.approx(1 / kum.PERM)
+
+
+def test_sign_flip_reports_an_estimate_when_draws_do_reach_it():
+    d = np.array([1.0, -1.0, 1.0, 0.0, 0.0])
+    p, _, how = kum.sign_flip(d, np.random.default_rng(0))
+    assert how.startswith("exact") and 0 < p <= 1
