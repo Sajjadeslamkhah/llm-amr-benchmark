@@ -161,3 +161,25 @@ def test_h3_row_says_so_when_no_case_is_attached(run):
     h3 = [f for f in audit.check(run, CATALOG)[0] if f["code"] == "H3"]
     assert h3
     assert "not stated" in h3[0]["detail"]
+
+
+def test_h3_context_picks_the_nearest_drug_not_the_longest_name(run):
+    """The first version of this sorted the vocabulary by length and put
+    trimethoprim/sulfamethoxazole on a gyrA ciprofloxacin claim. That is worse than
+    leaving the drug out: an adjudicator who checks 0.25 mg/L against the TMP-SMX
+    breakpoint finds 0.5 and confirms a fabricated threshold that was never fabricated.
+    """
+    (run / "predictions.tsv").write_text(
+        "isolate_id\tantibiotic\tprediction\tevidence\n"
+        "ISO_002\tciprofloxacin\tS\tno QRDR substitution found\n"
+        "ISO_002\ttrimethoprim/sulfamethoxazole\tR\tsul1 and dfrA17 present\n")
+    (run / "transcript.txt").write_text(
+        "For ciprofloxacin the QRDR was inspected in every isolate. "
+        "A single gyrA mutation on its own is around the S <=0.25 mg/L breakpoint. "
+        + "Filler sentence to push the other drug away. " * 4 +
+        "Separately, trimethoprim/sulfamethoxazole was called from sul and dfr genes.")
+    h3 = [f for f in audit.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert h3
+    d = h3[0]["detail"]
+    assert "ciprofloxacin" in d
+    assert "trimethoprim" not in d, "the far-off drug with the longer name must not win"

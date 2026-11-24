@@ -246,7 +246,8 @@ def load_run(run: Path) -> dict:
 ISO_TOKEN = re.compile(r"\bISO_\d{3}\b")
 
 
-def claim_context(pos: int, text: str, spans: list, abx_vocab: set[str]) -> tuple[str, str, str]:
+def claim_context(pos: int, claim: str, text: str, spans: list,
+                  abx_vocab: set[str]) -> tuple[str, str, str]:
     """Which isolate and antibiotic a claim at `pos` is about, and how that was decided.
 
     Both readers refused to adjudicate the two H3 rows for the same reason: the row gave
@@ -258,18 +259,61 @@ def claim_context(pos: int, text: str, spans: list, abx_vocab: set[str]) -> tupl
     """
     for start, end, iso, abx in spans:
         if start <= pos < end:
-            return iso, abx, "stated: the claim is in this prediction's evidence field"
+            return (f"isolate: {iso}; antibiotic: {abx}",
+                    "stated: the claim sits in this prediction's own evidence field", "")
     before = text[max(0, pos - 1500):pos]
     hits = list(ISO_TOKEN.finditer(before))
     iso = hits[-1].group(0) if hits else ""
     if not iso:
         nxt = ISO_TOKEN.search(text[pos:pos + 400])
         iso = nxt.group(0) if nxt else ""
-    window = normalise(text[max(0, pos - 400):pos + 400]).lower()
-    abx = next((a for a in sorted(abx_vocab, key=len, reverse=True) if a and a.lower() in window), "")
+    # Nearest mention, not longest name. Sorting the vocabulary by length put
+    # "trimethoprim/sulfamethoxazole" on a gyrA ciprofloxacin claim because the longer
+    # name happened to appear somewhere in the window. A wrong drug is worse here than
+    # none: an adjudicator checking 0.25 mg/L against the TMP-SMX breakpoint finds 0.5
+    # and confirms a fabricated threshold that was never fabricated. So the drug is
+    # taken from the claim's own text where it is there, and otherwise from the nearest
+    # mention with its distance shown, so the reader can see how loosely it is attached.
+    claim_lo = claim.lower()
+    named = [a for a in abx_vocab if a and a.lower() in claim_lo]
+    if named:
+        abx = max(named, key=len)
+        abx_how = "named in the claim itself"
+        abx_dist = 0
+    else:
+        abx, abx_dist, abx_how = "", -1, ""
+        w_start = max(0, pos - 600)
+        w = text[w_start:pos + 600]
+        wl = w.lower()
+        best = None
+        for a in abx_vocab:
+            if not a:
+                continue
+            al, i = a.lower(), 0
+            while (i := wl.find(al, i)) >= 0:
+                cand = (abs((w_start + i) - pos), -len(a), a)
+                if best is None or cand < best:
+                    best = cand
+                i += 1
+        if best:
+            abx, abx_dist = best[2], best[0]
+            abx_how = (f"nearest mention, {abx_dist} characters away, "
+                       f"not named in the claim and possibly unrelated")
+
+    hits = list(ISO_TOKEN.finditer(text[max(0, pos - 1500):pos]))
+    iso = hits[-1].group(0) if hits else ""
+    iso_how = "nearest mention before the claim, not stated by the agent" if iso else ""
+    if not iso:
+        nxt = ISO_TOKEN.search(text[pos:pos + 400])
+        if nxt:
+            iso, iso_how = nxt.group(0), "nearest mention after the claim, not stated by the agent"
+
+    parts = [f"isolate: {iso}" if iso else "isolate: not stated",
+             f"antibiotic: {abx}" if abx else "antibiotic: not stated"]
+    how = "; ".join(x for x in (iso_how, abx_how) if x)
     if not iso and not abx:
-        return "", "", "not stated: no isolate or antibiotic near this claim"
-    return iso, abx, "nearest mention in the narrative, not stated by the agent"
+        how = "no isolate or antibiotic anywhere near this claim"
+    return "; ".join(parts), how, ""
 
 
 def normalise(s: str) -> str:
@@ -398,11 +442,9 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         tail = tail[:stop.start() + 1] if stop else tail
         n = normalise(lead + text[m.start():m.end()] + tail)
         if not commandish(n):
-            iso, abx, how = claim_context(m.start(), text, data.get("spans", []), abx_vocab)
-            add("H3", n, detail="; ".join(x for x in (
-                f"isolate: {iso}" if iso else "isolate: not stated",
-                f"antibiotic: {abx}" if abx else "antibiotic: not stated",
-                how) if x))
+            what, how, _ = claim_context(m.start(), n, text,
+                                         data.get("spans", []), abx_vocab)
+            add("H3", n, detail="; ".join(x for x in (what, how) if x))
 
     # U1 is NOT a hallucination code. Added 2026-11-21 as a post-hoc exploratory
     # measure after the H3 screen turned up mostly hedges: it counts the places an
