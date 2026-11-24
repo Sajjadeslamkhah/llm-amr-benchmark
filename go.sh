@@ -17,6 +17,7 @@
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
 #   bash go.sh kompozisyon  suruklenme iddiasi icin bilesim kontrolu (rep4, tum izolatlar)
 #   bash go.sh h3tekrar     yalnizca H3 satirlari, baglam sutunuyla, yeniden degerlendirme icin
+#   bash go.sh kumelenme    izolat duzeyinde aralik ve test (Wilson/McNemar'in yaninda)
 #   bash go.sh duyarlilik  on belirlenmis duyarlilik analizleri (ara fenotip, test standardi)
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
@@ -139,6 +140,19 @@ case "${1:-}" in
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
     PY="$PY" ARMS="$ARMS" caffeinate -dimsu bash scripts/tekrar.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
+    ;;
+  kumelenme)
+    # Izolat duzeyinde cikarim: izolat bootstrap araliklari, izolat isaret testi, ICC.
+    # metrics.py'nin Wilson araliklari ve tam McNemar'i ciftleri bagimsiz sayiyor;
+    # 552 cift 118 izolattan geliyor. Bu komut ikisini yan yana basar.
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    GIZLI="${GIZLI:-$HOME/amr_gizli}"
+    "$PY" scripts/kumelenme.py \
+      --ref "$GIZLI/reference_phenotypes.tsv" \
+      --key "$GIZLI/blinding_key.tsv" \
+      --pred claude=runs/claude/rep1/predictions.tsv \
+      --pred gpt=runs/gpt/rep1/predictions.tsv \
+      --pred ref=runs/amrfinderplus/predictions.tsv
     ;;
   h3tekrar)
     # Yalnizca H3 satirlari, baglam sutunuyla, iki okuyucuya yeniden gonderilmek uzere.
