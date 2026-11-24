@@ -133,3 +133,31 @@ def test_h3_evidence_reaches_the_end_of_the_claim(run):
     assert "one substitution alone." in claim, "the claim must reach its own conclusion"
     assert "and the eviden" not in claim.replace("and the evidence", "")
     assert "next sentence" not in claim, "the row must stop at the sentence boundary"
+
+
+def test_h3_row_names_the_isolate_and_antibiotic_it_is_about(run):
+    """Both readers refused to adjudicate the H3 rows for want of this.
+
+    Reader 2 returned Unclear on both, asking which mutation one referred to and which
+    strain the other applied to; reader 1's second report named the same gap. A
+    breakpoint cannot be checked without the organism and the drug, so the row carries
+    them, and says whether they were stated or merely nearby.
+    """
+    (run / "predictions.tsv").write_text(
+        "isolate_id\tantibiotic\tprediction\tevidence\n"
+        "ISO_007\tciprofloxacin\tS\tA single gyrA substitution, MIC near 0.25 mg/L, so susceptible.\n")
+    h3 = [f for f in audit.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert h3, "the claim should be flagged"
+    d = h3[0]["detail"]
+    assert "ISO_007" in d and "ciprofloxacin" in d
+    assert "stated" in d, "a claim inside its own prediction's evidence is stated, not guessed"
+
+
+def test_h3_row_says_so_when_no_case_is_attached(run):
+    """A breakpoint claim with no isolate and no drug anywhere near it is not a row the
+    adjudicator should have to guess at, and the absence is itself worth seeing."""
+    (run / "transcript.txt").write_text(
+        "In general the committee sets the threshold at 0.25 mg/L for this class.")
+    h3 = [f for f in audit.check(run, CATALOG)[0] if f["code"] == "H3"]
+    assert h3
+    assert "not stated" in h3[0]["detail"]

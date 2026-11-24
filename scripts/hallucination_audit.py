@@ -196,12 +196,19 @@ def load_run(run: Path) -> dict:
         if p.exists():
             text_parts.append(p.read_text(encoding="utf-8", errors="replace"))
     preds: list[dict] = []
+    # Which part of the joined text each prediction's evidence occupies. Both readers
+    # returned the H3 rows unadjudicated because the row did not say which isolate or
+    # antibiotic the claim was about, and a breakpoint means nothing without them.
+    # Where a claim sits inside a prediction's evidence cell those two are known exactly.
+    part_owner: list[tuple[str, str] | None] = [None] * len(text_parts)
     pred = run / "predictions.tsv"
     if pred.exists():
         with pred.open(encoding="utf-8", errors="replace") as fh:
             for r in csv.DictReader(fh, delimiter="\t"):
                 preds.append(r)
                 text_parts.append(r.get("evidence") or "")
+                part_owner.append(((r.get("isolate_id") or "").strip(),
+                                   (r.get("antibiotic") or "").strip()))
     log = run / "commands.log"
     if log.exists():
         for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -226,8 +233,43 @@ def load_run(run: Path) -> dict:
         blob = (c.get("stdout") or "") + "\n" + (c.get("stderr") or "")
         for iso in set(re.findall(r"ISO_\d{3}", (c.get("cmd") or "") + blob)):
             per_isolate[iso] = per_isolate.get(iso, "") + "\n" + blob
+    spans = []
+    pos = 0
+    for part, owner in zip(text_parts, part_owner):
+        if owner and owner[0]:
+            spans.append((pos, pos + len(part), owner[0], owner[1]))
+        pos += len(part) + 1          # the "\n" the join inserts
     return {"text": "\n".join(text_parts), "commands": commands,
-            "preds": preds, "per_isolate": per_isolate}
+            "preds": preds, "per_isolate": per_isolate, "spans": spans}
+
+
+ISO_TOKEN = re.compile(r"\bISO_\d{3}\b")
+
+
+def claim_context(pos: int, text: str, spans: list, abx_vocab: set[str]) -> tuple[str, str, str]:
+    """Which isolate and antibiotic a claim at `pos` is about, and how that was decided.
+
+    Both readers refused to adjudicate the two H3 rows for the same reason: the row gave
+    a breakpoint with no organism, no antibiotic and, in one case, no named mutation, and
+    a threshold cannot be checked without them. An adjudicator must also be told how
+    firmly the context is attached, because a nearest-mention guess and a value read off
+    the prediction the claim was written for are not the same evidence, and a claim made
+    with no case attached at all is itself worth seeing.
+    """
+    for start, end, iso, abx in spans:
+        if start <= pos < end:
+            return iso, abx, "stated: the claim is in this prediction's evidence field"
+    before = text[max(0, pos - 1500):pos]
+    hits = list(ISO_TOKEN.finditer(before))
+    iso = hits[-1].group(0) if hits else ""
+    if not iso:
+        nxt = ISO_TOKEN.search(text[pos:pos + 400])
+        iso = nxt.group(0) if nxt else ""
+    window = normalise(text[max(0, pos - 400):pos + 400]).lower()
+    abx = next((a for a in sorted(abx_vocab, key=len, reverse=True) if a and a.lower() in window), "")
+    if not iso and not abx:
+        return "", "", "not stated: no isolate or antibiotic near this claim"
+    return iso, abx, "nearest mention in the narrative, not stated by the agent"
 
 
 def normalise(s: str) -> str:
@@ -272,6 +314,7 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
                          "evidence": kirp(evidence), "detail": detail})
 
     real_blob = out_blob + "\n" + "\n".join(data["per_isolate"].values())
+    abx_vocab = {(r.get("antibiotic") or "").strip() for r in data["preds"]}
 
     # H1: a gene-like name that appears in no catalogue entry and in no tool output.
     # Qualifiers are stripped first, so blaOXA-48-like is tested as blaOXA-48.
@@ -355,7 +398,11 @@ def check(run: Path, catalog: set[str]) -> list[dict]:
         tail = tail[:stop.start() + 1] if stop else tail
         n = normalise(lead + text[m.start():m.end()] + tail)
         if not commandish(n):
-            add("H3", n)
+            iso, abx, how = claim_context(m.start(), text, data.get("spans", []), abx_vocab)
+            add("H3", n, detail="; ".join(x for x in (
+                f"isolate: {iso}" if iso else "isolate: not stated",
+                f"antibiotic: {abx}" if abx else "antibiotic: not stated",
+                how) if x))
 
     # U1 is NOT a hallucination code. Added 2026-11-21 as a post-hoc exploratory
     # measure after the H3 screen turned up mostly hedges: it counts the places an
