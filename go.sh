@@ -159,6 +159,7 @@ case "${1:-}" in
     # Birincil ciktilari depoya kopyala, SHA-256 manifestiyle. Anahtar dosyalari ve
     # referans fenotipleri kasitla disarida; results/audit iki kez kayboldu.
     export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    shift                     # alt komut adini Python'a gecirme
     "$PY" scripts/arsiv.py "$@"
     ;;
   kumelenme)
