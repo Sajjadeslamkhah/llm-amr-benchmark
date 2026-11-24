@@ -248,71 +248,39 @@ ISO_TOKEN = re.compile(r"\bISO_\d{3}\b")
 
 def claim_context(pos: int, claim: str, text: str, spans: list,
                   abx_vocab: set[str]) -> tuple[str, str, str]:
-    """Which isolate and antibiotic a claim at `pos` is about, and how that was decided.
+    """What the claim itself, or the prediction it sits in, says it is about.
 
-    Both readers refused to adjudicate the two H3 rows for the same reason: the row gave
-    a breakpoint with no organism, no antibiotic and, in one case, no named mutation, and
-    a threshold cannot be checked without them. An adjudicator must also be told how
-    firmly the context is attached, because a nearest-mention guess and a value read off
-    the prediction the claim was written for are not the same evidence, and a claim made
-    with no case attached at all is itself worth seeing.
+    Nothing here is inferred from surrounding text. Two earlier versions guessed the
+    drug from nearby mentions and both guessed wrong on the same two rows, first
+    trimethoprim/sulfamethoxazole and then gentamicin, on claims about a gyrA
+    substitution and the 0.25 mg/L ciprofloxacin breakpoint. The narrative simply does
+    not attach these claims to a drug, and distance in characters is not attachment: a
+    nearest-mention rule will always return something, and what it returns reads to an
+    adjudicator like a fact about the agent rather than a guess by the screen. A wrong
+    drug turns a correct threshold into a confirmed fabrication, which inflates this
+    study's own headline. So the row reports the two things that are stated — the
+    prediction the claim was written inside, where that is so, and what the claim's own
+    words name — and otherwise says plainly that there is nothing to go on.
+
+    Reader 2 asked of one row which mutation was meant: it opens "That mutation" with no
+    antecedent in the row. Naming the genes the claim mentions, or recording that it
+    mentions none, answers that question with stated material.
     """
-    for start, end, iso, abx in spans:
-        if start <= pos < end:
+    for span_start, span_end, iso, abx in spans:
+        if span_start <= pos < span_end:
             return (f"isolate: {iso}; antibiotic: {abx}",
                     "stated: the claim sits in this prediction's own evidence field", "")
-    before = text[max(0, pos - 1500):pos]
-    hits = list(ISO_TOKEN.finditer(before))
-    iso = hits[-1].group(0) if hits else ""
-    if not iso:
-        nxt = ISO_TOKEN.search(text[pos:pos + 400])
-        iso = nxt.group(0) if nxt else ""
-    # Nearest mention, not longest name. Sorting the vocabulary by length put
-    # "trimethoprim/sulfamethoxazole" on a gyrA ciprofloxacin claim because the longer
-    # name happened to appear somewhere in the window. A wrong drug is worse here than
-    # none: an adjudicator checking 0.25 mg/L against the TMP-SMX breakpoint finds 0.5
-    # and confirms a fabricated threshold that was never fabricated. So the drug is
-    # taken from the claim's own text where it is there, and otherwise from the nearest
-    # mention with its distance shown, so the reader can see how loosely it is attached.
+
     claim_lo = claim.lower()
     named = [a for a in abx_vocab if a and a.lower() in claim_lo]
-    if named:
-        abx = max(named, key=len)
-        abx_how = "named in the claim itself"
-        abx_dist = 0
-    else:
-        abx, abx_dist, abx_how = "", -1, ""
-        w_start = max(0, pos - 600)
-        w = text[w_start:pos + 600]
-        wl = w.lower()
-        best = None
-        for a in abx_vocab:
-            if not a:
-                continue
-            al, i = a.lower(), 0
-            while (i := wl.find(al, i)) >= 0:
-                cand = (abs((w_start + i) - pos), -len(a), a)
-                if best is None or cand < best:
-                    best = cand
-                i += 1
-        if best:
-            abx, abx_dist = best[2], best[0]
-            abx_how = (f"nearest mention, {abx_dist} characters away, "
-                       f"not named in the claim and possibly unrelated")
-
-    hits = list(ISO_TOKEN.finditer(text[max(0, pos - 1500):pos]))
-    iso = hits[-1].group(0) if hits else ""
-    iso_how = "nearest mention before the claim, not stated by the agent" if iso else ""
-    if not iso:
-        nxt = ISO_TOKEN.search(text[pos:pos + 400])
-        if nxt:
-            iso, iso_how = nxt.group(0), "nearest mention after the claim, not stated by the agent"
-
-    parts = [f"isolate: {iso}" if iso else "isolate: not stated",
-             f"antibiotic: {abx}" if abx else "antibiotic: not stated"]
-    how = "; ".join(x for x in (iso_how, abx_how) if x)
-    if not iso and not abx:
-        how = "no isolate or antibiotic anywhere near this claim"
+    genes = sorted(set(GENE_LIKE.findall(claim)) | set(re.findall(r"\b[a-z]{3}[A-Z]\b", claim)))
+    parts = ["isolate: not stated"]
+    parts.append(f"antibiotic: {max(named, key=len)} (named in the claim)" if named
+                 else "antibiotic: not named in the claim")
+    parts.append("gene or variant named in the claim: " + ", ".join(genes) if genes
+                 else "no gene or variant named in the claim")
+    how = ("the claim is in the narrative, not in a prediction, and names no isolate; "
+           "nothing is taken from nearby text, because proximity is not attachment")
     return "; ".join(parts), how, ""
 
 
