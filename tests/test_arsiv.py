@@ -44,3 +44,13 @@ def test_patterns_cover_each_artifact_the_numbers_come_from():
 def test_every_pattern_states_why_the_file_is_kept():
     for glob, why in ars.PATTERNS:
         assert why and len(why) > 10, glob
+
+
+def test_verify_mode_exists_and_is_documented():
+    """FREEZE.md told readers to verify twelve files with shasum, five no longer matched,
+    and nobody noticed until a reviewer ran it. An archive whose manifest cannot be
+    checked with one command repeats that."""
+    import inspect
+    src = inspect.getsource(ars.main)
+    assert "--dogrula" in src
+    assert "MANIFEST.tsv" in src

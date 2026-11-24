@@ -89,8 +89,36 @@ def sha256(p: Path) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--yaz", action="store_true", help="copy; without it, only report")
+    ap.add_argument("--dogrula", action="store_true",
+                    help="recompute every checksum in archive/MANIFEST.tsv and report")
     ap.add_argument("--max-mb", type=float, default=MAX_MB)
     a = ap.parse_args()
+
+    if a.dogrula:
+        man = DEST / "MANIFEST.tsv"
+        if not man.exists():
+            sys.exit(f"{man} yok. Once: python scripts/arsiv.py --yaz")
+        with man.open(encoding="utf-8") as fh:
+            entries = list(csv.DictReader(fh, delimiter="\t"))
+        missing, changed = [], []
+        for e in entries:
+            f = DEST / e["path"]
+            if not f.exists():
+                missing.append(e["path"])
+            elif sha256(f) != e["sha256"]:
+                changed.append(e["path"])
+        print(f"{len(entries)} kayit kontrol edildi")
+        for label, items in (("EKSIK", missing), ("DEGISMIS", changed)):
+            for it in items:
+                print(f"  {label}: {it}")
+        if missing or changed:
+            # FREEZE.md told readers to verify twelve files with shasum and five of them
+            # no longer matched, which nobody noticed until a reviewer ran it. A
+            # mismatch here is an error, not a warning.
+            sys.exit(f"\n{len(missing)} eksik, {len(changed)} degismis. "
+                     f"Her birini PROTOCOL.md bolum 12'ye bagla ya da arsivi yenile.")
+        print("Hepsi manifestle uyusuyor.")
+        return
 
     keep, skipped, blocked = [], [], []
     for pattern, why in PATTERNS:
@@ -146,8 +174,8 @@ def main() -> None:
         w.writeheader()
         w.writerows(sorted(rows, key=lambda r: r["path"]))
     print(f"\n{len(rows)} dosya kopyalandi -> {DEST.relative_to(ROOT)}/")
-    print(f"MANIFEST.tsv yazildi. Dogrulama: shasum -a 256 -c yerine")
-    print("  python scripts/arsiv.py --yaz  tekrar kosulursa manifest yeniden uretilir")
+    print(f"MANIFEST.tsv yazildi ({len(rows)} kayit).")
+    print("Dogrulamak icin:  python scripts/arsiv.py --dogrula")
 
 
 if __name__ == "__main__":
