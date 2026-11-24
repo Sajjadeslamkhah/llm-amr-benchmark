@@ -1,0 +1,709 @@
+isolate_id	antibiotic	prediction	evidence
+ISO_001	ampicillin	R	blaCTX-M-15;blaOXA-1;blaTEM-1
+ISO_001	cefotaxime	R	blaCTX-M-15
+ISO_001	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_E84V;parC_S80I;parE_I529L;aac(6')-Ib-cr5
+ISO_001	gentamicin	S	no determinant found
+ISO_001	meropenem	S	no determinant found
+ISO_001	trimethoprim/sulfamethoxazole	R	dfrA17;sul1
+ISO_002	ampicillin	R	blaTEM-1;blaOXA-9;blaCTX-M-15;blaNDM-6;blaCMY-42;blaOXA-1
+ISO_002	cefotaxime	R	blaCTX-M-15;blaNDM-6;blaCMY-42
+ISO_002	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_S80I;parE_S458A;qnrS1;aac(6')-Ib-cr5
+ISO_002	gentamicin	R	aac(3)-IIe
+ISO_002	meropenem	R	blaNDM-6
+ISO_002	trimethoprim/sulfamethoxazole	R	dfrA17;sul1
+ISO_003	ampicillin	R	blaOXA-1;blaNDM-7;blaCTX-M-15;blaCMY-6
+ISO_003	cefotaxime	R	blaNDM-7;blaCTX-M-15;blaCMY-6
+ISO_003	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_A108V;parC_S80I;parE_S458A;aac(6')-Ib-cr5
+ISO_003	gentamicin	S	no determinant found
+ISO_003	meropenem	R	blaNDM-7
+ISO_003	trimethoprim/sulfamethoxazole	R	dfrA17;sul1
+ISO_004	ampicillin	S	no determinant found
+ISO_004	cefotaxime	S	no determinant found
+ISO_004	ciprofloxacin	S	no determinant found
+ISO_004	gentamicin	S	no determinant found
+ISO_004	meropenem	S	no determinant found
+ISO_004	trimethoprim/sulfamethoxazole	R	dfrA1
+ISO_005	ampicillin	R	blaCMY-6;blaTEM-1;blaCTX-M-15;blaNDM-1;blaOXA-1
+ISO_005	cefotaxime	R	blaCMY-6;blaCTX-M-15;blaNDM-1
+ISO_005	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_S80I;parE_S458A;qnrB1;aac(6')-Ib-cr5
+ISO_005	gentamicin	R	rmtC
+ISO_005	meropenem	R	blaNDM-1
+ISO_005	trimethoprim/sulfamethoxazole	R	dfrA14;sul2;sul1
+ISO_006	ampicillin	R	blaTEM-1;blaNDM-1;blaCMY-42
+ISO_006	cefotaxime	R	blaNDM-1;blaCMY-42
+ISO_006	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_S80I;parE_S458A;aac(6')-Ib-cr5;qnrB1
+ISO_006	gentamicin	R	aac(3)-IId
+ISO_006	meropenem	R	blaNDM-1
+ISO_006	trimethoprim/sulfamethoxazole	R	dfrA17;sul2;sul1[PARTIAL_CONTIG_ENDX]
+ISO_007	ampicillin	R	blaTEM-1;blaOXA-9;blaSHV-12;blaNDM-1;blaCMY-42
+ISO_007	cefotaxime	R	blaSHV-12;blaNDM-1;blaCMY-42
+ISO_007	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_S80I;parE_S458A
+ISO_007	gentamicin	R	armA
+ISO_007	meropenem	R	blaNDM-1
+ISO_007	trimethoprim/sulfamethoxazole	R	dfrA12;sul2;sul1
+ISO_008	ampicillin	R	blaTEM-1;blaCTX-M-14
+ISO_008	cefotaxime	R	blaCTX-M-14
+ISO_008	ciprofloxacin	R	gyrA_D87N;gyrA_S83L;parC_E84V;parC_S80I;parE_I529L
+ISO_008	gentamicin	R	aac(3)-IId
+ISO_008	meropenem	S	no determinant found
+ISO_008	trimethoprim/sulfamethoxazole	R	dfrA17;sul1;sul2
+ISO_009	ampicillin	R	blaTEM-1
+ISO_009	cefotaxime	S	narrow-spectrum beta-lactamase only: blaTEM-1
+ISO_009	ciprofloxacin	S	single low-level determinant, predicted below breakpoint: gyrA_S83L
+ISO_009	gentamicin	S	no determinant found
+ISO_009	meropenem	S	no determinant found
+ISO_009	trimethoprim/sulfamethoxazole	R	dfrA12;sul1
+ISO_010	ampicillin	R	blaTEM-1
+ISO_010	cefotaxime	S	narrow-spectrum beta-lactamase only: blaTEM-1
+ISO_010	ciprofloxacin	S	no determinant found
+ISO_010	gentamicin	S	no determinant found
+ISO_010	meropenem	S	no determinant found
+ISO_010	trimethoprim/sulfamethoxazole	R	dfrA1;sul1;sul2
+ISO_011	ampicillin	R	blaOXA-10; blaTEM-1
+ISO_011	cefotaxime	S	only narrow-spectrum/non-ESBL beta-lactamase: blaOXA-10; blaTEM-1
+ISO_011	ciprofloxacin	R	qnrS1; gyrA_S83L; multiple QRDR/PMQR determinants
+ISO_011	gentamicin	S	no determinant found
+ISO_011	meropenem	S	no determinant found
+ISO_011	trimethoprim/sulfamethoxazole	R	dfrA14; sul3
+ISO_012	ampicillin	R	blaOXA-48
+ISO_012	cefotaxime	S	only narrow-spectrum/non-ESBL beta-lactamase: blaOXA-48
+ISO_012	ciprofloxacin	S	no determinant found
+ISO_012	gentamicin	S	no determinant found
+ISO_012	meropenem	R	blaOXA-48; OXA-48 may give low-level MIC near breakpoint
+ISO_012	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_013	ampicillin	R	blaNDM-5; blaCTX-M-14; blaTEM-1
+ISO_013	cefotaxime	R	blaNDM-5; blaCTX-M-14
+ISO_013	ciprofloxacin	R	parC_S80I; parE_S458A; gyrA_D87N; gyrA_S83L; multiple QRDR/PMQR determinants
+ISO_013	gentamicin	R	aac(3)-IVa
+ISO_013	meropenem	R	blaNDM-5
+ISO_013	trimethoprim/sulfamethoxazole	R	dfrA12; sul2
+ISO_014	ampicillin	S	no determinant found
+ISO_014	cefotaxime	S	no determinant found
+ISO_014	ciprofloxacin	S	no determinant found
+ISO_014	gentamicin	S	no determinant found
+ISO_014	meropenem	S	no determinant found
+ISO_014	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_015	ampicillin	S	no determinant found
+ISO_015	cefotaxime	S	no determinant found
+ISO_015	ciprofloxacin	S	no determinant found
+ISO_015	gentamicin	S	no determinant found
+ISO_015	meropenem	S	no determinant found
+ISO_015	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_016	ampicillin	R	blaSHV-12; blaTEM-1
+ISO_016	cefotaxime	R	blaSHV-12
+ISO_016	ciprofloxacin	R	gyrA_S83L; single low-level determinant, borderline MIC
+ISO_016	gentamicin	S	no determinant found
+ISO_016	meropenem	S	no determinant found
+ISO_016	trimethoprim/sulfamethoxazole	R	dfrA1; no sul gene (dfr alone)
+ISO_017	ampicillin	R	blaTEM(BLASTX,cov97.90)
+ISO_017	cefotaxime	S	no determinant found
+ISO_017	ciprofloxacin	S	no determinant found
+ISO_017	gentamicin	R	aac(3)-IId(PARTIAL_CONTIG_ENDX,cov86.71)
+ISO_017	meropenem	S	no determinant found
+ISO_017	trimethoprim/sulfamethoxazole	R	dfrA17; sul2; sul1
+ISO_018	ampicillin	R	blaCTX-M-55; blaOXA-10
+ISO_018	cefotaxime	R	blaCTX-M-55
+ISO_018	ciprofloxacin	R	qnrS1; single low-level determinant, borderline MIC
+ISO_018	gentamicin	S	no determinant found
+ISO_018	meropenem	S	no determinant found
+ISO_018	trimethoprim/sulfamethoxazole	R	dfrA14; no sul gene (dfr alone)
+ISO_019	ampicillin	R	blaTEM-1
+ISO_019	cefotaxime	S	only narrow-spectrum/non-ESBL beta-lactamase: blaTEM-1
+ISO_019	ciprofloxacin	S	no determinant found
+ISO_019	gentamicin	S	no determinant found
+ISO_019	meropenem	S	no determinant found
+ISO_019	trimethoprim/sulfamethoxazole	R	dfrA1; sul1
+ISO_020	ampicillin	S	no determinant found
+ISO_020	cefotaxime	S	no determinant found
+ISO_020	ciprofloxacin	S	no determinant found
+ISO_020	gentamicin	S	no determinant found
+ISO_020	meropenem	S	no determinant found
+ISO_020	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_021	ampicillin	S	chromosomal blaEC-5 only, no ampC promoter mutation
+ISO_021	cefotaxime	S	no determinant found (chromosomal blaEC-5 only)
+ISO_021	ciprofloxacin	S	no determinant found
+ISO_021	gentamicin	S	no determinant found
+ISO_021	meropenem	S	no determinant found
+ISO_021	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_022	ampicillin	S	chromosomal blaEC only, no ampC promoter mutation
+ISO_022	cefotaxime	S	no determinant found
+ISO_022	ciprofloxacin	S	no determinant found
+ISO_022	gentamicin	S	no determinant found (aph(6)-Id, aph(3'')-Ib are streptomycin only)
+ISO_022	meropenem	S	no determinant found
+ISO_022	trimethoprim/sulfamethoxazole	S	sul2 (partial, contig end) only; no dfr gene
+ISO_023	ampicillin	R	blaTEM-1
+ISO_023	cefotaxime	S	blaTEM-1 (non-ESBL); no ESBL/AmpC/carbapenemase
+ISO_023	ciprofloxacin	S	no determinant found
+ISO_023	gentamicin	S	no determinant found
+ISO_023	meropenem	S	no determinant found
+ISO_023	trimethoprim/sulfamethoxazole	R	dfrA7 + sul1 + sul2
+ISO_024	ampicillin	R	blaTEM (TEM-1 with I12M signal-peptide substitution; penicillinase)
+ISO_024	cefotaxime	S	blaTEM non-ESBL; no ESBL/AmpC/carbapenemase
+ISO_024	ciprofloxacin	S	no determinant found
+ISO_024	gentamicin	S	no determinant found
+ISO_024	meropenem	S	no determinant found
+ISO_024	trimethoprim/sulfamethoxazole	R	dfrA17 + sul1
+ISO_025	ampicillin	R	blaCTX-M-1 + blaTEM-1
+ISO_025	cefotaxime	R	blaCTX-M-1 (ESBL)
+ISO_025	ciprofloxacin	S	no determinant found
+ISO_025	gentamicin	S	no determinant found
+ISO_025	meropenem	S	no determinant found
+ISO_025	trimethoprim/sulfamethoxazole	R	dfrA1 + dfrA5 + sul2
+ISO_026	ampicillin	S	chromosomal blaEC only; marR_S3N not sufficient
+ISO_026	cefotaxime	S	no determinant found
+ISO_026	ciprofloxacin	R	gyrA_S83L (+ marR_S3N); single QRDR mutation, low-level
+ISO_026	gentamicin	S	no determinant found
+ISO_026	meropenem	S	no determinant found
+ISO_026	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_027	ampicillin	R	blaCTX-M-55 + blaTEM (partial)
+ISO_027	cefotaxime	R	blaCTX-M-55 (ESBL)
+ISO_027	ciprofloxacin	R	gyrA_S83L + gyrA_D87N + parC_S80I (+ parC_A56T)
+ISO_027	gentamicin	R	aac(3)-IId
+ISO_027	meropenem	S	no determinant found
+ISO_027	trimethoprim/sulfamethoxazole	R	dfrA17 + sul1 + sul2
+ISO_028	ampicillin	S	chromosomal blaEC-5 only
+ISO_028	cefotaxime	S	no determinant found
+ISO_028	ciprofloxacin	S	no determinant found
+ISO_028	gentamicin	S	no determinant found
+ISO_028	meropenem	S	no determinant found
+ISO_028	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_029	ampicillin	S	chromosomal blaEC-5 only
+ISO_029	cefotaxime	S	no determinant found
+ISO_029	ciprofloxacin	S	no determinant found
+ISO_029	gentamicin	S	no determinant found
+ISO_029	meropenem	S	no determinant found
+ISO_029	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_030	ampicillin	R	blaKPC-2 + blaTEM-1
+ISO_030	cefotaxime	R	blaKPC-2 (carbapenemase)
+ISO_030	ciprofloxacin	S	no gyrA QRDR mutation; parC_S57T/parE_I355T only (not established as R)
+ISO_030	gentamicin	S	no determinant found
+ISO_030	meropenem	R	blaKPC-2
+ISO_030	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_031	ampicillin	R	blaTEM-1
+ISO_031	cefotaxime	S	blaTEM-1 only (narrow-spectrum); chromosomal blaEC without ampC promoter mutation
+ISO_031	ciprofloxacin	R	gyrA S83L+D87N, parC S80I+E84V
+ISO_031	gentamicin	S	only aadA5 (streptomycin); no gentamicin-modifying enzyme
+ISO_031	meropenem	S	no carbapenemase
+ISO_031	trimethoprim/sulfamethoxazole	R	dfrA17 + sul1
+ISO_032	ampicillin	S	chromosomal blaEC only, no ampC promoter mutation; no acquired beta-lactamase
+ISO_032	cefotaxime	S	no determinant found
+ISO_032	ciprofloxacin	S	no determinant found
+ISO_032	gentamicin	S	aph(6)-Id/aph(3'')-Ib (streptomycin only)
+ISO_032	meropenem	S	no determinant found
+ISO_032	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_033	ampicillin	S	chromosomal blaEC only; marR S3N (minor) only
+ISO_033	cefotaxime	S	no determinant found
+ISO_033	ciprofloxacin	S	no QRDR mutation/qnr; marR S3N only
+ISO_033	gentamicin	S	no determinant found
+ISO_033	meropenem	S	no determinant found
+ISO_033	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_034	ampicillin	S	chromosomal blaEC only; no acquired beta-lactamase
+ISO_034	cefotaxime	S	no determinant found
+ISO_034	ciprofloxacin	S	no determinant found
+ISO_034	gentamicin	S	no determinant found
+ISO_034	meropenem	S	no determinant found
+ISO_034	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_035	ampicillin	R	blaTEM-1
+ISO_035	cefotaxime	S	blaTEM-1 only; no ESBL/pAmpC/ampC promoter mutation
+ISO_035	ciprofloxacin	S	single gyrA S83L only (reduced susceptibility, expected MIC <=0.25-0.5); no parC/qnr
+ISO_035	gentamicin	R	aac(3)-IId
+ISO_035	meropenem	S	no carbapenemase
+ISO_035	trimethoprim/sulfamethoxazole	R	dfrA17 + sul1/sul2/sul3
+ISO_036	ampicillin	S	chromosomal blaEC only; marR S3N only
+ISO_036	cefotaxime	S	no determinant found
+ISO_036	ciprofloxacin	S	no QRDR mutation/qnr
+ISO_036	gentamicin	S	no determinant found
+ISO_036	meropenem	S	no determinant found
+ISO_036	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_037	ampicillin	R	blaKPC-3, blaTEM-1
+ISO_037	cefotaxime	R	blaKPC-3 (carbapenemase hydrolyses cephalosporins)
+ISO_037	ciprofloxacin	R	gyrA S83L + qnrS1
+ISO_037	gentamicin	S	no determinant found
+ISO_037	meropenem	R	blaKPC-3
+ISO_037	trimethoprim/sulfamethoxazole	R	dfrA14
+ISO_038	ampicillin	S	chromosomal blaEC only; no acquired beta-lactamase
+ISO_038	cefotaxime	S	no determinant found
+ISO_038	ciprofloxacin	S	no determinant found
+ISO_038	gentamicin	S	aph(3')-Ia, aph(6)-Id, aph(3'')-Ib (not gentamicin)
+ISO_038	meropenem	S	no determinant found
+ISO_038	trimethoprim/sulfamethoxazole	S	sul2 only, no dfr gene
+ISO_039	ampicillin	S	chromosomal blaEC-5 only
+ISO_039	cefotaxime	S	no determinant found
+ISO_039	ciprofloxacin	S	no determinant found
+ISO_039	gentamicin	S	no determinant found
+ISO_039	meropenem	S	no determinant found
+ISO_039	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_040	ampicillin	R	blaSHV-1
+ISO_040	cefotaxime	S	blaSHV-1 (narrow-spectrum, non-ESBL)
+ISO_040	ciprofloxacin	S	no determinant found
+ISO_040	gentamicin	S	aadA1 only (streptomycin)
+ISO_040	meropenem	S	no determinant found
+ISO_040	trimethoprim/sulfamethoxazole	S	sul1 only, no dfr gene
+ISO_041	ampicillin	R	blaTEM-1, blaCTX-M-15, blaOXA-1
+ISO_041	cefotaxime	R	blaCTX-M-15
+ISO_041	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parE_S458A, parC_S80I, aac(6')-Ib-cr5
+ISO_041	gentamicin	R	aac(3)-IIe
+ISO_041	meropenem	S	no determinant found
+ISO_041	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_042	ampicillin	R	blaCTX-M-65
+ISO_042	cefotaxime	R	blaCTX-M-65
+ISO_042	ciprofloxacin	R	gyrA_D87Y, gyrA_S83L, parE_S458A, parC_S80I
+ISO_042	gentamicin	R	aac(3)-IVa
+ISO_042	meropenem	S	no determinant found
+ISO_042	trimethoprim/sulfamethoxazole	R	dfrA12, sul2
+ISO_043	ampicillin	R	blaTEM-1
+ISO_043	cefotaxime	S	no determinant found
+ISO_043	ciprofloxacin	S	no determinant found
+ISO_043	gentamicin	S	no determinant found
+ISO_043	meropenem	S	no determinant found
+ISO_043	trimethoprim/sulfamethoxazole	R	dfrA5, sul1
+ISO_044	ampicillin	S	no determinant found
+ISO_044	cefotaxime	S	no determinant found
+ISO_044	ciprofloxacin	S	no determinant found
+ISO_044	gentamicin	S	no determinant found
+ISO_044	meropenem	S	no determinant found
+ISO_044	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_045	ampicillin	S	no determinant found
+ISO_045	cefotaxime	S	no determinant found
+ISO_045	ciprofloxacin	S	no determinant found
+ISO_045	gentamicin	S	no determinant found
+ISO_045	meropenem	S	no determinant found
+ISO_045	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_046	ampicillin	R	blaTEM-1
+ISO_046	cefotaxime	S	no determinant found
+ISO_046	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S57T, parC_S80I, parE_S458A
+ISO_046	gentamicin	S	no determinant found
+ISO_046	meropenem	S	no determinant found
+ISO_046	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_047	ampicillin	S	no determinant found
+ISO_047	cefotaxime	S	no determinant found
+ISO_047	ciprofloxacin	S	no determinant found
+ISO_047	gentamicin	S	no determinant found
+ISO_047	meropenem	S	no determinant found
+ISO_047	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_048	ampicillin	R	blaTEM-1, blaCMY-2
+ISO_048	cefotaxime	R	blaCMY-2
+ISO_048	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parE_S458A, parC_S80I, qnrS1
+ISO_048	gentamicin	R	aac(3)-IId
+ISO_048	meropenem	S	no determinant found
+ISO_048	trimethoprim/sulfamethoxazole	R	dfrA12, sul2, sul1
+ISO_049	ampicillin	R	blaCTX-M-1, blaTEM-1
+ISO_049	cefotaxime	R	blaCTX-M-1
+ISO_049	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_A56T, parC_S80I
+ISO_049	gentamicin	S	no determinant found
+ISO_049	meropenem	S	no determinant found
+ISO_049	trimethoprim/sulfamethoxazole	R	dfrA17, sul1, sul2
+ISO_050	ampicillin	R	blaTEM-1
+ISO_050	cefotaxime	S	no determinant found
+ISO_050	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S80I, parE_L445H
+ISO_050	gentamicin	R	aac(3)-IId
+ISO_050	meropenem	S	no determinant found
+ISO_050	trimethoprim/sulfamethoxazole	R	dfrA17, sul2, sul1
+ISO_051	ampicillin	R	blaTEM-1
+ISO_051	cefotaxime	S	no ESBL/pAmpC/carbapenemase; blaTEM-1 (narrow-spectrum)
+ISO_051	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_051	gentamicin	S	"no gentamicin-modifying enzyme (aac(3)/ant(2"")/16S methylase)"
+ISO_051	meropenem	S	no carbapenemase found
+ISO_051	trimethoprim/sulfamethoxazole	R	dfrA1,sul1,sul2
+ISO_052	ampicillin	R	blaTEM-1
+ISO_052	cefotaxime	S	no ESBL/pAmpC/carbapenemase; blaTEM-1 (narrow-spectrum)
+ISO_052	ciprofloxacin	S	gyrA_S83L only (single determinant; low-level reduced susceptibility)
+ISO_052	gentamicin	S	"no gentamicin-modifying enzyme (aac(3)/ant(2"")/16S methylase)"
+ISO_052	meropenem	S	no carbapenemase found
+ISO_052	trimethoprim/sulfamethoxazole	R	dfrA7,sul2,sul1
+ISO_053	ampicillin	R	blaTEM-1
+ISO_053	cefotaxime	S	no ESBL/pAmpC/carbapenemase; blaTEM-1 (narrow-spectrum)
+ISO_053	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_053	gentamicin	S	"no gentamicin-modifying enzyme (aac(3)/ant(2"")/16S methylase)"
+ISO_053	meropenem	S	no carbapenemase found
+ISO_053	trimethoprim/sulfamethoxazole	S	no dfrA gene; sul2 alone insufficient
+ISO_054	ampicillin	S	no acquired beta-lactamase (chromosomal blaEC only)
+ISO_054	cefotaxime	S	no ESBL/pAmpC/carbapenemase; no determinant found
+ISO_054	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_054	gentamicin	S	"no gentamicin-modifying enzyme (aac(3)/ant(2"")/16S methylase)"
+ISO_054	meropenem	S	no carbapenemase found
+ISO_054	trimethoprim/sulfamethoxazole	S	no dfrA gene; no determinant found
+ISO_055	ampicillin	R	blaTEM-1
+ISO_055	cefotaxime	S	no ESBL/pAmpC/carbapenemase; blaTEM-1 (narrow-spectrum)
+ISO_055	ciprofloxacin	R	gyrA_S83L,parC_S80I
+ISO_055	gentamicin	R	aac(3)-IIe
+ISO_055	meropenem	S	no carbapenemase found
+ISO_055	trimethoprim/sulfamethoxazole	R	dfrA17,sul1
+ISO_056	ampicillin	S	no acquired beta-lactamase (chromosomal blaEC only)
+ISO_056	cefotaxime	S	no ESBL/pAmpC/carbapenemase; no determinant found
+ISO_056	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_056	gentamicin	S	"no gentamicin-modifying enzyme (aac(3)/ant(2"")/16S methylase)"
+ISO_056	meropenem	S	no carbapenemase found
+ISO_056	trimethoprim/sulfamethoxazole	S	no dfrA gene; folP_P64S alone insufficient
+ISO_057	ampicillin	R	blaCTX-M-55
+ISO_057	cefotaxime	R	blaCTX-M-55
+ISO_057	ciprofloxacin	R	gyrA_D87N,gyrA_S83L,parE_S458A,parC_S80I
+ISO_057	gentamicin	R	aac(3)-IIe
+ISO_057	meropenem	S	no carbapenemase found
+ISO_057	trimethoprim/sulfamethoxazole	R	dfrA1
+ISO_058	ampicillin	R	blaTEM-1,blaCMY-2
+ISO_058	cefotaxime	R	blaCMY-2
+ISO_058	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_058	gentamicin	R	aac(3)-VIa
+ISO_058	meropenem	S	no carbapenemase found
+ISO_058	trimethoprim/sulfamethoxazole	S	no dfrA gene; sul1,sul2 alone insufficient
+ISO_059	ampicillin	R	blaOXA-1,blaCTX-M-15
+ISO_059	cefotaxime	R	blaCTX-M-15
+ISO_059	ciprofloxacin	R	gyrA_D87N,gyrA_S83L,parC_E84V,parC_S80I,parE_I529L
+ISO_059	gentamicin	S	"no gentamicin-modifying enzyme (aac(3)/ant(2"")/16S methylase); aac(6')-Ib-cr does not affect gentamicin"
+ISO_059	meropenem	S	no carbapenemase found
+ISO_059	trimethoprim/sulfamethoxazole	R	dfrA17,sul1
+ISO_060	ampicillin	R	blaCTX-M-15,blaTEM-1,blaOXA-1
+ISO_060	cefotaxime	R	blaCTX-M-15
+ISO_060	ciprofloxacin	R	gyrA_D87N,gyrA_S83L,parC_E84V,parC_S80I,parE_I529L
+ISO_060	gentamicin	R	aac(3)-IIe
+ISO_060	meropenem	S	no carbapenemase found
+ISO_060	trimethoprim/sulfamethoxazole	R	dfrA14,sul2
+ISO_061	ampicillin	R	blaCMY-111+blaTEM-1
+ISO_061	cefotaxime	R	blaCMY-111
+ISO_061	ciprofloxacin	S	no determinant found
+ISO_061	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_061	meropenem	S	no carbapenemase
+ISO_061	trimethoprim/sulfamethoxazole	R	dfrA12+sul3
+ISO_062	ampicillin	R	blaTEM-1
+ISO_062	cefotaxime	S	no ESBL/AmpC/carbapenemase (blaTEM-1 narrow-spectrum only)
+ISO_062	ciprofloxacin	S	no determinant found
+ISO_062	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_062	meropenem	S	no carbapenemase
+ISO_062	trimethoprim/sulfamethoxazole	R	dfrA17+sul2+sul1
+ISO_063	ampicillin	R	blaCMY-2
+ISO_063	cefotaxime	R	blaCMY-2
+ISO_063	ciprofloxacin	R	parC_S80I+parE_S458A+gyrA_D87N+gyrA_S83L
+ISO_063	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_063	meropenem	S	no carbapenemase (ompC_W124Ter porin change without carbapenemase)
+ISO_063	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_064	ampicillin	S	no acquired beta-lactamase (intrinsic blaEC only)
+ISO_064	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_064	ciprofloxacin	S	no determinant found
+ISO_064	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_064	meropenem	S	no carbapenemase
+ISO_064	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_065	ampicillin	R	blaTEMp_C32T+blaTEM-1
+ISO_065	cefotaxime	S	no ESBL/AmpC/carbapenemase (blaTEMp_C32T+blaTEM-1 narrow-spectrum only)
+ISO_065	ciprofloxacin	R	gyrA_D87N+gyrA_S83L+parE_S458A+parC_A108V+parC_S80I
+ISO_065	gentamicin	R	aac(3)-IIe
+ISO_065	meropenem	S	no carbapenemase
+ISO_065	trimethoprim/sulfamethoxazole	R	dfrA14+sul2
+ISO_066	ampicillin	R	blaTEM-1+blaOXA-9+blaKPC-3+blaTEM-1
+ISO_066	cefotaxime	R	blaKPC-3
+ISO_066	ciprofloxacin	S	no determinant found
+ISO_066	gentamicin	R	aac(6')-Ib'
+ISO_066	meropenem	R	blaKPC-3
+ISO_066	trimethoprim/sulfamethoxazole	R	dfrA14+dfrA12+sul2+sul3+sul1
+ISO_067	ampicillin	R	blaTEM-1
+ISO_067	cefotaxime	S	no ESBL/AmpC/carbapenemase (blaTEM-1 narrow-spectrum only)
+ISO_067	ciprofloxacin	R	gyrA_D87N+gyrA_S83L+parE_L416F+parC_S57T+parC_S80I
+ISO_067	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_067	meropenem	S	no carbapenemase
+ISO_067	trimethoprim/sulfamethoxazole	R	dfrA17+sul1
+ISO_068	ampicillin	S	no acquired beta-lactamase (intrinsic blaEC only)
+ISO_068	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_068	ciprofloxacin	S	no determinant found
+ISO_068	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_068	meropenem	S	no carbapenemase
+ISO_068	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_069	ampicillin	R	blaCMY-2
+ISO_069	cefotaxime	R	blaCMY-2
+ISO_069	ciprofloxacin	S	gyrA_S83L only; single determinant predicted below R breakpoint
+ISO_069	gentamicin	S	no gentamicin-modifying enzyme/16S methylase
+ISO_069	meropenem	S	no carbapenemase
+ISO_069	trimethoprim/sulfamethoxazole	R	dfrA14+sul2
+ISO_070	ampicillin	R	blaTEM-1
+ISO_070	cefotaxime	S	no ESBL/AmpC/carbapenemase (blaTEM-1 narrow-spectrum only)
+ISO_070	ciprofloxacin	R	gyrA_D87N+gyrA_S83L+parC_S80I+qnrS1
+ISO_070	gentamicin	R	aac(3)-IVa
+ISO_070	meropenem	S	no carbapenemase
+ISO_070	trimethoprim/sulfamethoxazole	R	dfrA1 (dfr without sul)
+ISO_071	ampicillin	R	blaCTX-M; ampC_T-32A
+ISO_071	cefotaxime	R	blaCTX-M
+ISO_071	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_E84V; parC_S80I; parE_I529L
+ISO_071	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_071	meropenem	S	no carbapenemase
+ISO_071	trimethoprim/sulfamethoxazole	S	no dfr gene
+ISO_072	ampicillin	R	blaCTX-M-15; blaOXA-1
+ISO_072	cefotaxime	R	blaCTX-M-15
+ISO_072	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_E84V; parC_S80I; parE_I529L; aac(6')-Ib-cr5
+ISO_072	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_072	meropenem	S	no carbapenemase
+ISO_072	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_073	ampicillin	R	blaCTX-M-1
+ISO_073	cefotaxime	R	blaCTX-M-1
+ISO_073	ciprofloxacin	S	no QRDR mutation
+ISO_073	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_073	meropenem	S	no carbapenemase
+ISO_073	trimethoprim/sulfamethoxazole	S	no dfr gene (sul1; sul2 only)
+ISO_074	ampicillin	R	blaTEM-1; blaOXA-48
+ISO_074	cefotaxime	S	no ESBL/plasmid AmpC/KPC-type enzyme (blaTEM-1; blaOXA-48 present; poor cefotaxime hydrolysis)
+ISO_074	ciprofloxacin	S	no QRDR mutation
+ISO_074	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_074	meropenem	R	blaOXA-48
+ISO_074	trimethoprim/sulfamethoxazole	R	dfrA5; sul2
+ISO_075	ampicillin	R	blaOXA-1; blaKPC-3
+ISO_075	cefotaxime	R	blaKPC-3
+ISO_075	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parE_I529L; parC_E84V; parC_S80I; aac(6')-Ib-cr5
+ISO_075	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_075	meropenem	R	blaKPC-3
+ISO_075	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_076	ampicillin	R	blaTEM-1
+ISO_076	cefotaxime	S	no ESBL/plasmid AmpC/KPC-type enzyme (blaTEM-1 present; poor cefotaxime hydrolysis)
+ISO_076	ciprofloxacin	S	no QRDR mutation
+ISO_076	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_076	meropenem	S	no carbapenemase
+ISO_076	trimethoprim/sulfamethoxazole	R	dfrA8; sul2
+ISO_077	ampicillin	S	no acquired beta-lactamase; chromosomal blaEC only
+ISO_077	cefotaxime	S	no ESBL/plasmid AmpC/KPC-type enzyme
+ISO_077	ciprofloxacin	S	no QRDR mutation
+ISO_077	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_077	meropenem	S	no carbapenemase
+ISO_077	trimethoprim/sulfamethoxazole	S	no dfr gene
+ISO_078	ampicillin	R	blaCTX-M-55; blaTEM
+ISO_078	cefotaxime	R	blaCTX-M-55
+ISO_078	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_S80I; parE_S458A
+ISO_078	gentamicin	R	aac(3)-IId; rmtB1
+ISO_078	meropenem	S	no carbapenemase
+ISO_078	trimethoprim/sulfamethoxazole	R	dfrA17; dfrA12; sul1; sul3
+ISO_079	ampicillin	R	blaTEM-1
+ISO_079	cefotaxime	S	no ESBL/plasmid AmpC/KPC-type enzyme (blaTEM-1 present; poor cefotaxime hydrolysis)
+ISO_079	ciprofloxacin	S	no QRDR mutation
+ISO_079	gentamicin	S	no gentamicin-modifying enzyme or 16S methylase
+ISO_079	meropenem	S	no carbapenemase
+ISO_079	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_080	ampicillin	R	blaTEM-1; blaCTX-M-15; blaOXA-1
+ISO_080	cefotaxime	R	blaCTX-M-15
+ISO_080	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parE_S458A; parC_S80I; aac(6')-Ib-cr5
+ISO_080	gentamicin	R	aac(3)-IId
+ISO_080	meropenem	S	no carbapenemase (ompF_Y253EfsTer3 noted, insufficient alone)
+ISO_080	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_081	ampicillin	R	blaTEM-1, blaCTX-M-15-like
+ISO_081	cefotaxime	R	blaCTX-M (closest CTX-M-15, 100% id; 92% cov because truncated at contig end) - ESBL
+ISO_081	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_E84V, parC_S80I, parE_I529L
+ISO_081	gentamicin	S	only non-gentamicin aminoglycoside genes (aadA5)
+ISO_081	meropenem	S	no carbapenemase; porin changes (ompF_A251EfsTer3, ompC_Q171Ter) insufficient alone
+ISO_081	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_082	ampicillin	S	no acquired beta-lactamase or ampC promoter mutation (chromosomal blaEC only)
+ISO_082	cefotaxime	S	no determinant found
+ISO_082	ciprofloxacin	S	no determinant found
+ISO_082	gentamicin	S	no determinant found
+ISO_082	meropenem	S	no carbapenemase
+ISO_082	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_083	ampicillin	S	no acquired beta-lactamase or ampC promoter mutation (chromosomal blaEC only)
+ISO_083	cefotaxime	S	no determinant found
+ISO_083	ciprofloxacin	S	no determinant found
+ISO_083	gentamicin	S	no determinant found
+ISO_083	meropenem	S	no carbapenemase
+ISO_083	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_084	ampicillin	R	blaTEM-1
+ISO_084	cefotaxime	S	blaTEM-1 only (narrow-spectrum); no ESBL/AmpC
+ISO_084	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S80I, parE_E460K
+ISO_084	gentamicin	S	only non-gentamicin aminoglycoside genes (aph(3'')-Ib, aph(6)-Id)
+ISO_084	meropenem	S	no carbapenemase
+ISO_084	trimethoprim/sulfamethoxazole	R	dfrA14, sul2
+ISO_085	ampicillin	R	blaCMY-2, blaTEM-1
+ISO_085	cefotaxime	R	blaCMY-2 (ESBL/pAmpC)
+ISO_085	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S80I, parE_S458A, qepA1
+ISO_085	gentamicin	R	rmtB1
+ISO_085	meropenem	S	no carbapenemase
+ISO_085	trimethoprim/sulfamethoxazole	R	dfrA14, sul2
+ISO_086	ampicillin	S	no acquired beta-lactamase or ampC promoter mutation (chromosomal blaEC only)
+ISO_086	cefotaxime	S	no determinant found
+ISO_086	ciprofloxacin	S	no determinant found
+ISO_086	gentamicin	S	no determinant found
+ISO_086	meropenem	S	no carbapenemase
+ISO_086	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_087	ampicillin	S	no acquired beta-lactamase or ampC promoter mutation (chromosomal blaEC only)
+ISO_087	cefotaxime	S	no determinant found
+ISO_087	ciprofloxacin	S	no determinant found
+ISO_087	gentamicin	S	no determinant found
+ISO_087	meropenem	S	no carbapenemase
+ISO_087	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_088	ampicillin	S	no acquired beta-lactamase or ampC promoter mutation (chromosomal blaEC only)
+ISO_088	cefotaxime	S	no determinant found
+ISO_088	ciprofloxacin	S	no determinant found
+ISO_088	gentamicin	S	no determinant found
+ISO_088	meropenem	S	no carbapenemase
+ISO_088	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_089	ampicillin	R	blaTEM-1
+ISO_089	cefotaxime	S	blaTEM-1 only (narrow-spectrum); no ESBL/AmpC
+ISO_089	ciprofloxacin	S	single low-level determinant (gyrA_S83L); expected MIC below R breakpoint
+ISO_089	gentamicin	S	only non-gentamicin aminoglycoside genes (aadA5, aph(6)-Id, aph(3'')-Ib)
+ISO_089	meropenem	S	no carbapenemase
+ISO_089	trimethoprim/sulfamethoxazole	R	dfrA17, sul1, sul2
+ISO_090	ampicillin	S	no acquired beta-lactamase or ampC promoter mutation (chromosomal blaEC only)
+ISO_090	cefotaxime	S	no determinant found
+ISO_090	ciprofloxacin	S	single low-level determinant (parE_I355T); expected MIC below R breakpoint
+ISO_090	gentamicin	S	no determinant found
+ISO_090	meropenem	S	no carbapenemase
+ISO_090	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_091	ampicillin	R	blaTEM-1
+ISO_091	cefotaxime	S	no ESBL/AmpC/carbapenemase; blaTEM-1 is narrow-spectrum
+ISO_091	ciprofloxacin	S	single determinant gyrA_S83L (low-level, MIC usually <=0.25-0.5)
+ISO_091	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_091	meropenem	S	no carbapenemase found
+ISO_091	trimethoprim/sulfamethoxazole	R	dfrA5+sul2
+ISO_092	ampicillin	S	no acquired beta-lactamase (chromosomal blaEC only)
+ISO_092	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_092	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_092	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_092	meropenem	S	no carbapenemase found
+ISO_092	trimethoprim/sulfamethoxazole	S	no dfr gene
+ISO_093	ampicillin	R	blaTEM-1
+ISO_093	cefotaxime	S	no ESBL/AmpC/carbapenemase; blaTEM-1 is narrow-spectrum
+ISO_093	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_093	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_093	meropenem	S	no carbapenemase found
+ISO_093	trimethoprim/sulfamethoxazole	R	dfrA5+sul2
+ISO_094	ampicillin	S	no acquired beta-lactamase (chromosomal blaEC only)
+ISO_094	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_094	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_094	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_094	meropenem	S	no carbapenemase found
+ISO_094	trimethoprim/sulfamethoxazole	S	no dfr gene
+ISO_095	ampicillin	R	blaCTX-M-65
+ISO_095	cefotaxime	R	blaCTX-M-65
+ISO_095	ciprofloxacin	R	gyrA_D87N+gyrA_S83L+parC_S80I
+ISO_095	gentamicin	R	aac(3)-IVa
+ISO_095	meropenem	S	no carbapenemase found
+ISO_095	trimethoprim/sulfamethoxazole	S	no dfr gene; sul1+sul2 alone insufficient
+ISO_096	ampicillin	R	blaTEM-1
+ISO_096	cefotaxime	S	no ESBL/AmpC/carbapenemase; blaTEM-1 is narrow-spectrum
+ISO_096	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_096	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_096	meropenem	S	no carbapenemase found
+ISO_096	trimethoprim/sulfamethoxazole	S	no dfr gene; sul2 alone insufficient
+ISO_097	ampicillin	R	blaCTX-M-14+blaTEM-1
+ISO_097	cefotaxime	R	blaCTX-M-14
+ISO_097	ciprofloxacin	R	gyrA_D87N+gyrA_S83L+parC_A56T+parC_S80I
+ISO_097	gentamicin	R	aac(3)-IVa
+ISO_097	meropenem	S	no carbapenemase found
+ISO_097	trimethoprim/sulfamethoxazole	R	dfrA12+sul2
+ISO_098	ampicillin	S	no acquired beta-lactamase (chromosomal blaEC only)
+ISO_098	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_098	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_098	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_098	meropenem	S	no carbapenemase found
+ISO_098	trimethoprim/sulfamethoxazole	S	no dfr gene
+ISO_099	ampicillin	R	blaCTX-M-15
+ISO_099	cefotaxime	R	blaCTX-M-15
+ISO_099	ciprofloxacin	S	single determinant gyrA_S83L (low-level, MIC usually <=0.25-0.5)
+ISO_099	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_099	meropenem	S	no carbapenemase found
+ISO_099	trimethoprim/sulfamethoxazole	S	no dfr gene
+ISO_100	ampicillin	R	blaCTX-M-1
+ISO_100	cefotaxime	R	blaCTX-M-1
+ISO_100	ciprofloxacin	S	no QRDR mutation or PMQR found
+ISO_100	gentamicin	S	no gentamicin-modifying enzyme/16S methylase found
+ISO_100	meropenem	S	no carbapenemase found
+ISO_100	trimethoprim/sulfamethoxazole	R	dfrA17+sul1+sul2
+ISO_101	ampicillin	R	blaTEM-1
+ISO_101	cefotaxime	S	no determinant found
+ISO_101	ciprofloxacin	S	no determinant found
+ISO_101	gentamicin	S	no determinant found
+ISO_101	meropenem	S	no determinant found
+ISO_101	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_102	ampicillin	S	no determinant found
+ISO_102	cefotaxime	S	no determinant found
+ISO_102	ciprofloxacin	S	no determinant found
+ISO_102	gentamicin	S	no determinant found
+ISO_102	meropenem	S	no determinant found
+ISO_102	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_103	ampicillin	R	blaOXA-1; blaCTX-M-15
+ISO_103	cefotaxime	R	blaCTX-M-15
+ISO_103	ciprofloxacin	R	qnrS1
+ISO_103	gentamicin	S	no determinant found
+ISO_103	meropenem	S	no determinant found
+ISO_103	trimethoprim/sulfamethoxazole	R	dfrA1
+ISO_104	ampicillin	R	blaNDM-5; blaOXA-1; blaCTX-M-15; blaTEM-1
+ISO_104	cefotaxime	R	blaNDM-5; blaCTX-M-15
+ISO_104	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_S80I; parE_S458A
+ISO_104	gentamicin	R	aac(3)-IVa; aac(3)-IId
+ISO_104	meropenem	R	blaNDM-5
+ISO_104	trimethoprim/sulfamethoxazole	R	dfrA17
+ISO_105	ampicillin	S	no determinant found
+ISO_105	cefotaxime	S	no determinant found
+ISO_105	ciprofloxacin	S	no determinant found
+ISO_105	gentamicin	S	no determinant found
+ISO_105	meropenem	S	no determinant found
+ISO_105	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_106	ampicillin	S	no determinant found
+ISO_106	cefotaxime	S	no determinant found
+ISO_106	ciprofloxacin	S	no gyrA/parC QRDR or qnr determinant (only parE_D475E, not sufficient)
+ISO_106	gentamicin	S	no determinant found
+ISO_106	meropenem	S	no determinant found
+ISO_106	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_107	ampicillin	R	blaTEM-1
+ISO_107	cefotaxime	S	no determinant found
+ISO_107	ciprofloxacin	S	no determinant found
+ISO_107	gentamicin	S	no determinant found
+ISO_107	meropenem	S	no determinant found
+ISO_107	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_108	ampicillin	R	blaNDM-5; blaTEM; blaCTX-M-55
+ISO_108	cefotaxime	R	blaNDM-5; blaCTX-M-55
+ISO_108	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_S80I; parE_S458A; qnrS1
+ISO_108	gentamicin	R	rmtB1
+ISO_108	meropenem	R	blaNDM-5
+ISO_108	trimethoprim/sulfamethoxazole	R	dfrA12; dfrA14
+ISO_109	ampicillin	R	blaTEM-1; blaCMY-2
+ISO_109	cefotaxime	R	blaCMY-2
+ISO_109	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_S80I; parE_L416F
+ISO_109	gentamicin	R	aac(3)-IId
+ISO_109	meropenem	S	no determinant found
+ISO_109	trimethoprim/sulfamethoxazole	R	dfrA17
+ISO_110	ampicillin	R	blaCTX-M-15; blaTEM-1
+ISO_110	cefotaxime	R	blaCTX-M-15
+ISO_110	ciprofloxacin	R	gyrA_S83L; parC_S80R; parE_I529L
+ISO_110	gentamicin	R	aac(3)-IId
+ISO_110	meropenem	S	no determinant found
+ISO_110	trimethoprim/sulfamethoxazole	R	dfrA17; dfrA12
+ISO_111	ampicillin	R	blaCTX-M-27
+ISO_111	cefotaxime	R	blaCTX-M-27
+ISO_111	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_E84V; parC_S80I; parE_I529L
+ISO_111	gentamicin	S	no gentamicin-active AME or 16S methylase
+ISO_111	meropenem	S	no carbapenemase
+ISO_111	trimethoprim/sulfamethoxazole	S	no dfr gene; no determinant found
+ISO_112	ampicillin	S	no acquired beta-lactamase; chromosomal blaEC only, no ampC promoter mutation
+ISO_112	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_112	ciprofloxacin	S	no QRDR mutation or PMQR gene
+ISO_112	gentamicin	S	no gentamicin-active AME or 16S methylase
+ISO_112	meropenem	S	no carbapenemase
+ISO_112	trimethoprim/sulfamethoxazole	S	no dfr gene; no determinant found
+ISO_113	ampicillin	S	no acquired beta-lactamase; chromosomal blaEC only, no ampC promoter mutation
+ISO_113	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_113	ciprofloxacin	S	no QRDR mutation or PMQR gene
+ISO_113	gentamicin	S	no gentamicin-active AME or 16S methylase
+ISO_113	meropenem	S	no carbapenemase
+ISO_113	trimethoprim/sulfamethoxazole	S	no dfr gene; no determinant found
+ISO_114	ampicillin	S	no acquired beta-lactamase; chromosomal blaEC only, no ampC promoter mutation
+ISO_114	cefotaxime	S	no ESBL/AmpC/carbapenemase
+ISO_114	ciprofloxacin	S	no QRDR mutation or PMQR gene
+ISO_114	gentamicin	S	no gentamicin-active AME or 16S methylase
+ISO_114	meropenem	S	no carbapenemase
+ISO_114	trimethoprim/sulfamethoxazole	S	no dfr gene; no determinant found
+ISO_115	ampicillin	R	blaTEM-1 (full length, split over contig_61/contig_102; verified by blastn 100% id)
+ISO_115	cefotaxime	S	no ESBL/AmpC/carbapenemase (narrow-spectrum blaTEM-1 (full length, split over contig_61/contig_102; verified by blastn 100% id) only)
+ISO_115	ciprofloxacin	S	no QRDR mutation or PMQR gene; marR_S3N only (low-level, not sufficient)
+ISO_115	gentamicin	S	no gentamicin-active AME or 16S methylase (other AMEs: aph(6)-Id, aph(3'')-Ib, aph(3')-Ia)
+ISO_115	meropenem	S	no carbapenemase
+ISO_115	trimethoprim/sulfamethoxazole	R	dfrA5; sul2
+ISO_116	ampicillin	R	blaCTX-M-15; blaOXA-1; blaCMY-42
+ISO_116	cefotaxime	R	blaCTX-M-15; blaCMY-42
+ISO_116	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parC_S80I; parE_S458A; aac(6')-Ib-cr5
+ISO_116	gentamicin	R	aac(3)-IIe
+ISO_116	meropenem	S	no carbapenemase; blaCMY-42 + ompF_Y253EfsTer3 + mrdA_A543V may reduce carbapenem susceptibility (mainly ertapenem) but meropenem expected S
+ISO_116	trimethoprim/sulfamethoxazole	R	dfrA17; sul2; sul1
+ISO_117	ampicillin	R	blaTEM-1
+ISO_117	cefotaxime	S	no ESBL/AmpC/carbapenemase (narrow-spectrum blaTEM-1 only)
+ISO_117	ciprofloxacin	S	no QRDR mutation or PMQR gene
+ISO_117	gentamicin	S	no gentamicin-active AME or 16S methylase (other AMEs: aph(6)-Id, aph(3'')-Ib)
+ISO_117	meropenem	S	no carbapenemase
+ISO_117	trimethoprim/sulfamethoxazole	S	no dfr gene (sul2 alone insufficient)
+ISO_118	ampicillin	R	blaTEM-1; blaNDM-5; blaCTX-M-15
+ISO_118	cefotaxime	R	blaNDM-5; blaCTX-M-15
+ISO_118	ciprofloxacin	R	gyrA_D87N; gyrA_S83L; parE_S458A; parC_S80I
+ISO_118	gentamicin	R	rmtB1
+ISO_118	meropenem	R	blaNDM-5
+ISO_118	trimethoprim/sulfamethoxazole	R	dfrA17; dfrA12; sul1

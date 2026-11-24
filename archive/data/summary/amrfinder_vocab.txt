@@ -1,0 +1,518 @@
+database directory: /Users/applemacbookpro/miniforge3/envs/amr/share/amrfinderplus/data/2026-10-29.1
+database version:   2026-10-29.1
+
+### fam.tsv  (2280 rows, 18 columns)
+header: 1:#node_id | 2:parent_node_id | 3:gene_symbol | 4:hmm_id | 5:hmm_tc1 | 6:hmm_tc2 | 7:blastrule_complete_ident | 8:blastrule_complete_wp_coverage | 9:blastrule_complete_br_coverage | 10:blastrule_partial_ident | 11:blastrule_partial_wp_coverage | 12:blastrule_partial_br_coverage | 13:reportable | 14:type | 15:subtype | 16:class | 17:subclass | 18:family_name
+
+  -- column 7 (blastrule_complete_ident): 32 distinct
+          1454  0.00
+           348  94.00
+           101  90.00
+            63  98.00
+            38  92.00
+            37  93.00
+            27  80.00
+            26  85.00
+            26  97.00
+            20  88.00
+            19  96.00
+            16  91.00
+            16  99.00
+            13  95.00
+            11  84.00
+            10  86.00
+             9  89.00
+             9  87.00
+             7  92.50
+             5  82.00
+             4  77.00
+             4  83.00
+             4  75.00
+             2  76.00
+             2  70.00
+             2  81.00
+             2  97.50
+             1  71.00
+             1  60.00
+             1  98.50
+             1  50.00
+             1  73.00
+
+  -- column 8 (blastrule_complete_wp_coverage): 11 distinct
+          1454  0.00
+           758  90.00
+            31  80.00
+            15  97.00
+            13  95.00
+             3  92.00
+             2  93.00
+             1  85.00
+             1  99.00
+             1  50.00
+             1  98.00
+
+  -- column 9 (blastrule_complete_br_coverage): 9 distinct
+          1454  0.00
+           785  90.00
+            17  95.00
+            16  97.00
+             3  92.00
+             2  80.00
+             1  93.00
+             1  99.00
+             1  98.00
+
+  -- column 10 (blastrule_partial_ident): 22 distinct
+          1454  0.00
+           470  96.00
+            61  98.00
+            51  93.00
+            50  90.00
+            43  92.00
+            38  99.00
+            32  85.00
+            20  94.00
+            19  97.00
+            14  88.00
+            10  95.00
+             7  80.00
+             2  70.00
+             2  97.50
+             1  89.00
+             1  81.00
+             1  99.10
+             1  91.00
+             1  75.00
+             1  82.00
+             1  83.00
+
+  -- column 11 (blastrule_partial_wp_coverage): 10 distinct
+          1454  0.00
+           786  90.00
+            17  95.00
+            15  97.00
+             2  85.00
+             2  99.00
+             1  84.00
+             1  88.00
+             1  93.00
+             1  98.00
+
+  -- column 12 (blastrule_partial_br_coverage): 19 distinct
+          1454  0.00
+           735  25.00
+            21  90.00
+            19  35.00
+            15  50.00
+            12  95.00
+             5  40.00
+             5  60.00
+             3  70.00
+             2  75.00
+             1  45.00
+             1  20.00
+             1  65.00
+             1  66.00
+             1  80.00
+             1  99.00
+             1  98.00
+             1  85.00
+             1  97.00
+
+  -- column 13 (reportable): 3 distinct
+          1429  2
+           778  1
+            73  0
+
+  -- column 14 (type): 3 distinct
+          1511  AMR
+           579  VIRULENCE
+           189  STRESS
+
+  -- column 15 (subtype): 7 distinct
+          1511  AMR
+           579  VIRULENCE
+           125  METAL
+            46  BIOCIDE
+            11  HEAT
+             6  ACID
+             1  STRESS
+
+### taxgroup.tsv  (32 rows, 3 columns)
+header: 1:#taxgroup | 2:gpipe_taxgroup | 3:number_of_nucl_ref_genes
+
+  -- column 1 (#taxgroup): 32 distinct
+             1  Acinetobacter_baumannii
+             1  Bordetella_pertussis
+             1  Burkholderia_cepacia
+             1  Burkholderia_mallei
+             1  Burkholderia_pseudomallei
+             1  Campylobacter
+             1  Citrobacter_freundii
+             1  Clostridioides_difficile
+             1  Corynebacterium_diphtheriae
+             1  Enterobacter_asburiae
+             1  Enterobacter_cloacae
+             1  Enterococcus_faecalis
+             1  Enterococcus_faecium
+             1  Escherichia
+             1  Haemophilus_influenzae
+             1  Helicobacter_pylori
+             1  Klebsiella_oxytoca
+             1  Klebsiella_pneumoniae
+             1  Neisseria_gonorrhoeae
+             1  Neisseria_meningitidis
+             1  Pseudomonas_aeruginosa
+             1  Salmonella
+             1  Serratia_marcescens
+             1  Staphylococcus_aureus
+             1  Staphylococcus_epidermidis
+             1  Staphylococcus_pseudintermedius
+             1  Streptococcus_agalactiae
+             1  Streptococcus_pneumoniae
+             1  Streptococcus_pyogenes
+             1  Vibrio_cholerae
+             1  Vibrio_parahaemolyticus
+             1  Vibrio_vulnificus
+
+  -- column 2 (gpipe_taxgroup): 32 distinct
+             1  Acinetobacter
+             1  Bordetella_pertussis
+             1  Burkholderia_cepacia_complex
+             1  Burkholderia_mallei
+             1  Burkholderia_pseudomallei
+             1  Campylobacter
+             1  Citrobacter_freundii
+             1  Clostridioides_difficile
+             1  Corynebacterium_diphtheriae
+             1  Enterobacter_asburiae
+             1  Enterobacter_cloacae
+             1  Enterococcus_faecalis
+             1  Enterococcus_faecium
+             1  Escherichia_coli_Shigella
+             1  Haemophilus_influenzae
+             1  Helicobacter_pylori
+             1  Klebsiella_oxytoca
+             1  Klebsiella
+             1  Neisseria_gonorrhoeae
+             1  Neisseria_meningitidis
+             1  Pseudomonas_aeruginosa
+             1  Salmonella
+             1  Serratia
+             1  Staphylococcus_aureus
+             1  Staphylococcus_epidermidis
+             1  Staphylococcus_pseudintermedius
+             1  Streptococcus_agalactiae
+             1  Streptococcus_pneumoniae
+             1  Streptococcus_pyogenes
+             1  Vibrio_cholerae
+             1  Vibrio_parahaemolyticus
+             1  Vibrio_vulnificus
+
+  -- column 3 (number_of_nucl_ref_genes): 5 distinct
+            19  0
+             8  1
+             2  2
+             2  6
+             1  3
+
+### AMR_DNA-Escherichia.tsv  (49 rows, 7 columns)
+header: 1:#accesion_version@gene_name@gene_symbol:start-stop | 2:mutation_position | 3:standard_mutation_symbol | 4:reported_mutation_symbol | 5:class | 6:subclass | 7:mutated_gene_name
+
+  -- column 1 (#accesion_version@gene_name@gene_symbol:start-stop): 5 distinct
+            19  NC_000913.3@16S_ribosomal_RNA@16S_rrsB:4166659-4168201
+            10  NC_004431.1@23S_ribosomal_RNA@23S:237160-240064
+             9  NZ_CP041538.1@ampC/blaEC_promoter_region@ampC:1149245-1149489
+             8  NC_000913.3@16S_ribosomal_RNA@16S_rrsC:3941808-3943350
+             3  NZ_CP095603.1@blaTEM_promoter_region@blaTEM:148777-149952
+
+  -- column 2 (mutation_position): 33 distinct
+             3  1064
+             3  1192
+             3  926
+             3  1519
+             3  2032
+             3  12
+             3  22
+             2  794
+             2  2058
+             1  523
+             1  527
+             1  528
+             1  964
+             1  1053
+             1  1054
+             1  1055
+             1  1058
+             1  1066
+             1  1068
+             1  1406
+             1  1408
+             1  1499
+             1  754
+             1  2057
+             1  2447
+             1  2609
+             1  2611
+             1  39
+             1  40
+             1  43
+             1  32
+             1  141
+             1  162
+
+  -- column 3 (standard_mutation_symbol): 49 distinct
+             1  16S_A523C
+             1  16S_G527T
+             1  16S_C528T
+             1  16S_A964G
+             1  16S_G1053A
+             1  16S_C1054T
+             1  16S_A1055G
+             1  16S_G1058C
+             1  16S_G1064A
+             1  16S_G1064C
+             1  16S_G1064T
+             1  16S_C1066T
+             1  16S_G1068A
+             1  16S_C1192A
+             1  16S_C1192G
+             1  16S_C1192T
+             1  16S_T1406A
+             1  16S_A1408G
+             1  16S_A1499G
+             1  16S_A794G
+             1  16S_A794T
+             1  16S_G926A
+             1  16S_G926C
+             1  16S_G926T
+             1  16S_A1519C
+             1  16S_A1519G
+             1  16S_A1519T
+             1  23S_T754A
+             1  23S_G2032A
+             1  23S_G2032C
+             1  23S_G2032T
+             1  23S_G2057A
+             1  23S_A2058G
+             1  23S_A2058T
+             1  23S_G2447T
+             1  23S_T2609C
+             1  23S_C2611T
+             1  ampC_C-42A
+             1  ampC_C-42G
+             1  ampC_C-42T
+             1  ampC_T-32A
+             1  ampC_T-32C
+             1  ampC_T-32G
+             1  ampC_G-15GG
+             1  ampC_T-14TGT
+             1  ampC_C-11T
+             1  blaTEMp_C32T
+             1  blaTEMp_C141G
+             1  blaTEMp_G162T
+
+  -- column 4 (reported_mutation_symbol): 49 distinct
+             1  16S_A523C
+             1  16S_G527T
+             1  16S_C528T
+             1  16S_A964G
+             1  16S_G1053A
+             1  16S_C1054T
+             1  16S_A1055G
+             1  16S_G1058C
+             1  16S_G1064A
+             1  16S_G1064C
+             1  16S_G1064T
+             1  16S_C1066T
+             1  16S_G1068A
+             1  16S_C1192A
+             1  16S_C1192G
+             1  16S_C1192T
+             1  16S_T1406A
+             1  16S_A1408G
+             1  16S_A1499G
+             1  16S_A794G
+             1  16S_A794T
+             1  16S_G926A
+             1  16S_G926C
+             1  16S_G926T
+             1  16S_A1519C
+             1  16S_A1519G
+             1  16S_A1519T
+             1  23S_T754A
+             1  23S_G2032A
+             1  23S_G2032C
+             1  23S_G2032T
+             1  23S_G2057A
+             1  23S_A2058G
+             1  23S_A2058T
+             1  23S_G2447T
+             1  23S_T2609C
+             1  23S_C2611T
+             1  ampC_C-42A
+             1  ampC_C-42G
+             1  ampC_C-42T
+             1  ampC_T-32A
+             1  ampC_T-32C
+             1  ampC_T-32G
+             1  ampC_G-15GG
+             1  ampC_T-14TGT
+             1  ampC_C-11T
+             1  blaTEMp_C32T
+             1  blaTEMp_C141G
+             1  blaTEMp_G162T
+
+  -- column 5 (class): 9 distinct
+            21  AMINOGLYCOSIDE
+            12  BETA-LACTAM
+             5  TETRACYCLINE
+             5  MACROLIDE
+             2  OXAZOLIDINONE
+             1  EDEINE
+             1  LINCOSAMIDE/OXAZOLIDINONE
+             1  MACROLIDE/OXAZOLIDINONE
+             1  MULTIDRUG
+
+  -- column 6 (subclass): 16 distinct
+             9  CEPHALOSPORIN
+             8  SPECTINOMYCIN
+             8  KASUGAMYCIN
+             5  TETRACYCLINE
+             3  STREPTOMYCIN
+             3  AMOXICILLIN-CLAVULANIC_ACID/PIPERACILLIN-TAZOBACTAM/TICARCILLIN-CLAVULANIC_ACID
+             2  ERYTHROMYCIN/TELITHROMYCIN
+             2  LINEZOLID
+             2  AZITHROMYCIN/ERYTHROMYCIN/TELITHROMYCIN
+             1  G418/TOBRAMYCIN
+             1  GENTAMICIN_C/NEOMYCIN/PAROMOMYCIN
+             1  EDEINE
+             1  CLINDAMYCIN/LINEZOLID
+             1  CLARITHROMYCIN/LINEZOLID
+             1  CHLORAMPHENICOL/ERYTHROMYCIN/TELITHROMYCIN
+             1  TELITHROMYCIN
+
+  -- column 7 (mutated_gene_name): 16 distinct
+             9  Escherichia_cephalosporin_resistant_ampC_promoter
+             8  Escherichia_spectinomycin_resistant_16S_rrsB
+             8  Escherichia_kasugamycin_resistant_16S_rrsC
+             5  Escherichia_tetracycline_resistant_16S_rrsB
+             3  Escherichia_streptomycin_resistant_16S_rrsB
+             3  Escherichia_amoxicillin-clavulanic_acid/piperacillin-tazobactam/ticarcillin-clavulanic_acid_resistant_blaTEM_promoter
+             2  Escherichia_erythromycin/telithromycin_resistant_23S
+             2  Escherichia_linezolid_resistant_23S
+             2  Escherichia_azithromycin/erythromycin/telithromycin_resistant_23S
+             1  Escherichia_g418/tobramycin_resistant_16S_rrsB
+             1  Escherichia_gentamicin_c/neomycin/paromomycin_resistant_16S_rrsB
+             1  Escherichia_edeine_resistant_16S_rrsB
+             1  Escherichia_clindamycin/linezolid_resistant_23S
+             1  Escherichia_clarithromycin/linezolid_resistant_23S
+             1  Escherichia_chloramphenicol/erythromycin/telithromycin_resistant_23S
+             1  Escherichia_telithromycin_resistant_23S
+
+### fam.tsv, type=AMR rows: 1511
+
+  -- distinct class values (43)
+           459  BETA-LACTAM
+           291  AMINOGLYCOSIDE
+           141  GLYCOPEPTIDE
+            89  TETRACYCLINE
+            68  TRIMETHOPRIM
+            59  MACROLIDE
+            58  PHENICOL
+            45  FOSFOMYCIN
+            43  EFFLUX
+            34  LINCOSAMIDE/MACROLIDE/STREPTOGRAMIN
+            22  LINCOSAMIDE
+            20  COLISTIN
+            18  (empty)
+            16  RIFAMYCIN
+            14  LINCOSAMIDE/MACROLIDE
+            13  BLEOMYCIN
+            13  STREPTOGRAMIN
+            12  QUINOLONE
+            12  NITROIMIDAZOLE
+             8  LINCOSAMIDE/PLEUROMUTILIN/STREPTOGRAMIN
+             8  MACROLIDE/STREPTOGRAMIN
+             8  SULFONAMIDE
+             7  LINCOSAMIDE/OXAZOLIDINONE/PHENICOL/PLEUROMUTILIN/STREPTOGRAMIN
+             7  LINCOSAMIDE/STREPTOGRAMIN
+             7  FUSIDIC ACID
+             7  STREPTOTHRICIN
+             4  LIPOPEPTIDE
+             4  PLEUROMUTILIN
+             3  THIOSTREPTON
+             3  OXAZOLIDINONE/PHENICOL
+             2  TUBERACTINOMYCIN
+             2  AVILAMYCIN
+             2  MUPIROCIN
+             2  IONOPHORE
+             2  NITROFURAN/PHENICOL/QUINOLONE/TETRACYCLINE
+             1  AMINOGLYCOSIDE/QUINOLONE
+             1  RIBOSOMAL PROTECTION
+             1  BACITRACIN
+             1  PHENICOL/QUINOLONE
+             1  QUATERNARY AMMONIUM
+             1  AMINOGLYCOSIDE/LINCOSAMIDE/MACROLIDE/PLEUROMUTILIN/TETRACYCLINE
+             1  LINCOSAMIDE/PLEUROMUTILIN
+             1  TETRACENOMYCIN
+
+  -- subclass values, for each class used by reference_rule.md
+
+     BETA-LACTAM: 459 rows, 6 distinct subclasses
+           211  BETA-LACTAM
+           135  CARBAPENEM
+            97  CEPHALOSPORIN
+            13  METHICILLIN
+             2  CEPHALOTHIN
+             1  CEFTAROLINE/METHICILLIN
+
+     QUINOLONE: 12 rows, 1 distinct subclasses
+            12  QUINOLONE
+
+     AMINOGLYCOSIDE: 291 rows, 25 distinct subclasses
+            71  AMINOGLYCOSIDE
+            41  STREPTOMYCIN
+            38  AMIKACIN/KANAMYCIN/TOBRAMYCIN
+            29  GENTAMICIN
+            17  SPECTINOMYCIN/STREPTOMYCIN
+            15  KANAMYCIN
+            15  AMIKACIN/GENTAMICIN/KANAMYCIN/TOBRAMYCIN
+            12  AMIKACIN/KANAMYCIN
+            10  KANAMYCIN/TOBRAMYCIN
+             8  GENTAMICIN/KANAMYCIN/TOBRAMYCIN
+             7  SPECTINOMYCIN
+             6  GENTAMICIN/TOBRAMYCIN
+             3  KASUGAMYCIN
+             3  TOBRAMYCIN
+             3  HYGROMYCIN
+             2  APRAMYCIN/GENTAMICIN/TOBRAMYCIN
+             2  AMIKACIN/TOBRAMYCIN
+             2  NEOMYCIN/PAROMOMYCIN/RIBOSTAMYCIN
+             1  GENTAMICIN/PLAZOMICIN/TOBRAMYCIN
+             1  GENTAMICIN/KANAMYCIN/RIBOSTAMYCIN/SISOMICIN/TOBRAMYCIN
+             1  AMIKACIN/GENTAMICIN/KANAMYCIN/PLAZOMICIN/TOBRAMYCIN
+             1  GENTAMICIN/KANAMYCIN
+             1  KANAMYCIN/PAROMOMYCIN/RIBOSTAMYCIN/SISOMICIN
+             1  APRAMYCIN
+             1  GENTAMICIN/PLAZOMICIN
+
+     TRIMETHOPRIM: 68 rows, 1 distinct subclasses
+            68  TRIMETHOPRIM
+
+     SULFONAMIDE: 8 rows, 1 distinct subclasses
+             8  SULFONAMIDE
+
+  -- subclass values mentioning an antibiotic the study uses
+
+     'GENTAMICIN' appears in: AMINOGLYCOSIDE / GENTAMICIN (n=29), AMINOGLYCOSIDE / AMIKACIN/GENTAMICIN/KANAMYCIN/TOBRAMYCIN (n=15), AMINOGLYCOSIDE / GENTAMICIN/KANAMYCIN/TOBRAMYCIN (n=8), AMINOGLYCOSIDE / GENTAMICIN/TOBRAMYCIN (n=6), AMINOGLYCOSIDE / APRAMYCIN/GENTAMICIN/TOBRAMYCIN (n=2), AMINOGLYCOSIDE / GENTAMICIN/PLAZOMICIN/TOBRAMYCIN (n=1), AMINOGLYCOSIDE / GENTAMICIN/KANAMYCIN/RIBOSTAMYCIN/SISOMICIN/TOBRAMYCIN (n=1), AMINOGLYCOSIDE / AMIKACIN/GENTAMICIN/KANAMYCIN/PLAZOMICIN/TOBRAMYCIN (n=1), AMINOGLYCOSIDE / GENTAMICIN/KANAMYCIN (n=1), AMINOGLYCOSIDE / GENTAMICIN/PLAZOMICIN (n=1), AMINOGLYCOSIDE/LINCOSAMIDE/MACROLIDE/PLEUROMUTILIN/TETRACYCLINE / AMIKACIN/CLINDAMYCIN/DOXYCYCLINE/ERYTHROMYCIN/GENTAMICIN/MINOCYCLINE/PLEUROMUTILIN/TETRACYCLINE (n=1)
+
+     'TRIMETHOPRIM' appears in: TRIMETHOPRIM / TRIMETHOPRIM (n=68)
+
+     'SULFONAMIDE' appears in: SULFONAMIDE / SULFONAMIDE (n=8)
+
+     'QUINOLONE' appears in: QUINOLONE / QUINOLONE (n=12), NITROFURAN/PHENICOL/QUINOLONE/TETRACYCLINE / NITROFURANTOIN/PHENICOL/QUINOLONE/TIGECYCLINE (n=2), AMINOGLYCOSIDE/QUINOLONE / AMIKACIN/KANAMYCIN/QUINOLONE/TOBRAMYCIN (n=1), PHENICOL/QUINOLONE / FLORFENICOL/QUINOLONE (n=1)
+
+     'CEPHALOSPORIN' appears in: BETA-LACTAM / CEPHALOSPORIN (n=97)
+
+     'CARBAPENEM' appears in: BETA-LACTAM / CARBAPENEM (n=135)

@@ -1,0 +1,31 @@
+antibiotic | evidence | n
+ampicillin | total | 234759
+ampicillin | Laboratory Method | 12671
+ampicillin | Computational Method | 221933
+cefotaxime | total | 236860
+cefotaxime | Laboratory Method | 14883
+cefotaxime | Computational Method | 221933
+ceftriaxone | total | 226721
+ceftriaxone | Laboratory Method | 4632
+ceftriaxone | Computational Method | 221933
+ceftazidime | total | 238198
+ceftazidime | Laboratory Method | 16217
+ceftazidime | Computational Method | 221933
+meropenem | total | 236109
+meropenem | Laboratory Method | 13995
+meropenem | Computational Method | 221933
+ciprofloxacin | total | 238861
+ciprofloxacin | Laboratory Method | 16741
+ciprofloxacin | Computational Method | 221933
+gentamicin | total | 134500
+gentamicin | Laboratory Method | 14220
+gentamicin | Computational Method | 120059
+trimethoprim/sulfamethoxazole | total | 131728
+trimethoprim/sulfamethoxazole | Laboratory Method | 11613
+trimethoprim/sulfamethoxazole | Computational Method | 120059
+sulfamethoxazole/trimethoprim | total | 121
+sulfamethoxazole/trimethoprim | Laboratory Method | 121
+sulfamethoxazole/trimethoprim | Computational Method | 0
+trimethoprim-sulfamethoxazole | total | 0
+trimethoprim-sulfamethoxazole | Laboratory Method | 0
+trimethoprim-sulfamethoxazole | Computational Method | 0

@@ -1,0 +1,301 @@
+isolate_id	antibiotic	prediction	evidence
+ISO_001	ampicillin	R	blaCTX-M-15, blaOXA-1, blaTEM-1
+ISO_001	cefotaxime	R	blaCTX-M-15
+ISO_001	ciprofloxacin	R	aac(6')-Ib-cr5, gyrA_D87N, gyrA_S83L, parC_E84V, parC_S80I, parE_I529L
+ISO_001	gentamicin	S	no determinant found
+ISO_001	meropenem	S	no determinant found
+ISO_001	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_002	ampicillin	R	blaCMY-42, blaCTX-M-15, blaNDM-6, blaOXA-1, blaOXA-9, blaTEM-1
+ISO_002	cefotaxime	R	blaCMY-42, blaCTX-M-15, blaNDM-6
+ISO_002	ciprofloxacin	R	aac(6')-Ib-cr5, gyrA_D87N, gyrA_S83L, parC_S80I, parE_S458A, qnrS1
+ISO_002	gentamicin	R	aac(3)-IIe
+ISO_002	meropenem	R	blaNDM-6
+ISO_002	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_003	ampicillin	R	blaCMY-6, blaCTX-M-15, blaNDM-7, blaOXA-1
+ISO_003	cefotaxime	R	blaCMY-6, blaCTX-M-15, blaNDM-7
+ISO_003	ciprofloxacin	R	aac(6')-Ib-cr5, gyrA_D87N, gyrA_S83L, parC_A108V, parC_S80I, parE_S458A
+ISO_003	gentamicin	S	no determinant found
+ISO_003	meropenem	R	blaNDM-7
+ISO_003	trimethoprim/sulfamethoxazole	R	dfrA17; sul1
+ISO_004	ampicillin	S	no determinant found
+ISO_004	cefotaxime	S	no determinant found
+ISO_004	ciprofloxacin	S	no determinant found
+ISO_004	gentamicin	S	no determinant found
+ISO_004	meropenem	S	no determinant found
+ISO_004	trimethoprim/sulfamethoxazole	R	dfrA1
+ISO_005	ampicillin	R	blaCMY-6, blaCTX-M-15, blaNDM-1, blaOXA-1, blaTEM-1
+ISO_005	cefotaxime	R	blaCMY-6, blaCTX-M-15, blaNDM-1
+ISO_005	ciprofloxacin	R	aac(6')-Ib-cr5, gyrA_D87N, gyrA_S83L, parC_S80I, parE_S458A, qnrB1
+ISO_005	gentamicin	R	rmtC
+ISO_005	meropenem	R	blaNDM-1
+ISO_005	trimethoprim/sulfamethoxazole	R	dfrA14; sul1, sul2
+ISO_006	ampicillin	R	blaCMY-42, blaNDM-1, blaTEM-1
+ISO_006	cefotaxime	R	blaCMY-42, blaNDM-1
+ISO_006	ciprofloxacin	R	aac(6')-Ib-cr5, gyrA_D87N, gyrA_S83L, parC_S80I, parE_S458A, qnrB1
+ISO_006	gentamicin	R	aac(3)-IId
+ISO_006	meropenem	R	blaNDM-1
+ISO_006	trimethoprim/sulfamethoxazole	R	dfrA17; sul1, sul2
+ISO_007	ampicillin	R	blaCMY-42, blaNDM-1, blaOXA-9, blaSHV-12, blaTEM-1
+ISO_007	cefotaxime	R	blaCMY-42, blaNDM-1, blaSHV-12
+ISO_007	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S80I, parE_S458A
+ISO_007	gentamicin	R	armA
+ISO_007	meropenem	R	blaNDM-1
+ISO_007	trimethoprim/sulfamethoxazole	R	dfrA12; sul1, sul2
+ISO_008	ampicillin	R	blaCTX-M-14, blaTEM-1
+ISO_008	cefotaxime	R	blaCTX-M-14
+ISO_008	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_E84V, parC_S80I, parE_I529L
+ISO_008	gentamicin	R	aac(3)-IId
+ISO_008	meropenem	S	no determinant found
+ISO_008	trimethoprim/sulfamethoxazole	R	dfrA17; sul1, sul2
+ISO_009	ampicillin	R	blaTEM-1
+ISO_009	cefotaxime	S	no determinant found
+ISO_009	ciprofloxacin	R	gyrA_S83L
+ISO_009	gentamicin	S	no determinant found
+ISO_009	meropenem	S	no determinant found
+ISO_009	trimethoprim/sulfamethoxazole	R	dfrA12; sul1
+ISO_010	ampicillin	R	blaTEM-1
+ISO_010	cefotaxime	S	no determinant found
+ISO_010	ciprofloxacin	S	no determinant found
+ISO_010	gentamicin	S	no determinant found
+ISO_010	meropenem	S	no determinant found
+ISO_010	trimethoprim/sulfamethoxazole	R	dfrA1; sul1, sul2
+ISO_011	ampicillin	R	blaTEM-1, blaOXA-10
+ISO_011	cefotaxime	S	no determinant found
+ISO_011	ciprofloxacin	R	gyrA_S83L, qnrS1
+ISO_011	gentamicin	S	no determinant found
+ISO_011	meropenem	S	no determinant found
+ISO_011	trimethoprim/sulfamethoxazole	R	dfrA14, sul3
+ISO_012	ampicillin	R	blaOXA-48
+ISO_012	cefotaxime	S	no determinant found
+ISO_012	ciprofloxacin	S	no determinant found
+ISO_012	gentamicin	S	no determinant found
+ISO_012	meropenem	R	blaOXA-48
+ISO_012	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_013	ampicillin	R	blaNDM-5, blaCTX-M-14, blaTEM-1
+ISO_013	cefotaxime	R	blaCTX-M-14, blaNDM-5
+ISO_013	ciprofloxacin	R	gyrA_S83L, gyrA_D87N, parC_S80I
+ISO_013	gentamicin	R	aac(3)-IVa
+ISO_013	meropenem	R	blaNDM-5, ompF_D34RfsTer1
+ISO_013	trimethoprim/sulfamethoxazole	R	dfrA12, sul2
+ISO_014	ampicillin	S	no determinant found
+ISO_014	cefotaxime	S	no determinant found
+ISO_014	ciprofloxacin	S	no determinant found
+ISO_014	gentamicin	S	no determinant found
+ISO_014	meropenem	S	no determinant found
+ISO_014	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_015	ampicillin	S	no determinant found
+ISO_015	cefotaxime	S	no determinant found
+ISO_015	ciprofloxacin	S	no determinant found
+ISO_015	gentamicin	S	no determinant found
+ISO_015	meropenem	S	no determinant found
+ISO_015	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_016	ampicillin	R	blaSHV-12, blaTEM-1
+ISO_016	cefotaxime	R	blaSHV-12
+ISO_016	ciprofloxacin	R	gyrA_S83L
+ISO_016	gentamicin	S	no determinant found
+ISO_016	meropenem	S	no determinant found
+ISO_016	trimethoprim/sulfamethoxazole	R	dfrA1
+ISO_017	ampicillin	R	blaTEM
+ISO_017	cefotaxime	S	no determinant found
+ISO_017	ciprofloxacin	S	no determinant found
+ISO_017	gentamicin	R	aac(3)-IId
+ISO_017	meropenem	S	no determinant found
+ISO_017	trimethoprim/sulfamethoxazole	R	dfrA17, sul1, sul2
+ISO_018	ampicillin	R	blaCTX-M-55, blaOXA-10
+ISO_018	cefotaxime	R	blaCTX-M-55
+ISO_018	ciprofloxacin	R	qnrS1
+ISO_018	gentamicin	S	no determinant found
+ISO_018	meropenem	S	no determinant found
+ISO_018	trimethoprim/sulfamethoxazole	R	dfrA14
+ISO_019	ampicillin	R	blaTEM-1
+ISO_019	cefotaxime	S	no determinant found
+ISO_019	ciprofloxacin	S	no determinant found
+ISO_019	gentamicin	S	no determinant found
+ISO_019	meropenem	S	no determinant found
+ISO_019	trimethoprim/sulfamethoxazole	R	dfrA1, sul1
+ISO_020	ampicillin	S	no determinant found
+ISO_020	cefotaxime	S	no determinant found
+ISO_020	ciprofloxacin	S	no determinant found
+ISO_020	gentamicin	S	no determinant found
+ISO_020	meropenem	S	no determinant found
+ISO_020	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_021	ampicillin	S	no determinant found
+ISO_021	cefotaxime	S	no determinant found
+ISO_021	ciprofloxacin	S	no determinant found
+ISO_021	gentamicin	S	no determinant found
+ISO_021	meropenem	S	no determinant found
+ISO_021	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_022	ampicillin	S	no determinant found
+ISO_022	cefotaxime	S	no determinant found
+ISO_022	ciprofloxacin	S	no determinant found
+ISO_022	gentamicin	S	no determinant found
+ISO_022	meropenem	S	no determinant found
+ISO_022	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_023	ampicillin	R	blaTEM-1
+ISO_023	cefotaxime	S	no determinant found
+ISO_023	ciprofloxacin	S	no determinant found
+ISO_023	gentamicin	S	no determinant found
+ISO_023	meropenem	S	no determinant found
+ISO_023	trimethoprim/sulfamethoxazole	R	dfrA7, sul1, sul2
+ISO_024	ampicillin	R	blaTEM
+ISO_024	cefotaxime	S	no determinant found
+ISO_024	ciprofloxacin	S	no determinant found
+ISO_024	gentamicin	S	no determinant found
+ISO_024	meropenem	S	no determinant found
+ISO_024	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_025	ampicillin	R	blaCTX-M-1, blaTEM-1
+ISO_025	cefotaxime	R	blaCTX-M-1
+ISO_025	ciprofloxacin	S	no determinant found
+ISO_025	gentamicin	S	no determinant found
+ISO_025	meropenem	S	no determinant found
+ISO_025	trimethoprim/sulfamethoxazole	R	dfrA1, dfrA5, sul2
+ISO_026	ampicillin	S	no determinant found
+ISO_026	cefotaxime	S	no determinant found
+ISO_026	ciprofloxacin	R	gyrA_S83L
+ISO_026	gentamicin	S	no determinant found
+ISO_026	meropenem	S	no determinant found
+ISO_026	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_027	ampicillin	R	blaCTX-M-55, blaTEM
+ISO_027	cefotaxime	R	blaCTX-M-55
+ISO_027	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_A56T, parC_S80I
+ISO_027	gentamicin	R	aac(3)-IId
+ISO_027	meropenem	S	no determinant found
+ISO_027	trimethoprim/sulfamethoxazole	R	dfrA17, sul1, sul2
+ISO_028	ampicillin	S	no determinant found
+ISO_028	cefotaxime	S	no determinant found
+ISO_028	ciprofloxacin	S	no determinant found
+ISO_028	gentamicin	S	no determinant found
+ISO_028	meropenem	S	no determinant found
+ISO_028	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_029	ampicillin	S	no determinant found
+ISO_029	cefotaxime	S	no determinant found
+ISO_029	ciprofloxacin	S	no determinant found
+ISO_029	gentamicin	S	no determinant found
+ISO_029	meropenem	S	no determinant found
+ISO_029	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_030	ampicillin	R	blaKPC-2, blaOXA, blaTEM-1
+ISO_030	cefotaxime	R	blaKPC-2
+ISO_030	ciprofloxacin	S	no determinant found
+ISO_030	gentamicin	S	no determinant found
+ISO_030	meropenem	R	blaKPC-2
+ISO_030	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_031	ampicillin	R	blaTEM-1
+ISO_031	cefotaxime	S	no determinant found
+ISO_031	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_E84V, parC_S80I, parE_I529L
+ISO_031	gentamicin	S	no determinant found
+ISO_031	meropenem	S	no determinant found
+ISO_031	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_032	ampicillin	S	no determinant found
+ISO_032	cefotaxime	S	no determinant found
+ISO_032	ciprofloxacin	S	no determinant found
+ISO_032	gentamicin	S	no determinant found
+ISO_032	meropenem	S	no determinant found
+ISO_032	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_033	ampicillin	S	no determinant found
+ISO_033	cefotaxime	S	no determinant found
+ISO_033	ciprofloxacin	S	no determinant found
+ISO_033	gentamicin	S	no determinant found
+ISO_033	meropenem	S	no determinant found
+ISO_033	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_034	ampicillin	S	no determinant found
+ISO_034	cefotaxime	S	no determinant found
+ISO_034	ciprofloxacin	S	no determinant found
+ISO_034	gentamicin	S	no determinant found
+ISO_034	meropenem	S	no determinant found
+ISO_034	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_035	ampicillin	R	blaTEM-1
+ISO_035	cefotaxime	S	no determinant found
+ISO_035	ciprofloxacin	R	gyrA_S83L
+ISO_035	gentamicin	R	aac(3)-IId
+ISO_035	meropenem	S	no determinant found
+ISO_035	trimethoprim/sulfamethoxazole	R	dfrA17, sul1, sul2, sul3
+ISO_036	ampicillin	S	no determinant found
+ISO_036	cefotaxime	S	no determinant found
+ISO_036	ciprofloxacin	S	no determinant found
+ISO_036	gentamicin	S	no determinant found
+ISO_036	meropenem	S	no determinant found
+ISO_036	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_037	ampicillin	R	blaKPC-3, blaTEM-1
+ISO_037	cefotaxime	R	blaKPC-3
+ISO_037	ciprofloxacin	R	gyrA_S83L, qnrS1
+ISO_037	gentamicin	S	no determinant found
+ISO_037	meropenem	R	blaKPC-3
+ISO_037	trimethoprim/sulfamethoxazole	R	dfrA14
+ISO_038	ampicillin	S	no determinant found
+ISO_038	cefotaxime	S	no determinant found
+ISO_038	ciprofloxacin	S	no determinant found
+ISO_038	gentamicin	S	no determinant found
+ISO_038	meropenem	S	no determinant found
+ISO_038	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_039	ampicillin	S	no determinant found
+ISO_039	cefotaxime	S	no determinant found
+ISO_039	ciprofloxacin	S	no determinant found
+ISO_039	gentamicin	S	no determinant found
+ISO_039	meropenem	S	no determinant found
+ISO_039	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_040	ampicillin	R	blaSHV-1
+ISO_040	cefotaxime	S	no determinant found
+ISO_040	ciprofloxacin	S	no determinant found
+ISO_040	gentamicin	S	no determinant found
+ISO_040	meropenem	S	no determinant found
+ISO_040	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_041	ampicillin	R	blaTEM-1, blaCTX-M-15, blaOXA-1
+ISO_041	cefotaxime	R	blaCTX-M-15
+ISO_041	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parE_S458A, parC_S80I, aac(6')-Ib-cr5
+ISO_041	gentamicin	R	aac(3)-IIe
+ISO_041	meropenem	S	no determinant found
+ISO_041	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_042	ampicillin	R	blaCTX-M-65
+ISO_042	cefotaxime	R	blaCTX-M-65
+ISO_042	ciprofloxacin	R	gyrA_D87Y, gyrA_S83L, parE_S458A, parC_S80I
+ISO_042	gentamicin	R	aac(3)-IVa
+ISO_042	meropenem	S	no determinant found
+ISO_042	trimethoprim/sulfamethoxazole	R	dfrA12, sul2
+ISO_043	ampicillin	R	blaTEM-1
+ISO_043	cefotaxime	S	no determinant found
+ISO_043	ciprofloxacin	S	no determinant found
+ISO_043	gentamicin	S	no determinant found
+ISO_043	meropenem	S	no determinant found
+ISO_043	trimethoprim/sulfamethoxazole	R	dfrA5, sul1
+ISO_044	ampicillin	S	no determinant found
+ISO_044	cefotaxime	S	no determinant found
+ISO_044	ciprofloxacin	S	no determinant found
+ISO_044	gentamicin	S	no determinant found
+ISO_044	meropenem	S	no determinant found
+ISO_044	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_045	ampicillin	S	no determinant found
+ISO_045	cefotaxime	S	no determinant found
+ISO_045	ciprofloxacin	S	no determinant found
+ISO_045	gentamicin	S	no determinant found
+ISO_045	meropenem	S	no determinant found
+ISO_045	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_046	ampicillin	R	blaTEM-1
+ISO_046	cefotaxime	S	no determinant found
+ISO_046	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S57T, parC_S80I, parE_S458A
+ISO_046	gentamicin	S	no determinant found
+ISO_046	meropenem	S	no determinant found
+ISO_046	trimethoprim/sulfamethoxazole	R	dfrA17, sul1
+ISO_047	ampicillin	S	no determinant found
+ISO_047	cefotaxime	S	no determinant found
+ISO_047	ciprofloxacin	S	no determinant found
+ISO_047	gentamicin	S	no determinant found
+ISO_047	meropenem	S	no determinant found
+ISO_047	trimethoprim/sulfamethoxazole	S	no determinant found
+ISO_048	ampicillin	R	blaTEM-1, blaCMY-2
+ISO_048	cefotaxime	R	blaCMY-2
+ISO_048	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parE_S458A, parC_S80I, qnrS1
+ISO_048	gentamicin	R	aac(3)-IId
+ISO_048	meropenem	S	no determinant found
+ISO_048	trimethoprim/sulfamethoxazole	R	dfrA12, sul2, sul1
+ISO_049	ampicillin	R	blaCTX-M-1, blaTEM-1
+ISO_049	cefotaxime	R	blaCTX-M-1
+ISO_049	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_A56T, parC_S80I
+ISO_049	gentamicin	S	no determinant found
+ISO_049	meropenem	S	no determinant found
+ISO_049	trimethoprim/sulfamethoxazole	R	dfrA17, sul1, sul2
+ISO_050	ampicillin	R	blaTEM-1
+ISO_050	cefotaxime	S	no determinant found
+ISO_050	ciprofloxacin	R	gyrA_D87N, gyrA_S83L, parC_S80I, parE_L445H
+ISO_050	gentamicin	R	aac(3)-IId
+ISO_050	meropenem	S	no determinant found
+ISO_050	trimethoprim/sulfamethoxazole	R	dfrA17, sul2, sul1

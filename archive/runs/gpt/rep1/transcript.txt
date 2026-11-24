@@ -1,0 +1,255 @@
+===== batch_001 =====
+I’ll inspect the installed tools and local databases, check their versions, then use the available genomic evidence to make and document each call.
+
+AMRFinderPlus 4.2.7 and its local database are available. The workspace also contains four completed isolate reports and several incomplete runs. I’ll complete the missing analyses, including the curated E. coli resistance mutation searches, before generating all 60 predictions.
+
+The completed reports show beta-lactamase genes and quinolone target mutations, including NDM-1 in two isolates. The calling rules distinguish drug-specific effects: for example, TEM-1 alone does not trigger cefotaxime resistance, and streptomycin resistance genes do not trigger gentamicin resistance. I’ll check the remaining reports and validate the full isolate–antibiotic matrix.
+
+The searches on assemblies with long contigs are taking substantially longer. I’ll search those assemblies in overlapping 30 kb windows, with a 3 kb overlap to preserve genes across window boundaries, and document the adjustment.
+
+The windowed searches are running. The prediction script and methods now record the window sizes and which reports are used. Once the searches finish, I’ll validate that the output has exactly 60 unique rows, the required columns, and valid prediction values.
+
+The remaining searches are still running, with no errors reported so far. The methods describe how calls are made and the limits of assigning susceptibility when no relevant determinant is found.
+
+The windowed BLAST searches are producing results and have reported no errors. The translated searches are the remaining bottleneck; I’ll wait for complete reports before using them for calls.
+
+Three more isolates have completed successfully. Their reports include NDM carbapenemases and multiple quinolone target mutations. The final three isolates are now running; all completed reports have been checked for drug-specific determinants.
+
+ISO_008, ISO_009 and ISO_010 are still running. Seven isolates now have complete reports, and the matrix validation script is ready.
+
+I’ve saved the windowing and prediction scripts alongside the methods for reproducibility. The final three searches are still running; their reports will be checked for successful completion before generating the TSV.
+
+All ten isolates have completed successfully, and the TSV passes the 60-row format and coverage checks. I’m reviewing the determinant mappings once more, especially broad aminoglycoside resistance mechanisms whose database labels may not name gentamicin explicitly.
+
+Completed and validated all 60 isolate–antibiotic predictions.
+
+- [Predictions](output/predictions.tsv)
+- [Methods, versions, databases and calling rules](output/methods.md)
+
+Results: 44 R and 16 S calls. No internet access or downloads were used.
+
+===== batch_002 =====
+I’ll inspect the available tools and databases, check their versions, and use the genome evidence to produce the predictions and methods files.
+
+AMRFinderPlus 4.2.7 and its local database release 2026-10-29.1 are available. Its default database path was incorrect; supplying the installed path resolved that. The searches are running with Escherichia-specific mutation detection enabled.
+
+The completed searches have found beta-lactamases, quinolone resistance mutations, and other acquired resistance genes. I’m applying antibiotic-specific rules so that, for example, streptomycin resistance genes do not trigger gentamicin resistance, and narrow-spectrum beta-lactamases do not trigger cefotaxime resistance.
+
+Eight of the ten searches are complete. The mutation reports also recover the key GyrA and ParC sites in those genomes, including wild-type sites. I’m finishing the remaining two searches and checking that the output contains exactly one row for each of the 60 isolate–antibiotic combinations.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): 60 predictions covering all 10 isolates and 6 antibiotics.
+- [methods.md](output/methods.md): tools, versions, database, parameters, and genotype interpretation rules.
+
+All searches completed locally without downloads.
+
+===== batch_003 =====
+I’ll inspect the installed tools and databases, then use the available resistance evidence to make and document a call for every isolate–antibiotic pair.
+
+AMRFinderPlus 4.2.7 and its 2026-10-29.1 database are installed. The default database path was incorrect; using the installed database explicitly resolved it. The scans are running with the Escherichia mutation panel to detect both acquired resistance genes and curated resistance mutations.
+
+The first scans have completed. I’m mapping hits to the specific antibiotics: TEM-1 supports ampicillin resistance but not cefotaxime resistance, and the streptomycin genes found so far do not support gentamicin resistance. I’m also reviewing partial gene hits and mutation results before assigning susceptibility.
+
+All ten scans completed successfully. The results include CTX-M ESBLs, a gentamicin-specific resistance enzyme, and KPC-2 carbapenemase. I’m writing the predictions and documenting the call rules, including the lower confidence of calls based only on regulatory or single quinolone-associated mutations.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): 60 validated predictions covering every isolate–antibiotic pair.
+- [methods.md](output/methods.md): tools, versions, database, parameters, call rules, and limitations.
+
+Results: 18 R and 42 S. All analyses ran offline.
+
+===== batch_004 =====
+I’ll inspect the installed tools and databases, check their versions, and use the available genome evidence to make and document each call.
+
+AMRFinderPlus 4.2.7 and its local database (2026-10-29.1) are available. The default database path is misconfigured, so I’m supplying the installed path explicitly and enabling the Escherichia mutation screen.
+
+The first results include TEM-1, trimethoprim/sulfonamide resistance genes, and quinolone target mutations. I’m mapping determinants to individual drugs: TEM-1 supports an ampicillin resistance call, while the streptomycin-specific genes found so far do not support gentamicin resistance.
+
+The completed assemblies have usable sequence, and the mutation reports distinguish wild-type quinolone targets from resistance substitutions. One isolate has only a MarR regulatory variant; I’ll flag that evidence separately because it does not reliably establish clinical resistance on its own.
+
+The screen has also found a gentamicin-specific acetyltransferase and a single gyrA S83L substitution. I’ll document uncertainty in the genotype-to-phenotype rules and retain the raw reports so each prediction can be traced to its evidence.
+
+Eight screens are complete. ISO_037 carries KPC-3, supporting resistance calls for ampicillin, cefotaxime, and meropenem. I’m finishing the last two screens and checking that every isolate–antibiotic pair appears exactly once in the output.
+
+All ten screens finished successfully, and the output contains all 60 requested pairs. Seven calls are marked NA because the detected regulatory variant or single-component trimethoprim/sulfamethoxazole evidence leaves the phenotype unresolved. The methods file explains those choices.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): 60 predictions — 41 S, 12 R, 7 NA.
+- [methods.md](output/methods.md): tools, versions, database, parameters, and decision rules.
+
+Validated complete coverage of all isolate–antibiotic pairs. Raw evidence reports are retained in `output/amrfinder/`.
+
+===== batch_005 =====
+I’ll inspect the installed tools and local databases, check their versions, and use the available genomic evidence to make the calls and document the rules.
+
+AMRFinderPlus 4.2.7 and its local database (2026-10-29.1) are available. I’m running resistance-gene and E. coli mutation searches on all ten assemblies, then checking which findings apply to each of the six antibiotics.
+
+The first two isolates have CTX-M enzymes and multiple quinolone target mutations. I’m checking drug specificity carefully: TEM-1 and OXA-1 alone won’t drive cefotaxime resistance calls, and aminoglycoside genes will count only if they affect gentamicin.
+
+Some completed isolates have no drug-specific determinants for several antibiotics; their key quinolone target positions are also wild type. Those will receive S predictions under the documented rules. These are genome-based predictions—absence of a detected determinant does not establish laboratory susceptibility.
+
+Six isolates have finished. Two have no determinants that meet the rules for any of the six requested drugs. The others show different resistance patterns, including quinolone resistance without an ESBL. I’m preserving the raw reports and a script with the exact prediction rules alongside the requested files.
+
+The remaining searches are still running. The completed reports contain a few partial gene hits, but none affect the requested drug calls; the prediction rules require at least 90% reference coverage for acquired genes.
+
+Nine isolates have finished. The later results include CMY-2 and CTX-M-1, which support cefotaxime resistance calls. No carbapenemase has been detected so far. Once the final search finishes, I’ll check that every isolate–antibiotic pair appears exactly once.
+
+Completed and validated all 60 isolate–antibiotic predictions: 28 R, 32 S, 0 NA.
+
+- [Predictions](output/predictions.tsv)
+- [Methods, versions, databases and interpretation rules](output/methods.md)
+
+Raw AMRFinder reports and logs are preserved in `output/amrfinder/`.
+
+===== batch_006 =====
+I’ll inspect the available tools and databases, check their versions, and use the genome results to produce predictions and document the decision rules.
+
+AMRFinderPlus 4.2.7 and its local database (2026-10-29.1) are available. The analysis is running with the Escherichia mutation panel. I’ll map each determinant to the requested drugs, accounting for differences such as streptomycin versus gentamicin resistance.
+
+The completed assemblies contain about 4.9–5.3 Mb each. Results so far include TEM-1, sulfonamide and trimethoprim resistance genes, and some quinolone-associated mutations. Isolated low-level quinolone determinants may not support a clear ciprofloxacin S/R call; I’ll mark those as NA and explain the uncertainty.
+
+Gentamicin-specific AAC(3)-IIe and combined GyrA/ParC mutations support resistance calls in ISO_055. Several other isolates have only regulatory or single-target quinolone changes; those will receive NA for ciprofloxacin. I’m finishing the remaining assemblies and checking that all 60 isolate–antibiotic pairs are present.
+
+Nine assemblies are complete. CTX-M-55 and CMY-2 support cefotaxime resistance calls; no carbapenemase has appeared so far. The final assembly is running, after which I’ll validate the TSV and check that the methods match the implemented rules.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): all 60 combinations validated; 25 R, 25 S, 10 NA.
+- [methods.md](output/methods.md): tools, versions, database, parameters, and decision rules.
+
+Uncertain genotype-to-phenotype calls are marked NA with evidence.
+
+===== batch_007 =====
+I’ll inspect the installed tools and databases, check their versions, and use the available genome evidence to generate predictions and document the calling rules.
+
+AMRFinderPlus 4.2.7 is available with the local NCBI database version 2026-10-29.1. I’m running its acquired-gene and Escherichia-specific mutation searches on all ten assemblies, including the mutations relevant to ciprofloxacin.
+
+The first two isolates have TEM-1 and trimethoprim/sulfonamide resistance genes; ISO_061 also has CMY-111, which supports cefotaxime resistance. I’m mapping genes to individual drugs: the streptomycin and kanamycin resistance genes found so far do not support gentamicin resistance.
+
+The searches are progressing, and the calling rules are documented. ISO_063 has multiple quinolone resistance mutations, supporting ciprofloxacin resistance. It also has a porin-disrupting mutation and CMY-2; I’m treating meropenem cautiously because those findings alone do not reliably establish resistance.
+
+ISO_065 has a gentamicin-specific resistance gene, aac(3)-IIe, as well as multiple quinolone resistance mutations. All ten FASTA files passed a basic sequence-format check. I’ll finish the remaining searches, then verify that the output contains exactly one row for each of the 60 isolate–antibiotic pairs.
+
+The remaining searches are still running. The methods file now records the tool and database versions, commands, and drug-specific calling rules. It also explains the limits of susceptible calls based on finding no resistance determinant.
+
+ISO_066’s search has completed successfully; it took longer than the earlier assemblies. Four isolates remain. I’ll review their determinant reports before generating and checking the final table.
+
+ISO_066 carries KPC-3, supporting meropenem resistance, and a gentamicin resistance determinant. ISO_067 has multiple quinolone resistance mutations. The final three searches are underway.
+
+All ten searches have completed, and the 60 predictions are generated. I’m checking the table’s headers, pair coverage, and allowed values, and confirming that the drug-relevant gene hits are near full length.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): all 60 isolate–antibiotic predictions, validated for completeness and format.
+- [methods.md](output/methods.md): tools, versions, database, parameters, calling rules, and limitations.
+
+Used local AMRFinderPlus 4.2.7 with database 2026-10-29.1. No downloads were attempted.
+
+===== batch_008 =====
+I’ll inspect the installed tools and local databases, screen the assemblies for resistance determinants, and use those results to produce the predictions and methods files.
+
+AMRFinderPlus 4.2.7 is installed with the local NCBI database version 2026-10-29.1. The screen is running with its Escherichia-specific mutation search enabled, which covers resistance mechanisms that an acquired-gene screen alone could miss.
+
+The first two isolates have CTX-M beta-lactamases and multiple gyrA/parC mutations, supporting resistance to ampicillin, cefotaxime and ciprofloxacin. I’ll map aminoglycoside genes by their specific drug activity; a streptomycin determinant alone won’t count as evidence for gentamicin resistance.
+
+The assemblies are roughly 5.0–5.5 Mb each, with little ambiguous sequence. The resistance profiles differ between isolates. For trimethoprim/sulfamethoxazole, I’ll use NA when a determinant affects only one component, since that leaves the combination phenotype uncertain.
+
+ISO_074 carries blaOXA-48, which supports a meropenem R prediction under the carbapenemase rule. Its blaTEM-1 and blaOXA-48 hits do not establish cefotaxime resistance. I’m retaining the raw reports and the conversion script so each call can be traced to its evidence.
+
+Four isolates have completed screening. ISO_075 has four long contigs and is taking longer in the translated search. The call rules and methods draft are ready; I’ll finish all screens before generating and validating the 60-row table.
+
+ISO_075 is still in the translated search, with no error reported. I’ve added a completion check to the prediction script so an unfinished screen cannot silently produce susceptible calls.
+
+ISO_075 completed successfully and carries blaKPC-3, supporting cefotaxime and meropenem resistance. Six isolates have now finished. I’m checking that the conversion script excludes short fragments and preserves family-level calls where an exact allele was not identified.
+
+Seven isolates have completed screening. ISO_077 has a curated marR_S3N call annotated for ampicillin resistance, but no acquired resistance genes were reported. The table will name that mutation as its ampicillin evidence.
+
+Nine isolates have finished. ISO_078 has both aac(3)-IId and rmtB1, supporting gentamicin resistance. Its partial blaTEM hit will be excluded; the near-full-length blaCTX-M-55 hit provides the beta-lactam resistance evidence.
+
+All ten screens completed. ISO_080 has a curated ompF frameshift alongside blaCTX-M-15, indicating a possible ESBL-plus-porin-loss route to carbapenem resistance. I’m adding that interaction to the documented rules and evidence before the final validation.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): 60 validated calls—33 R, 25 S, 2 NA.
+- [methods.md](output/methods.md): tools, versions, database, parameters and interpretation rules.
+
+Raw reports and the prediction script are retained in `output/`.
+
+===== batch_009 =====
+I’ll inspect the installed tools and databases, analyze each assembly, then write the predictions and methods files.
+
+AMRFinderPlus 4.2.7 and its local database (2026-10-29.1) are available. I’m screening all ten assemblies for resistance genes and E. coli resistance mutations. The assemblies are roughly 4.9–5.5 Mb; I’ll use drug-specific rules to translate the findings into calls.
+
+The first results show beta-lactamase genes and multiple fluoroquinolone target mutations in ISO_081, while ISO_082 has no reported resistance determinants. I’m checking drug specificity: for example, streptomycin resistance genes do not support a gentamicin-resistant call. Porin disruptions also need interpretation alongside beta-lactamases.
+
+Five assemblies are complete. ISO_085 carries blaCMY-2, rmtB1, and multiple quinolone target mutations, supporting resistance calls for cefotaxime, gentamicin, and ciprofloxacin. ISO_082 does have nitrofurantoin determinants; my earlier update should have said it has none for the six requested antibiotics.
+
+The remaining screens are running. I’ve documented the calling rules, including a lower-confidence meropenem call for ISO_081 based on a CTX-M gene plus disruptions in both OmpC and OmpF. The raw reports will be retained so that inference can be reviewed.
+
+Nine screens are complete. ISO_089 has GyrA S83L without the multiple-target mutation pattern seen in the clear ciprofloxacin-resistant isolates. I’ll mark that call NA: the single mutation can reduce susceptibility, but it does not support a confident binary call without a specified breakpoint.
+
+Completed and validated all 60 isolate–antibiotic pairs.
+
+- [Predictions](output/predictions.tsv)
+- [Methods](output/methods.md)
+
+Results: 44 S, 15 R, and 1 NA (ISO_089/ciprofloxacin). Methods document the uncertainty and the lower-confidence meropenem inference for ISO_081.
+
+===== batch_010 =====
+I’ll inspect the installed tools and databases, check their versions, then use the available resistance evidence to make and document each call.
+
+AMRFinderPlus 4.2.7 is available with database version 2026-10-29.1. I’m running its genome search with the Escherichia mutation panel to detect both acquired resistance genes and chromosomal resistance mutations.
+
+The completed searches show TEM-1 and paired trimethoprim/sulfonamide resistance genes in some isolates. I’ll map each determinant to the relevant antibiotic: TEM-1 supports ampicillin resistance, while the streptomycin-specific genes won’t drive gentamicin calls.
+
+One isolate carries CTX-M-65, a gentamicin-active acetyltransferase, and multiple quinolone target mutations. The remaining searches are still running. I’m retaining the raw reports and will document the rules for weaker evidence, including a single gyrA mutation and sul genes without a trimethoprim determinant.
+
+All ten searches completed successfully. I’m writing the 60 predictions and methods, then checking that every isolate–antibiotic pair appears exactly once and every prediction uses an allowed value.
+
+Completed and validated all 60 isolate–antibiotic predictions.
+
+- [predictions.tsv](output/predictions.tsv)
+- [methods.md](output/methods.md)
+
+Methods document tool versions, database, parameters, decision rules and uncertainties.
+
+===== batch_011 =====
+I’ll inspect the installed tools and local databases, check their versions, and use the genome evidence to generate predictions and document the calling rules.
+
+AMRFinderPlus 4.2.7 and its local database, version 2026-10-29.1, are available. The genome searches are running with the Escherichia mutation panel enabled, which checks resistance mutations as well as acquired genes.
+
+The first results include CTX-M-15 and QnrS1. I’m interpreting determinants by antibiotic: streptomycin genes won’t drive gentamicin calls, and narrow-spectrum beta-lactamases won’t drive cefotaxime calls. The methods file will also state the uncertainty when a gene can raise an MIC without reliably establishing clinical resistance.
+
+All ten assemblies are about 5 Mb and contain no ambiguous N bases. The results include NDM-5, which supports a meropenem resistance call, and some lower-effect quinolone and efflux determinants. I’ll use NA where those determinants alone don’t support a reliable S/R call.
+
+All searches completed successfully. The table has 60 predictions: 25 R, 31 S, and four NA calls where QnrS1, MarR S3N, or ParE D475E alone leaves the phenotype uncertain. I’m finishing the methods file and checking table completeness and formatting.
+
+Completed and validated all 60 predictions: 27 R, 29 S, and 4 NA.
+
+- [predictions.tsv](output/predictions.tsv)
+- [methods.md](output/methods.md)
+
+Methods document tool versions, the local database, parameters, calling rules, and uncertainty.
+
+===== batch_012 =====
+I’ll inspect the installed tools and databases, check their versions, then screen the genomes and write the predictions and methods files.
+
+AMRFinderPlus 4.2.7 and its local database (2026-10-29.1) are available. I’m screening all eight assemblies for acquired resistance genes and curated *E. coli* resistance mutations, including quinolone target mutations.
+
+The first two screens completed successfully. ISO_111 carries blaCTX-M-27 and multiple quinolone target mutations; ISO_112 has no detected determinant for the six requested antibiotics. All assemblies have plausible genome lengths and no ambiguous bases. I’ll interpret the remaining hits by antibiotic, since some detected genes affect drugs outside this panel.
+
+Four of eight screens are complete. ISO_113 and ISO_114 have no reported resistance determinants. I’m retaining the raw reports and mutation tables so the evidence behind the final calls is reviewable.
+
+ISO_115 carries dfrA5 and sul2, supporting resistance to trimethoprim/sulfamethoxazole. Its aminoglycoside genes are annotated for streptomycin or kanamycin, so I won’t use them to call gentamicin resistance. I’m also reviewing a partial TEM beta-lactamase hit and a regulator mutation before assigning the remaining calls.
+
+All eight screens are complete. ISO_116 has CTX-M-15, CMY-42, a gentamicin resistance gene, quinolone target mutations, and carbapenem-associated changes in OmpF and MrdA. I’ll document the genotype-to-phenotype rules and their limitations, particularly for partial genes and mutations whose effects depend on genetic context.
+
+Completed both files:
+
+- [predictions.tsv](output/predictions.tsv): 48 predictions covering every isolate–antibiotic pair; 29 S, 17 R, 2 NA.
+- [methods.md](output/methods.md): tools, versions, database, parameters, interpretation rules and limitations.
+
+Validated the output format and pair coverage. Raw screening reports are retained in `output/amrfinder/`.

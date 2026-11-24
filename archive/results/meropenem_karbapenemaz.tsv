@@ -1,0 +1,6 @@
+carbapenemase	R	S
+carbapenemase: OXA-48-like only	1	1
+carbapenemase: other, in the catalogue's carbapenem subclass	4	1
+carbapenemase: strong (KPC/NDM/VIM/IMP)	12	0
+no carbapenemase and no ESBL or AmpC	1	20
+no carbapenemase; ESBL or AmpC present	2	46

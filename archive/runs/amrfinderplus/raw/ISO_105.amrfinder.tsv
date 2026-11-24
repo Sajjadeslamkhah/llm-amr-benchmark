@@ -1,0 +1,23 @@
+Protein id	Contig id	Start	Stop	Strand	Element symbol	Element name	Scope	Type	Subtype	Class	Subclass	Method	Target length	Reference sequence length	% Coverage of reference	% Identity to reference	Alignment length	Closest reference accession	Closest reference name	HMM accession	HMM description
+NA	contig_14	211731	212918	+	emrD	multidrug efflux MFS transporter EmrD	plus	AMR	AMR	EFFLUX	EFFLUX	BLASTX	396	396	100.00	99.24	396	EFF04178.1	multidrug efflux MFS transporter EmrD	NA	NA
+NA	contig_16	48750	50549	+	ybtP	yersiniabactin ABC transporter ATP-binding/permease protein YbtP	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	600	600	100.00	99.83	600	CAA21388.1	yersiniabactin ABC transporter ATP-binding/permease protein YbtP	NA	NA
+NA	contig_16	50539	52338	+	ybtQ	yersiniabactin ABC transporter ATP-binding/permease protein YbtQ	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	600	600	100.00	99.67	600	AAC69584.1	yersiniabactin ABC transporter ATP-binding/permease protein YbtQ	NA	NA
+NA	contig_16	110439	110768	+	emrE	multidrug efflux SMR transporter EmrE	plus	STRESS	BIOCIDE	EFFLUX	EFFLUX	BLASTX	110	110	100.00	98.18	110	CAA77936.1	multidrug efflux SMR transporter EmrE	NA	NA
+NA	contig_16	469418	469849	-	marR_S3N	Escherichia ampicillin/chloramphenicol/quinolone/rifampin/tetracycline resistant MarR	core	AMR	POINT	MULTIDRUG	AMPICILLIN/CHLORAMPHENICOL/QUINOLONE/RIFAMPIN/TETRACYCLINE	POINTX	144	144	100.00	97.92	144	WP_000843414.1	transcriptional regulator MarR	NA	NA
+NA	contig_21	1026	2198	-	senB	enterotoxin production-related protein TieB	plus	VIRULENCE	VIRULENCE	NA	NA	EXACTX	391	391	100.00	100.00	391	AAZ89288.1	enterotoxin production-related protein TieB	NA	NA
+NA	contig_31	5361	8462	-	acrF	multidrug efflux RND transporter permease subunit AcrF	plus	AMR	AMR	EFFLUX	EFFLUX	BLASTX	1034	1034	100.00	99.42	1034	AAC76298.1	multidrug efflux RND transporter permease subunit AcrF	NA	NA
+NA	contig_31	329805	334364	+	sslE	lipoprotein metalloprotease SslE	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	1520	1520	100.00	94.09	1522	ADE89421.1	lipoprotein metalloprotease SslE	NA	NA
+NA	contig_43	30581	34708	-	vactox	vacuolating autotransporter toxin Vat	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	1376	1376	100.00	99.93	1376	CAD66214.1	vacuolating autotransporter toxin Vat	NA	NA
+NA	contig_43	54409	58653	+	fdeC	inverse autotransporter adhesin FdeC	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	1415	1416	100.00	97.95	1416	ABE05822.1	inverse autotransporter adhesin FdeC	NA	NA
+NA	contig_64	1960	4467	-	papC	P fimbrial usher protein PapC	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	836	836	100.00	96.55	841	CAA43564.1	P fimbrial usher protein PapC	NA	NA
+NA	contig_64	5179	5727	-	papA	P fimbria major subunit PapA	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	183	184	100.00	83.70	184	ENA25238.1	P fimbria major subunit PapA	NA	NA
+NA	contig_68	631	921	-	iss	increased serum survival lipoprotein Iss	plus	VIRULENCE	VIRULENCE	NA	NA	EXACTX	97	97	100.00	100.00	97	ADN71659.1	increased serum survival lipoprotein Iss	NA	NA
+NA	contig_73	29288	30016	-	traT	conjugal transfer complement resistance protein TraT	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	243	243	100.00	91.36	243	AAL23506.1	conjugal transfer complement resistance protein TraT	NA	NA
+NA	contig_78	10374	10637	+	ariR	biofilm/acid-resistance regulator AriR	plus	STRESS	ACID	NA	NA	BLASTX	88	88	100.00	97.73	88	AAC74250.1	biofilm/acid-resistance regulator AriR	NA	NA
+NA	contig_86	40	558	+	papE	P fimbrial minor subunit PapE	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	173	173	100.00	99.42	173	CAA43568.1	P fimbrial minor subunit PapE	NA	NA
+NA	contig_89	20315	24679	-	clbN	colibactin non-ribosomal peptide synthetase ClbN	plus	VIRULENCE	VIRULENCE	NA	NA	EXACTX	1455	1455	100.00	100.00	1455	AMH08480.1	colibactin non-ribosomal peptide synthetase ClbN	NA	NA
+NA	contig_89	54778	64395	-	clbB	colibactin hybrid non-ribosomal peptide synthetase/type I polyketide synthase ClbB	plus	VIRULENCE	VIRULENCE	NA	NA	EXACTX	3206	3206	100.00	100.00	3206	AMQ58400.1	colibactin hybrid non-ribosomal peptide synthetase/type I polyketide synthase ClbB	NA	NA
+NA	contig_9	17442	20483	-	cnf1	cytotoxic necrotizing factor CNF1	plus	VIRULENCE	VIRULENCE	NA	NA	EXACTX	1014	1014	100.00	100.00	1014	ABE10324.1	cytotoxic necrotizing factor CNF1	NA	NA
+NA	contig_9	25081	28152	-	hlyA-alpha	RTX toxin hemolysin HlyA	plus	VIRULENCE	VIRULENCE	NA	NA	BLASTX	1024	1024	100.00	96.09	1024	CAQ77251.1	RTX toxin hemolysin HlyA	NA	NA
+NA	contig_96	2	868	+	papG	P fimbria tip G-adhesin	plus	VIRULENCE	VIRULENCE	NA	NA	PARTIAL_CONTIG_ENDX	289	335	86.27	95.85	289	CAA43558.1	P fimbria tip G-adhesin PapG-III	NA	NA
+NA	contig_97	131645	132775	+	blaEC	BlaEC family class C beta-lactamase	plus	AMR	AMR	BETA-LACTAM	BETA-LACTAM	BLASTX	377	377	100.00	99.73	377	AAZ85965.1	cephalosporin-hydrolyzing class C beta-lactamase EC-5	NA	NA

@@ -1,0 +1,2 @@
+date_utc	file	query	n_rows	sha256
+2026-11-14T01:06:41+00:00	data/raw/bvbrc_genome_amr_ecoli.tsv	genome_amr taxon_id=562 evidence=Laboratory Method; ampicillin:12671; cefotaxime:14883; ceftriaxone:4632; ceftazidime:16217; meropenem:13995; ciprofloxacin:16741; gentamicin:14220; trimethoprim/sulfamethoxazole:11613; sulfamethoxazole/trimethoprim:121; trimethoprim-sulfamethoxazole:0	105093	5401b75f7ffb36555c39cd797de005a06966bd463aa121dc0e02cb82a5264efc

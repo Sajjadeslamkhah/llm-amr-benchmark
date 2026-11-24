@@ -1,0 +1,299 @@
+===== batch_001 =====
+AMRFinderPlus is running on each genome. Some are slow (about 5 min each), so I'm restarting it as a background job with a longer timeout and skipping the genomes already finished.
+Meanwhile, look at the finished outputs:
+While the remaining runs finish, I'll write the genotype-to-phenotype rules script.
+Four CPUs, so 4 jobs at a time. Waiting for the background run to finish.
+I'll wait for the completion notification.
+Bug found: the narrow-spectrum regex isn't end-anchored, so `SHV-1` also matches the ESBL `SHV-12`. Fixing it and checking which hits were filtered out.
+`blaSHV-12` still doesn't appear in the cefotaxime evidence, so I'm checking how AMRFinder classified it:
+Subclass strings can be compound, so I'll match on substrings instead of exact values.
+No ampC-promoter or 16S mutations turned up. Writing `methods.md`:
+I've written both files. `output/predictions.tsv` has 60 predictions (10 isolates × 6 antibiotics, all four columns): 43 R, 17 S and no NA. `output/methods.md` lists the tools, versions, parameters and every rule.
+
+**How the calls were made:** AMRFinderPlus 4.2.7 is the only resistance-gene tool installed. I ran it on each genome with database 2026-10-29.1 (BLAST+ 2.17.0), using the *E. coli* setting so it also checks known chromosomal point mutations. A rule script then turned the genes and mutations it found into S/R calls.
+
+**What the isolates look like:**
+
+| Antibiotic | R calls | What drives them |
+|---|---|---|
+| Ampicillin | 9 of 10 | any acquired beta-lactamase; ISO_004 is the only S |
+| Cefotaxime | 7 | CTX-M, SHV-12, CMY or NDM enzymes; ISO_009 and ISO_010 carry only TEM-1, so they're called S |
+| Meropenem | 5 | NDM carbapenemase in ISO_002, 003, 005, 006 and 007 |
+| Ciprofloxacin | 7 | multiple target-gene mutations, often with plasmid quinolone genes; ISO_009 has only the single gyrA S83L mutation and is called S |
+| Gentamicin | 5 | aac(3)-II enzymes, or armA/rmtC (enzymes that change the drug's ribosomal target) |
+| Trimethoprim/sulfamethoxazole | 10 of 10 | a dfrA gene in every isolate |
+
+**Least certain calls:**
+- **ISO_009 ciprofloxacin (S):** a single gyrA mutation usually sits near the resistance cut-off, so this one could go either way.
+- **Possible false S calls:** these calls only see known resistance genes and mutations. Resistance caused by changes in gene activity, such as increased drug pumping out of the cell or loss of entry channels, can't be seen this way.
+
+Three judgement calls are worth knowing about, since they all lean toward S:
+- AMRFinder labels OXA-1 as a cephalosporinase, but I don't count it for cefotaxime, because on its own it doesn't make the isolate resistant.
+- `aac(6')-Ib` doesn't count toward gentamicin resistance.
+- A sulfonamide gene without a dfr gene would be called S. This never came up, since every isolate has a dfr gene.
+
+A pattern-matching bug wrongly let SHV-12 count as a narrow-spectrum enzyme. I fixed it before the final run, and SHV-12 now appears in ISO_007's cefotaxime evidence.
+
+The raw AMRFinder results, logs and the script (`call.py`) are in `../amr_work/`, outside the workspace.
+
+===== batch_002 =====
+AMRFinderPlus 4.2.7 is the main tool. Running it with E. coli point-mutation screening on all 10 isolates.
+Column 1 is Name (added by --name), so fields shift by one.
+Chromosomal blaEC is intrinsic to all E. coli. Since no ampC promoter mutations were reported, I won't use it for cefotaxime calls. Writing the predictions now.
+Calls match the intended rules. Writing methods.md.
+I wrote both files: `output/predictions.tsv` has a call for all 10 isolates against all 6 antibiotics (60 rows, none marked NA), and `output/methods.md` describes the method. The calls were generated but not checked against any lab results; I didn't look at anything outside the workspace.
+
+**How the calls were made:** AMRFinderPlus 4.2.7 with database 2026-10-29.1 was the only resistance tool installed. abricate, RGI and ResFinder were not there. I ran it on each genome with the E. coli setting, which also screens for known point mutations, and translated the genes it found into S/R with a fixed set of rules (`scripts/call.py`). The raw output is in `output/amrfinder/`.
+
+**What the results show:**
+- **Meropenem resistant:** ISO_013 (NDM-5) and ISO_012 (OXA-48).
+- **Cefotaxime resistant:** ISO_013 (NDM-5 and CTX-M-14), ISO_016 (SHV-12) and ISO_018 (CTX-M-55).
+- **Gentamicin resistant:** ISO_013 (aac(3)-IVa) and ISO_017 (aac(3)-IId, on a contig edge).
+- **ISO_013** is resistant to all six. It also carries four quinolone mutations (gyrA S83L and D87N, parC S80I, parE S458A).
+- **Fully susceptible:** ISO_014, ISO_015 and ISO_020 have no acquired resistance genes, so all their calls are S.
+
+**Least certain calls (also listed in `methods.md`):**
+- **Ciprofloxacin for ISO_016 and ISO_018, called R:** each has only one low-level change (gyrA S83L alone, or qnrS1 alone), so the real MIC (lowest concentration that stops growth) may sit near the breakpoint.
+- **Meropenem for ISO_012, called R:** OXA-48 alone often tests susceptible or only just over the breakpoint in E. coli.
+- **Cefotaxime for ISO_011 and ISO_012, called S:** OXA-10 and OXA-48 break down cefotaxime poorly, so I treated them as not causing cefotaxime resistance.
+- **Partial genes:** blaTEM in ISO_017 and aac(3)-IId were partial or on contig edges but were still counted as present. The evidence column labels them as partial.
+
+===== batch_003 =====
+AMRFinderPlus 4.2.7 with DB 2026-10-29.1 is available. Running it with the E. coli organism option (point mutations included).
+I wrote both files: `output/predictions.tsv` has 60 calls (10 isolates × 6 antibiotics, all S or R, no NA), and `output/methods.md` describes the method. I ran AMRFinderPlus 4.2.7 (database 2026-10-29.1) with the *E. coli* setting so it also checks for point mutations. No other AMR tools were installed. The raw tool output for each isolate is in `output/amrfinder/`.
+
+| Isolate | Called R for | What drives it |
+|---|---|---|
+| ISO_021, 028, 029 | nothing | only the normal chromosomal blaEC gene |
+| ISO_022 | nothing | partial sul2, but no trimethoprim gene (dfr), so S for trimethoprim/sulfamethoxazole |
+| ISO_023 | ampicillin, trimethoprim/sulfamethoxazole | blaTEM-1; dfrA7 with sul1 and sul2 |
+| ISO_024 | ampicillin, trimethoprim/sulfamethoxazole | TEM-1-like blaTEM; dfrA17 with sul1 |
+| ISO_025 | ampicillin, cefotaxime, trimethoprim/sulfamethoxazole | blaCTX-M-1; dfrA1 and dfrA5 with sul2 |
+| ISO_026 | ciprofloxacin | one gyrA mutation (S83L) |
+| ISO_027 | ampicillin, cefotaxime, ciprofloxacin, gentamicin, trimethoprim/sulfamethoxazole | blaCTX-M-55; gyrA S83L and D87N plus parC S80I; aac(3)-IId; dfrA17 with sul |
+| ISO_030 | ampicillin, cefotaxime, meropenem | blaKPC-2 (a carbapenemase) |
+
+Two calls are the least certain:
+- **ISO_026 ciprofloxacin (R):** it rests on a single gyrA mutation, which usually gives only low-level resistance. With current breakpoints the real result may be susceptible or borderline.
+- **ISO_024 ampicillin (R), cefotaxime (S):** its blaTEM gene wasn't an exact match to a known version. I compared it against TEM-1 by hand: the only difference is one amino acid change (I12M) in the signal peptide, away from the positions that turn TEM into an extended-spectrum enzyme. So I treated it as plain TEM-1, which breaks down ampicillin but not cefotaxime.
+
+I didn't open anything outside the workspace. That includes the reference phenotype and blinding-key files in the parent repository.
+
+===== batch_004 =====
+Running AMRFinderPlus finished; now parsing the hits (column offset differs since `--name` adds a column).
+Assemblies look normal (4.7–5.3 Mb). AMRFinderPlus screened the ampC promoter and found no mutations. Now I'll write the predictions and methods.
+I wrote both output files. `output/predictions.tsv` has 60 calls (10 isolates × 6 antibiotics): 12 R, 48 S and no NA. `output/methods.md` lists the tools, versions, command and calling rules.
+
+I ran one tool, AMRFinderPlus 4.2.7 with database 2026-10-29.1, in E. coli mode with the extended gene set (`-O Escherichia --plus`). ResFinder, ABRicate and RGI aren't installed, so nothing cross-checks these results. The raw output for each isolate is in `output/amrfinder/`.
+
+| Isolate | Resistant calls | Driving determinants |
+|---|---|---|
+| ISO_031 | ampicillin, ciprofloxacin, trimethoprim/sulfamethoxazole | blaTEM-1; gyrA S83L + D87N with parC S80I + E84V; dfrA17 + sul1 |
+| ISO_035 | ampicillin, gentamicin, trimethoprim/sulfamethoxazole | blaTEM-1; aac(3)-IId; dfrA17 + sul1/sul2/sul3 |
+| ISO_037 | ampicillin, cefotaxime, ciprofloxacin, meropenem, trimethoprim/sulfamethoxazole | blaKPC-3 (a carbapenemase); gyrA S83L + qnrS1; dfrA14 |
+| ISO_040 | ampicillin | blaSHV-1 |
+| ISO_032, 033, 034, 036, 038, 039 | none | only the chromosomal ampC gene, with no promoter mutation |
+
+Three calls rest on judgement and could go either way:
+- **ISO_035 ciprofloxacin is called S.** It has a single gyrA S83L mutation and nothing else. That usually gives an MIC around the EUCAST susceptible cutoff, but CLSI or older breakpoints could score it I or R.
+- **ISO_037 trimethoprim/sulfamethoxazole is called R** on dfrA14 alone, with no sul gene.
+- **ISO_038 and ISO_040 trimethoprim/sulfamethoxazole are called S.** They carry a sul gene but no dfr gene.
+
+The answer keys sit in the parent `data/selection/` folder (`blinding_key.tsv`, `reference_phenotypes.tsv`). I didn't open them. Every call comes from the genome sequences only.
+
+===== batch_005 =====
+Running AMRFinderPlus is done; now checking hit quality (method column) for the genes that drive calls before writing predictions.
+Hit quality is clean for every gene that drives a call. Writing outputs.
+I've written both files. `output/predictions.tsv` has 60 calls (10 isolates × 6 antibiotics) and none are NA; `output/methods.md` describes the method. I haven't scored the calls against reference phenotypes, so their accuracy is unknown.
+
+**Tools:** AMRFinderPlus 4.2.7 with database 2026-10-29.1, run with `-O Escherichia --plus`. It uses BLAST+ 2.17.0 internally. A short Python script (`scripts/call.py`) turns the genes and mutations it finds into S/R calls. No other AMR tools (ResFinder, RGI, ABRicate) were installed. The raw AMRFinderPlus output for each isolate is in `output/amrfinder/`.
+
+**Rules used:**
+- **Ampicillin:** R if there is any acquired beta-lactamase.
+- **Cefotaxime:** R if there is a CTX-M or CMY-2 gene. TEM-1 or OXA-1 on their own count as S.
+- **Ciprofloxacin:** R if there are at least 2 gyrA mutations, or a gyrA mutation plus a parC/parE mutation or a transferable quinolone-resistance gene (e.g. qnrS1).
+- **Gentamicin:** R if an aac(3) gene is present.
+- **Meropenem:** R only if a carbapenemase gene is present.
+- **Trimethoprim/sulfamethoxazole:** R only if both a dfr gene and a sul gene are present.
+
+**Results:**
+
+| Antibiotic | Resistant isolates |
+|---|---|
+| Ampicillin | 7 (all except ISO_044, 045, 047) |
+| Cefotaxime | 4: ISO_041, 042 (CTX-M), 048 (CMY-2), 049 (CTX-M) |
+| Ciprofloxacin | 6: ISO_041, 042, 046, 048, 049, 050 |
+| Gentamicin | 4: ISO_041, 042, 048, 050 |
+| Meropenem | 0 (no carbapenemase found in any isolate) |
+| Trimethoprim/sulfamethoxazole | 7 (all except ISO_044, 045, 047) |
+
+ISO_044, ISO_045 and ISO_047 are called S for all six antibiotics.
+
+**Calls most likely to be wrong:**
+- **ISO_042, meropenem (S):** it has an inactivating mutation in the outer-membrane porin gene ompF plus a CTX-M-65 beta-lactamase. That combination can occasionally give carbapenem resistance, but I didn't count porin loss on its own.
+- **ISO_043 and ISO_044, ciprofloxacin (S):** the only related finding is a marR S3N regulatory mutation, which I treated as not enough for resistance.
+- **ISO_041, ampicillin and cefotaxime:** one hit, catB3, only partly matched the reference. It's a chloramphenicol gene and didn't affect any call.
+
+===== batch_006 =====
+I'll start by looking at the workspace and the tools that are installed.
+AMRFinderPlus 4.2.7 with database 2026-10-29.1 is installed. I'll run it in nucleotide mode with `--organism Escherichia` so it also reports point mutations.
+Column numbering is shifted by the leading Name column; I'll fix the indices.
+I'll check whether AMRFinder flagged any partial or low-identity dfr, bla or qnr hits, or any ampC promoter mutations, that the summary might have hidden.
+Next I'll write the predictions using explicit rules.
+Now the methods file.
+I'll check that the database really includes *ampC* promoter mutations, since methods.md says it does.
+Confirmed: `AMR_DNA-Escherichia.tsv` lists *ampC*, so nucleotide mode does screen for *ampC* promoter mutations. None were found in these isolates.
+
+I've written both files: `output/predictions.tsv` has all 60 isolate × antibiotic calls with no NAs, and `output/methods.md` describes the tools and rules.
+
+**How the calls were made:** the only resistance-detection tool installed was AMRFinderPlus 4.2.7 (database 2026-10-29.1). I ran it on each genome as *E. coli*, so it also checked known chromosomal point mutations. A short script in `output/scripts/call.py` then turns the genes and mutations it found into S/R calls, using the rules in methods.md.
+
+| Antibiotic | Resistant isolates | What drives the R calls |
+|---|---|---|
+| Ampicillin | 8 of 10 (all except 054, 056) | TEM-1, OXA-1, CTX-M or CMY-2 genes |
+| Cefotaxime | 057, 058, 059, 060 | CTX-M-15, CTX-M-55 or CMY-2 |
+| Ciprofloxacin | 055, 057, 059, 060 | two or more mutations in the quinolone target genes (gyrA/parC) |
+| Gentamicin | 055, 057, 058, 060 | aac(3)-IIe or aac(3)-VIa |
+| Meropenem | none | no carbapenemase gene found |
+| Trimethoprim/sulfamethoxazole | 051, 052, 055, 057, 059, 060 | a dfrA gene |
+
+**Calls most likely to be wrong:**
+- **ISO_052, ciprofloxacin, called S:** it has only one mutation (gyrA S83L). That usually gives a level close to the resistance cutoff, so it could test either way.
+- **ISO_057, trimethoprim/sulfamethoxazole, called R:** it has dfrA1 but no sul gene.
+- **ISO_053 and ISO_058, trimethoprim/sulfamethoxazole, called S:** they carry sul genes but no dfrA.
+- **Meropenem, all S:** this only checks for carbapenemase genes. Resistance from porin loss combined with CTX-M or CMY-2 was not modelled.
+
+I stayed inside the workspace and did not open the reference phenotype or blinding files elsewhere in the repository.
+
+===== batch_007 =====
+AMRFinderPlus is done with 8 of the 10 genomes. While the last two finish, I'm writing the rules that turn genotypes into S/R calls.
+No ampC promoter mutations and no ESBL genes turned up. Now I'll write the calling script and the outputs.
+Both files are written. `output/predictions.tsv` has a header plus 60 calls (10 isolates × 6 antibiotics), every one S or R with no NAs, and `output/methods.md` describes the tools, versions, parameters and rules.
+
+**How I made the calls:** AMRFinderPlus 4.2.7 was the only AMR tool installed (database version 2026-10-29.1). I ran it on each genome with the *E. coli* setting, which also screens for point mutations, and kept the default thresholds. The raw reports are in `output/amrfinder/`. A short script, `output/scripts/call.py`, then turns the detected genes and mutations into S/R calls using fixed rules.
+
+**Main findings:**
+- **ISO_066** carries the carbapenemase KPC-3. It is the only isolate called R for meropenem, and it is also R for ampicillin, cefotaxime, gentamicin and trimethoprim/sulfamethoxazole.
+- **Cefotaxime R:** ISO_061, ISO_063 and ISO_069 carry plasmid AmpC genes (CMY-111, CMY-2, CMY-2), plus ISO_066. No ESBL genes were found in any isolate.
+- **Ciprofloxacin R:** ISO_063, ISO_065, ISO_067 and ISO_070, each with several mutations in the quinolone target genes (gyrA plus parC).
+- **Gentamicin R:** ISO_065, ISO_066 and ISO_070, from three different gentamicin-modifying genes.
+- **ISO_064 and ISO_068** have no acquired resistance genes and are S for all six drugs.
+
+**Least certain calls:**
+- **ISO_069, ciprofloxacin:** called S on a single gyrA S83L mutation. Isolates with only that mutation usually sit near the resistance breakpoint, so this could go either way.
+- **ISO_070, trimethoprim/sulfamethoxazole:** called R on dfrA1 alone, with no sulfonamide-resistance gene.
+- **ISO_063, meropenem:** called S despite a truncated ompC porin gene, because there is no carbapenemase.
+
+===== batch_008 =====
+Two remain; meanwhile, inspect results so far.
+Predictions are regenerated (60 rows + header). Now writing methods.md.
+I've written both files: `output/predictions.tsv` (10 isolates × 6 antibiotics, 60 calls, no NA) and `output/methods.md`. Nothing was scored against reference phenotypes.
+
+**How the calls were made:** I ran AMRFinderPlus 4.2.7 (database 2026-10-29.1) on each genome, with *E. coli* point-mutation screening turned on. A small Python script (`output/scripts/call.py`) then turns the resistance genes and mutations it found into S/R calls using fixed rules. The raw reports are in `output/amrfinder/`. ResFinder, RGI, abricate and similar tools are not installed, so AMRFinderPlus was the only detection tool.
+
+**Results:**
+- **Ampicillin:** 9 of 10 resistant; only ISO_077 is susceptible.
+- **Cefotaxime:** 6 resistant, driven by CTX-M enzymes (CTX-M-1, -15, -27-like, -55) or KPC-3.
+- **Ciprofloxacin:** 5 resistant. All five have the two gyrA mutations S83L and D87N plus parC S80I.
+- **Gentamicin:** 2 resistant: ISO_078 (aac(3)-IId and rmtB1) and ISO_080 (aac(3)-IId).
+- **Meropenem:** 2 resistant: ISO_074 (OXA-48) and ISO_075 (KPC-3).
+- **Trimethoprim/sulfamethoxazole:** 7 resistant, each carrying a dfrA gene. ISO_073 has sul1 and sul2 but no dfr gene, so I called it susceptible.
+
+**Borderline calls** (also noted in `methods.md`):
+- **ISO_074 meropenem R:** OXA-48 is often only weakly active against meropenem in lab tests, so this is a cautious resistant call. For the same reason I called its cefotaxime S, since OXA-48 breaks down cefotaxime poorly.
+- **ISO_080 meropenem S:** it has a broken ompF porin gene plus CTX-M-15 and OXA-1. I judged that not enough on its own for meropenem resistance.
+- **ISO_078:** its blaTEM hit is a partial gene at a contig edge. It doesn't change any call, because CTX-M-55 already makes it ampicillin resistant.
+
+===== batch_009 =====
+I'll start by inspecting the workspace and the available tools.
+AMRFinderPlus is finished for all 10 genomes. Next I'm checking one unclear hit (a truncated CTX-M-15 in ISO_081) before I write the S/R calls.
+I've written both output files: `output/predictions.tsv` has all 60 calls (10 isolates × 6 antibiotics, none left as NA), and `output/methods.md` describes the tools and rules. The calls come from rules I wrote myself; I didn't check them against any measured resistance results.
+
+**How the calls were made:** the only AMR tool installed was AMRFinderPlus 4.2.7 (database 2026-10-29.1), so I ran it on each genome with the *E. coli* mutation screen on (`-O Escherichia --plus`). I then turned the genes and mutations it found into S/R calls with fixed rules, saved as `output/call_rules.py`. Raw tool output for each genome is in `output/amrfinder/`.
+
+| Isolate | AMP | CTX | CIP | GEN | MEM | SXT |
+|---|---|---|---|---|---|---|
+| ISO_081 | R | R (CTX-M-15) | R | S | S | R |
+| ISO_084 | R | S | R | S | S | R |
+| ISO_085 | R | R (CMY-2) | R | R (rmtB1) | S | R |
+| ISO_089 | R | S | S | S | S | R |
+| ISO_082, 083, 086, 087, 088, 090 | S | S | S | S | S | S |
+
+**Calls that could go either way:**
+- **ISO_089, ciprofloxacin:** called S because it has only one mutation (gyrA S83L) and no plasmid-borne quinolone resistance genes. That usually means reduced susceptibility below the resistance cut-off, but it could test R under some breakpoints.
+- **ISO_081, cefotaxime:** the CTX-M-15 gene matched only 92% of its length. It runs off the end of a short piece of the assembly, so it is probably cut off by the assembly rather than broken in the genome, and I called it present (R).
+- **ISO_081, meropenem:** called S. It has damaged ompC/ompF porin genes, but no carbapenemase, and porin loss alone usually doesn't make *E. coli* resistant to meropenem.
+
+None of the 10 isolates carries a carbapenemase, so every meropenem call is S.
+
+===== batch_010 =====
+Running AMRFinderPlus is done; now checking partial hits, point mutations and non-AMR rows before applying interpretation rules.
+Interpretation is clear. Writing predictions and methods.
+Both files are written. `output/predictions.tsv` has 60 calls (10 isolates × 6 antibiotics) and none is NA; `output/methods.md` describes the tools, versions, parameters and rules. Nothing has been scored against reference phenotypes.
+
+**How the calls were made:** the only AMR tool installed was AMRFinderPlus 4.2.7, with database 2026-10-29.1. I ran it on each genome with E. coli point-mutation screening turned on (`-O Escherichia --plus`). A rule script, `scripts/call.py`, then turns the genes and mutations it finds into S/R calls. Abricate, RGI, ResFinder, staramr and mlst were all absent.
+
+| Antibiotic | R isolates | Determinants |
+|---|---|---|
+| ampicillin | 091, 093, 095, 096, 097, 099, 100 | blaTEM-1 or blaCTX-M |
+| cefotaxime | 095, 097, 099, 100 | blaCTX-M-65, -14, -15, -1 |
+| ciprofloxacin | 095, 097 | at least 2 QRDR mutations (gyrA S83L+D87N, parC S80I) |
+| gentamicin | 095, 097 | aac(3)-IVa |
+| meropenem | none | no carbapenemase found |
+| trimethoprim/sulfamethoxazole | 091, 093, 097, 100 | dfrA + sul |
+
+The calls most likely to be wrong:
+- **Ciprofloxacin, ISO_091 and ISO_099:** each has only one gyrA S83L mutation, which usually gives an MIC right around the susceptibility breakpoint. I called these S, so they are the least certain calls.
+- **Trimethoprim/sulfamethoxazole, ISO_095 and ISO_096:** they carry sul genes but no dfr gene, so I called them S.
+- **ISO_092 and ISO_098:** they carry only the chromosomal blaEC-5 allele and no ampC promoter mutation, so I called them S for both β-lactams.
+
+The raw AMRFinderPlus results for each isolate are in `output/amrfinder/`. I put the rule script in `scripts/` in the workspace root rather than under `output/`.
+
+===== batch_011 =====
+Running AMRFinderPlus finished; now parsing hits (columns shifted by the Name column).
+Now writing the rule-based predictions and methods.
+I've written both files: `output/predictions.tsv` has 60 calls (10 isolates × 6 antibiotics, no NA) and `output/methods.md` describes the method. I ran AMRFinderPlus 4.2.7 (database 2026-10-29.1, with E. coli point-mutation screening) on every genome, then applied fixed rules to turn the detected genes and mutations into S/R calls. The rules are in `output/scripts/call.py`, and the raw AMRFinder output is in `output/amrfinder/`. AMRFinderPlus was the only AMR tool installed; abricate, RGI, ResFinder and staramr were not available.
+
+| Isolate | Resistant to | Main determinants |
+|---|---|---|
+| ISO_101, ISO_107 | ampicillin | TEM-1 |
+| ISO_102, ISO_105, ISO_106 | nothing | none relevant to these drugs |
+| ISO_103 | ampicillin, cefotaxime, ciprofloxacin, trimethoprim/sulfamethoxazole | CTX-M-15, OXA-1, qnrS1, dfrA1 with sul2 |
+| ISO_104 | all six | NDM-5, CTX-M-15, gyrA/parC mutations, aac(3)-IId and aac(3)-IVa, dfrA17 with sul |
+| ISO_108 | all six | NDM-5, CTX-M-55, gyrA/parC mutations plus qnrS1, rmtB1, dfrA12/14 with sul1 |
+| ISO_109 | all except meropenem | CMY-2, gyrA/parC mutations, aac(3)-IId, dfrA17 with sul |
+| ISO_110 | all except meropenem | CTX-M-15, gyrA S83L with parC S80R, aac(3)-IId, dfrA17/12 with sul |
+
+**Least certain call:** ciprofloxacin for ISO_103 is called R on qnrS1 alone. That gene gives low-level resistance close to the breakpoint, so this isolate could test susceptible.
+
+The other borderline cases are called S on purpose:
+- **Ciprofloxacin, ISO_106:** a parE mutation alone is not counted.
+- **Ampicillin, ISO_105:** the marR S3N mutation is not counted.
+- **Ampicillin and cefotaxime, all isolates:** the E. coli chromosomal ampC (blaEC) gene is not counted, since no promoter mutation was found.
+
+The reasoning behind each call is in the evidence column and in `methods.md`.
+
+===== batch_012 =====
+I'll start by looking at the workspace and what tools are installed.
+AMRFinderPlus ran cleanly on all 8 genomes. Next I'm checking the partial blaTEM hit in ISO_115 and the hit methods and coverage for the key genes.
+The ISO_115 blaTEM hit is partial (54% coverage) and does not sit at a contig end. I'll BLAST the full blaTEM-1 gene from ISO_117 against ISO_115 to see if the rest of the gene is on another contig.
+The predictions table is complete (48 rows plus header). Now methods.md:
+I've written both files: `output/predictions.tsv` has all 48 calls (8 isolates × 6 antibiotics), every one S or R with no NA, and `output/methods.md` describes the tools and rules. Each call comes from which resistance genes or mutations AMRFinderPlus 4.2.7 (database 2026-10-29.1) found in the genome, run with *E. coli* mutation screening on. These are predictions only; nothing here was checked against lab results.
+
+| Isolate | AMP | CTX | CIP | GEN | MEM | SXT |
+|---|---|---|---|---|---|---|
+| ISO_111 | R (CTX-M-27) | R | R (gyrA ×2, parC) | S | S | S |
+| ISO_112 | S | S | S | S | S | S |
+| ISO_113 | S | S | S | S | S | S |
+| ISO_114 | S | S | S | S | S | S |
+| ISO_115 | R (TEM-1) | S | S | S | S | R (dfrA5) |
+| ISO_116 | R | R (CTX-M-15, CMY-42) | R | R (aac(3)-IIe) | S | R (dfrA17) |
+| ISO_117 | R (TEM-1) | S | S | S | S | S (sul2 only) |
+| ISO_118 | R | R | R | R (rmtB1) | R (NDM-5) | R |
+
+Three calls involved a judgement beyond the tool's raw output:
+- **ISO_115 ampicillin:** AMRFinderPlus reported blaTEM as only 54% present. A BLAST search showed the whole gene is there at 100% identity, just split across two contigs where the assembly broke. I counted it as intact, so ampicillin is R.
+- **ISO_116 meropenem:** this is the least certain call. The isolate has no carbapenemase, but it carries an AmpC enzyme (CMY-42) and a broken outer-membrane porin gene (ompF), which together can raise carbapenem resistance. That mostly affects ertapenem, so I called meropenem S.
+- **Trimethoprim/sulfamethoxazole:** I called R only when a trimethoprim-resistance gene (dfrA) was present. A sulfonamide gene alone, as in ISO_117, was called S.
+
+The raw AMRFinderPlus output is in `output/amrfinder/`, and the script that turns it into calls is `output/work/call.py`.

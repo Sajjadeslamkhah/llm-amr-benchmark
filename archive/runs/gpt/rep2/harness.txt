@@ -1,0 +1,3 @@
+# Recorded 2026-11-21T15:35:01Z before gpt rep2
+codex-cli 0.169.0
+# model: the harness default; see events.jsonl where the harness records it

@@ -1,0 +1,4 @@
+# Recorded 2026-11-14 on the investigator workstation (macOS, conda env "amr")
+amrfinder software version: 4.2.7
+amrfinder database version: 2026-10-29.1
+install: conda create -n amr -c conda-forge -c bioconda ncbi-amrfinderplus; amrfinder -u

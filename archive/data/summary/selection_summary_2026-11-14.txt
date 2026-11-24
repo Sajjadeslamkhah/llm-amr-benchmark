@@ -1,0 +1,15 @@
+# 02_select_isolates.py + 03_fetch_genomes.py, run 2026-11-14 on investigator workstation
+# SEED = 20261114; 120 isolates selected; 118 passed assembly QC
+# Isolate-antibiotic pairs among QC-pass isolates (reference phenotype counts)
+pheno                          I   R   S
+abx
+ampicillin                     0  71  26
+cefotaxime                     0  35  55
+ciprofloxacin                  0  41  60
+gentamicin                     0  27  77
+meropenem                      1  20  68
+trimethoprim/sulfamethoxazole  0  44  28
+# QC failures
+     genome_id   length  n_contigs  qc_pass
+77   562.97446  4425827        180    False   (length < 4.5 Mb)
+114  562.57145  5128944        553    False   (> 500 contigs)

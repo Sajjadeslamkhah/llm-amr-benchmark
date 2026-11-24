@@ -1,0 +1,34 @@
+run	code	description	evidence	detail	occurrences	verdict
+runs/gpt/rep1	H1	gene or variant name found in neither the AMRFinderPlus catalogue nor any tool output	oqxAB	normalised: oqxAB	1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	), and ISO_106 ciprofloxacin (ParE D475E alone). These are explicitly uncertain calls, rather than automatica		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	1 no determinant found gyrA_S83L (reduced susceptibility; binary call uncertain) no determinant found no dete		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	a clear ciprofloxacin S/R call; I’ll mark those as NA and explain the uncertainty. Gentamicin-specific AAC(3)-		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ac(3)-IId; aac(3)-IVa blaNDM-5 dfrA17; sul1; sul2 marR_S3N; phenotype uncertain from this determinant alone n		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	acetyltransferase and a single gyrA S83L substitution. I’ll document uncertainty in the genotype-to-phenotype		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	acquired beta-lactamase, yields NA because its quantitative effect is uncertain. - **Cefotaxime:** R for CTX-		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ause functionality and the regulator mutation's breakpoint effect are uncertain. - **Cefotaxime:** CTX-M-15/2		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	calls where QnrS1, MarR S3N, or ParE D475E alone leaves the phenotype uncertain. I’m finishing the methods fi		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	component has a determinant, NA because the combination phenotype is uncertain. If neither is detected, S. |		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	determinant found blaCTX-M-15; blaOXA-1 blaCTX-M-15 qnrS1; phenotype uncertain from this determinant alone n		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ect does not establish S/R. A strong R genotype takes precedence over uncertain modifiers. The executable imp		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ed marR_S3N association rather than an acquired beta-lactamase. These uncertainties are retained explicitly rathe		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ent tool versions, the local database, parameters, calling rules, and uncertainty. ===== batch_012 ===== I’ll		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	es won’t drive cefotaxime calls. The methods file will also state the uncertainty when a gene can raise an MIC		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	fects only one component, since that leaves the combination phenotype uncertain. ISO_074 carries blaOXA-48,		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	found no determinant found no determinant found parE_D475E; phenotype uncertain from this determinant alone n		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	from this determinant alone no determinant found marR_S3N; phenotype uncertain from this determinant alone n		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	his combination is assigned NA because the binary resistance level is uncertain. General regulator variants s		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	hods document tool versions, database, parameters, decision rules and uncertainties. ===== batch_011 ===== I’ll		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	hods.md): tools, versions, database, parameters, and decision rules. Uncertain genotype-to-phenotype calls a		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ing only one component yields NA because the combination phenotype is uncertain under this conservative rule.		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	istance mutation yields NA because a clinical breakpoint phenotype is uncertain. The observed resistant isola		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	nteraction is a resistance-risk rule; the exact meropenem MIC remains uncertain. OXA-48 calls use a conservat		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ompC_W124Ter: its meropenem S call follows the rule above and carries uncertainty about permeability effects. I		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	partial blaTEM (53.85% coverage); marR_S3N; functional beta-lactamase uncertain no determinant found marR_S3N		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	s the conservative genetic-resistance rule and has greater breakpoint uncertainty than multi-mutation calls. IS		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	s: 44 S, 15 R, and 1 NA (ISO_089/ciprofloxacin). Methods document the uncertainty and the lower-confidence mero		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	t found marR_S3N: low-level/isolated mechanism; breakpoint resistance uncertain no determinant found no deter		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	t without a gyrA change is assigned NA because clinical resistance is uncertain. ParE I529L alone is not used		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	ta-lactamases. This non-carbapenemase inference has greater phenotype uncertainty than the NDM call: porin, tar		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	terminant found sul1; sul2: only one combination component; phenotype uncertain blaOXA-48; blaTEM-1 no determ		1	
+runs/gpt/rep1	U1	NOT a hallucination: the agent marking its own call as uncertain (exploratory)	uncertain no determinant found marR_S3N only; breakpoint-level effect uncertain no determinant found no deter		1	

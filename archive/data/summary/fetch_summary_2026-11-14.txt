@@ -1,0 +1,81 @@
+ampicillin                         12671 records
+cefotaxime                         14883 records
+ceftriaxone                         4632 records
+ceftazidime                        16217 records
+meropenem                          13995 records
+ciprofloxacin                      16741 records
+gentamicin                         14220 records
+trimethoprim/sulfamethoxazole      11613 records
+sulfamethoxazole/trimethoprim        121 records
+trimethoprim-sulfamethoxazole          0 records
+
+Records: 105093  Genomes: 13287
+
+evidence:
+   105093  Laboratory Method
+
+laboratory_typing_method:
+    43120  Disk diffusion
+    30887  MIC
+    25509  Broth dilution
+     4307  Agar dilution
+     1174  
+       72  mic.1
+       24  broth microdilution,Sensititre™ EU Surveillance Salmonella/E. coli EUVSEC3 plate
+
+resistant_phenotype:
+    51420  
+    38948  Susceptible
+    13842  Resistant
+      883  Intermediate
+
+testing_standard:
+    43070  
+    30390  EUCAST
+    28747  CLSI
+     1120  eucast
+      936  clsi
+      366  CLSI M100-33rd
+      215  EUCAST, CLSI
+      105  CLSI, EUCAST
+       84  EUCAST,CLSI
+       56  EUCAST and CLSI
+        4  SFM
+
+antibiotic x phenotype:
+     5268  ampicillin | 
+       13  ampicillin | Intermediate
+     4408  ampicillin | Resistant
+     2982  ampicillin | Susceptible
+     7494  cefotaxime | 
+       94  cefotaxime | Intermediate
+     1777  cefotaxime | Resistant
+     5518  cefotaxime | Susceptible
+     8047  ceftazidime | 
+      323  ceftazidime | Intermediate
+     1223  ceftazidime | Resistant
+     6624  ceftazidime | Susceptible
+     3369  ceftriaxone | 
+        2  ceftriaxone | Intermediate
+      510  ceftriaxone | Resistant
+      751  ceftriaxone | Susceptible
+     7308  ciprofloxacin | 
+      148  ciprofloxacin | Intermediate
+     2631  ciprofloxacin | Resistant
+     6654  ciprofloxacin | Susceptible
+     5865  gentamicin | 
+      201  gentamicin | Intermediate
+     1230  gentamicin | Resistant
+     6924  gentamicin | Susceptible
+     7241  meropenem | 
+       51  meropenem | Intermediate
+      100  meropenem | Resistant
+     6603  meropenem | Susceptible
+        1  sulfamethoxazole/trimethoprim | 
+       10  sulfamethoxazole/trimethoprim | Intermediate
+       60  sulfamethoxazole/trimethoprim | Resistant
+       50  sulfamethoxazole/trimethoprim | Susceptible
+     6827  trimethoprim/sulfamethoxazole | 
+       41  trimethoprim/sulfamethoxazole | Intermediate
+     1903  trimethoprim/sulfamethoxazole | Resistant
+     2842  trimethoprim/sulfamethoxazole | Susceptible

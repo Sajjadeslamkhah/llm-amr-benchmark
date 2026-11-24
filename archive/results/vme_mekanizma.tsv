@@ -1,0 +1,43 @@
+arm	isolate_id	abx	determinants_for_this_drug	anything_detectable
+claude	ISO_045	ampicillin	cirA_Q175Ter; blaEC	True
+claude	ISO_074	cefotaxime	blaTEM-1; blaOXA-48; blaEC	True
+claude	ISO_089	cefotaxime	blaEC; blaTEM-1	True
+claude	ISO_011	meropenem		False
+claude	ISO_113	ampicillin	blaEC	True
+claude	ISO_113	cefotaxime	blaEC	True
+claude	ISO_113	ciprofloxacin		False
+claude	ISO_113	meropenem		False
+claude	ISO_113	trimethoprim/sulfamethoxazole		False
+claude	ISO_116	meropenem	mrdA_A543V; ompF_Y253EfsTer3	True
+claude	ISO_081	meropenem	ompF_A251EfsTer3; ompC_Q171Ter	True
+claude	ISO_082	ampicillin	blaEC	True
+claude	ISO_080	meropenem	ompF_Y253EfsTer3	True
+claude	ISO_001	meropenem		False
+claude	ISO_063	meropenem	ompC_W124Ter	True
+claude	ISO_047	ampicillin	blaEC	True
+gpt	ISO_045	ampicillin	cirA_Q175Ter; blaEC	True
+gpt	ISO_074	cefotaxime	blaTEM-1; blaOXA-48; blaEC	True
+gpt	ISO_089	cefotaxime	blaEC; blaTEM-1	True
+gpt	ISO_011	meropenem		False
+gpt	ISO_113	ampicillin	blaEC	True
+gpt	ISO_113	cefotaxime	blaEC	True
+gpt	ISO_113	ciprofloxacin		False
+gpt	ISO_113	meropenem		False
+gpt	ISO_113	trimethoprim/sulfamethoxazole		False
+gpt	ISO_082	ampicillin	blaEC	True
+gpt	ISO_001	meropenem		False
+gpt	ISO_063	meropenem	ompC_W124Ter	True
+gpt	ISO_047	ampicillin	blaEC	True
+ref	ISO_118	gentamicin	rmtB1; aadA5; aadA2	True
+ref	ISO_057	trimethoprim/sulfamethoxazole	dfrA1	True
+ref	ISO_089	cefotaxime	blaEC; blaTEM-1	True
+ref	ISO_018	trimethoprim/sulfamethoxazole	dfrA14	True
+ref	ISO_011	meropenem		False
+ref	ISO_070	trimethoprim/sulfamethoxazole	dfrA1	True
+ref	ISO_113	cefotaxime	blaEC	True
+ref	ISO_113	ciprofloxacin		False
+ref	ISO_113	meropenem		False
+ref	ISO_113	trimethoprim/sulfamethoxazole		False
+ref	ISO_037	trimethoprim/sulfamethoxazole	dfrA14	True
+ref	ISO_005	gentamicin	aph(3'')-Ib; aph(6)-Id; aph(3')-Ia; rmtC; aph(3')-VI; aac(6')-Ib-cr5	True
+ref	ISO_001	meropenem		False
