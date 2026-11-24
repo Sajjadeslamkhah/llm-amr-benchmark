@@ -1,0 +1,7 @@
+item_id	code	evidence	verdict	reader_note
+1	H3	That mutation typically gives an MIC of about 0.12–0.5 mg/L, which is at or below the EUCAST S breakpoint of 0.25 mg/L	Unclear	Which mutation is mentioned ?
+2	H1	oqxAB	Rejected	Encoding a Multidrug Efflux Pump
+3	H1	strB	Rejected	Streptomycin Resistance Gene
+4	H3	A single gyrA mutation on its own (typical MIC 0.125–0.5 mg/L, around the S ≤0.25 breakpoint) is called S, and the evidence column flags it.	Unclear	Which strain is this statement for ? This situation is depend on the strain.
+5	H1	strA	Rejected	Streptomycin Resistance Gene
+6	H1	crpP	Rejected	Ciprofloxacin-Modifying Gene
