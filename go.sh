@@ -18,6 +18,8 @@
 #   bash go.sh kompozisyon  suruklenme iddiasi icin bilesim kontrolu (rep4, tum izolatlar)
 #   bash go.sh h3tekrar     yalnizca H3 satirlari, baglam sutunuyla, yeniden degerlendirme icin
 #   bash go.sh kumelenme    izolat duzeyinde aralik ve test (Wilson/McNemar'in yaninda)
+#   bash go.sh mekanizma    hangi direnc assembly'den okunabilirdi (meropenem, TMP-SMX, VME)
+#   bash go.sh arsiv        birincil ciktilari depoya kopyala (--yaz ile)
 #   bash go.sh duyarlilik  on belirlenmis duyarlilik analizleri (ara fenotip, test standardi)
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
@@ -140,6 +142,24 @@ case "${1:-}" in
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
     PY="$PY" ARMS="$ARMS" caffeinate -dimsu bash scripts/tekrar.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
+    ;;
+  mekanizma)
+    # Hangi direnc assembly'den okunabilirdi: meropenem x karbapenemaz, TMP-SMX x dfr/sul,
+    # ve her VME icin o ilaca dair bir determinant bildirilmis miydi.
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    GIZLI="${GIZLI:-$HOME/amr_gizli}"
+    "$PY" scripts/mekanizma.py \
+      --ref "$GIZLI/reference_phenotypes.tsv" \
+      --key "$GIZLI/blinding_key.tsv" \
+      --pred claude=runs/claude/rep1/predictions.tsv \
+      --pred gpt=runs/gpt/rep1/predictions.tsv \
+      --pred ref=runs/amrfinderplus/predictions.tsv
+    ;;
+  arsiv)
+    # Birincil ciktilari depoya kopyala, SHA-256 manifestiyle. Anahtar dosyalari ve
+    # referans fenotipleri kasitla disarida; results/audit iki kez kayboldu.
+    export PATH="$HOME/miniforge3/bin:$HOME/.local/bin:$PATH"
+    "$PY" scripts/arsiv.py "$@"
     ;;
   kumelenme)
     # Izolat duzeyinde cikarim: izolat bootstrap araliklari, izolat isaret testi, ICC.
