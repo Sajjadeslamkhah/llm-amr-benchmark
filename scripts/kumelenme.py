@@ -56,27 +56,32 @@ correctness indicator so a reader can see the design effect the intervals embody
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import itertools
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.stats import binomtest
 
+# Loading and the Wilson interval come from metrics.py rather than being written again
+# here. Two scripts in this repository defined "median seconds per batch" differently
+# and the manuscript quoted the odd one out; the same mistake with the column mapping
+# or the interval would be worse, because the cluster interval has to belong to the
+# point estimate metrics.py publishes.
+_spec = importlib.util.spec_from_file_location(
+    "amr_metrics", Path(__file__).resolve().parent / "metrics.py")
+_metrics = importlib.util.module_from_spec(_spec)
+sys.modules["amr_metrics"] = _metrics
+_spec.loader.exec_module(_metrics)
+load_pred = _metrics.load_pred
+wilson = _metrics.wilson
+
 SEED = 20261125
 BOOT = 2000
 PERM = 20000
 EXACT_MAX = 20          # enumerate 2**k sign flips up to this many differing isolates
-
-
-def wilson(k: int, n: int, z: float = 1.959964) -> tuple[float, float, float]:
-    if n == 0:
-        return float("nan"), float("nan"), float("nan")
-    p = k / n
-    d = 1 + z * z / n
-    c = (p + z * z / (2 * n)) / d
-    h = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / d
-    return p, max(0.0, c - h), min(1.0, c + h)
 
 
 def rates(df: pd.DataFrame) -> dict[str, float]:
@@ -177,11 +182,8 @@ def main() -> None:
         if "=" not in spec:
             sys.exit(f"--pred arm=path bekleniyor: {spec}")
         name, path = spec.split("=", 1)
-        p = pd.read_csv(path, sep="\t", dtype=str)
-        if "isolate_id" in p.columns:
-            p = p.merge(key, on="isolate_id", how="left")
-        m = ref.merge(p[["genome_id", "abx", "prediction"]], on=["genome_id", "abx"],
-                      how="left")
+        p = load_pred(path, key)
+        m = ref.merge(p, on=["genome_id", "abx"], how="left")
         m["prediction"] = m["prediction"].fillna("NA")
         m = m.merge(key, on="genome_id", how="left", suffixes=("", "_k"))
         if m["isolate_id"].isna().any():
