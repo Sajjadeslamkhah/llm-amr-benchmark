@@ -16,6 +16,7 @@
 #   bash go.sh tekrar   tekrarlanabilirlik: 40 izolatlik alt kumede rep2 ve rep3
 #   bash go.sh gece     gozetimsiz: GPT bitince Gemini, tekrar denemeli, sonra sizinti denetimi
 #   bash go.sh kompozisyon  suruklenme iddiasi icin bilesim kontrolu (rep4, tum izolatlar)
+#   bash go.sh h3tekrar     yalnizca H3 satirlari, baglam sutunuyla, yeniden degerlendirme icin
 #   bash go.sh duyarlilik  on belirlenmis duyarlilik analizleri (ara fenotip, test standardi)
 #   bash go.sh analiz  tamamlanmis kollar icin tum sayilari hesapla (results/)
 #   bash go.sh uydurma  uydurma (hallusinasyon) denetimi: aday bulgulari cikar
@@ -138,6 +139,23 @@ case "${1:-}" in
     echo "Mac prize takili, kapagi acik kalsin. Terminali kapatabilirsiniz."
     PY="$PY" ARMS="$ARMS" caffeinate -dimsu bash scripts/tekrar.sh > "$log" 2>&1 &
     echo "Arka planda calisiyor (pid $!)."
+    ;;
+  h3tekrar)
+    # Yalnizca H3 satirlari, baglam sutunuyla, iki okuyucuya yeniden gonderilmek uzere.
+    # H1 kararlari iki okuyucuda da kapandi; onlar tekrar okutulmuyor.
+    sh="results/audit/adjudication_sheet.tsv"
+    [ -f "$sh" ] || { echo "Once: bash go.sh hakem"; exit 1; }
+    out="results/audit/h3_tekrar"
+    rm -rf "$out"; mkdir -p "$out"
+    head -1 "$sh" > "$out/h3_rows.tsv"
+    awk -F'\t' '$2=="H3"' "$sh" >> "$out/h3_rows.tsv"
+    cp docs/H3_TEKRAR_NOTU.md "$out/NOT.md"
+    n=$(( $(wc -l < "$out/h3_rows.tsv") - 1 ))
+    [ "$n" -gt 0 ] || { echo "H3 satiri yok, paket yapilmadi"; exit 1; }
+    case "$(ls "$out")" in *key*) echo "HATA: pakette key dosyasi var"; exit 1 ;; esac
+    ( cd "$out" && zip -q ../h3_tekrar.zip h3_rows.tsv NOT.md )
+    echo "Gonderilecek dosya: results/audit/h3_tekrar.zip  ($n satir)"
+    unzip -l results/audit/h3_tekrar.zip
     ;;
   kompozisyon)
     # Bilesim kontrolu (post-hoc, PROTOCOL.md bolum 12): rep1 ile ayni parti bilesimi,
