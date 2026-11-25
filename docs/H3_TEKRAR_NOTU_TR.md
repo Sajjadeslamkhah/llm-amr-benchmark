@@ -23,3 +23,23 @@ eldeki malzeme karar vermenize yetmiyorsa, yetmediğini ve neyin eksik olduğunu
 
 Organizma baştan sona *Escherichia coli*'dir. Her satırı hangi kolun ürettiği
 gösterilmemektedir.
+
+## Bağlam sütunundaki ifadeler
+
+Sütun İngilizce, çünkü yanındaki kanıt metni ajanın kendi sözcükleri ve onu
+çevirmiyoruz. İfadelerin karşılıkları:
+
+- `isolate: not stated` — iddia hiçbir izolat adı anmıyor.
+- `antibiotic: not named in the claim` — iddianın kendi cümlesinde ilaç adı geçmiyor.
+  Anlatının başka bir yerinde bir ilaç adı geçiyor olabilir, ama onu bu iddiaya
+  bağlamıyoruz.
+- `gene or variant named in the claim: …` — iddianın kendi cümlesinde geçen gen ya da
+  varyant adı. Ajanın yazdığı şeydir, bizim yorumumuz değildir.
+- `no gene or variant named in the claim` — iddia hiçbir gen ya da varyant adı anmıyor.
+- `the claim is in the narrative, not in a prediction` — iddia, belirli bir
+  izolat-antibiyotik tahmininin kanıt alanında değil, ajanın serbest metninde geçiyor.
+- `stated: the claim sits in this prediction's own evidence field` — bunun tersi: iddia
+  belirli bir tahminin içinde yazılmış, o yüzden izolat ve antibiyotik kesin biliniyor.
+- `nothing is taken from nearby text, because proximity is not attachment` — çevredeki
+  metinden hiçbir şey çıkarsanmadı. Yakında geçen bir ad, iddianın o şey hakkında
+  olduğunu göstermez.
