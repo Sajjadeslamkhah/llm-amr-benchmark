@@ -192,7 +192,12 @@ case "${1:-}" in
     [ "$n" -gt 0 ] || { echo "H3 satiri yok, paket yapilmadi"; exit 1; }
     case "$(ls "$out")" in *key*) echo "HATA: pakette key dosyasi var"; exit 1 ;; esac
     ( cd "$out" && zip -q ../h3_tekrar.zip h3_rows.tsv NOT.md NOTE_en.md )
+    # Ana dizine acik bir adla da kopyala. results/audit icinde alfabetik ilk sirada
+    # adjudication_sheet.key.tsv duruyor ve dosya seciciden ucuncu kez o secildi;
+    # okuyuculara gidecek dosyanin adinin tereddut bırakmamasi gerekiyor.
+    cp results/audit/h3_tekrar.zip "$HOME/OKUYUCULARA_GONDER_h3_tekrar.zip"
     echo "Gonderilecek dosya: results/audit/h3_tekrar.zip  ($n satir)"
+    echo "Ayni dosya burada da duruyor: $HOME/OKUYUCULARA_GONDER_h3_tekrar.zip"
     unzip -l results/audit/h3_tekrar.zip
     ;;
   kompozisyon)
