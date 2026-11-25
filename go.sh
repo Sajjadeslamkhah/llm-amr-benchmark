@@ -184,11 +184,14 @@ case "${1:-}" in
     rm -rf "$out"; mkdir -p "$out"
     head -1 "$sh" > "$out/h3_rows.tsv"
     awk -F'\t' '$2=="H3"' "$sh" >> "$out/h3_rows.tsv"
-    cp docs/H3_TEKRAR_NOTU.md "$out/NOT.md"
+    # Okuyuculara Turkce gidiyor; ilk pakette de TALIMAT.md Turkceydi. Ingilizce surum
+    # depo kaydi icin docs/ altinda duruyor.
+    cp docs/H3_TEKRAR_NOTU_TR.md "$out/NOT.md"
+    cp docs/H3_TEKRAR_NOTU.md "$out/NOTE_en.md"
     n=$(( $(wc -l < "$out/h3_rows.tsv") - 1 ))
     [ "$n" -gt 0 ] || { echo "H3 satiri yok, paket yapilmadi"; exit 1; }
     case "$(ls "$out")" in *key*) echo "HATA: pakette key dosyasi var"; exit 1 ;; esac
-    ( cd "$out" && zip -q ../h3_tekrar.zip h3_rows.tsv NOT.md )
+    ( cd "$out" && zip -q ../h3_tekrar.zip h3_rows.tsv NOT.md NOTE_en.md )
     echo "Gonderilecek dosya: results/audit/h3_tekrar.zip  ($n satir)"
     unzip -l results/audit/h3_tekrar.zip
     ;;
